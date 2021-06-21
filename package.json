@@ -23,9 +23,11 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^12.1.0",
     "@angular-devkit/build-angular": "~12.0.4",
     "@angular/cli": "~12.0.4",
     "@angular/compiler-cli": "~12.0.4",
+    "@types/chrome": "^0.0.145",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
     "jasmine-core": "~3.7.0",
