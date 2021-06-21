@@ -3,12 +3,6 @@
   "version": "1.0",
   "description": "Visual history and tab manager",
   "manifest_version": 2,
-  "background": {
-    "scripts": [
-      "background.js",
-      "runtime.js"
-    ]
-  },
   "chrome_url_overrides" : {
     "newtab": "index.html"
   }
