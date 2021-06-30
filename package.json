@@ -12,7 +12,7 @@
     "pre-commit": "lint-staged --relative"
   },
   "lint-staged": {
-    "*.{js,ts}": [
+    "*.{js,ts,html}": [
       "eslint --fix"
     ]
   },
