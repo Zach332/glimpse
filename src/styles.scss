@@ -41,6 +41,27 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .flex {
   display: flex;
 }
+.flex-wrap {
+  flex-wrap: wrap;
+}
 .justify-content-center {
   justify-content: center;
+}
+
+
+// Margins
+.m-1 {
+  margin: 1px;
+}
+.m-2 {
+  margin: 2px;
+}
+.m-3 {
+  margin: 3px;
+}
+.m-4 {
+  margin: 4px;
+}
+.m-5 {
+  margin: 5px;
 }

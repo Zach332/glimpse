@@ -1,1 +1,16 @@
-<app-image-prev></app-image-prev>
+<mat-slider
+  [max]="max"
+  [min]="min"
+  [step]="step"
+  [(ngModel)]="value"
+  (input)="value = $event.value ? $event.value : value"
+  aria-labelledby="example-name-label"
+>
+</mat-slider>
+<div class="flex flex-wrap justify-content-center">
+  <app-image-prev
+    *ngFor="let i of arr(num).fill(1)"
+    [style.width.px]="value"
+    class="m-2"
+  ></app-image-prev>
+</div>

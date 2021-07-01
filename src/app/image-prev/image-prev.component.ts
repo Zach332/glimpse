@@ -5,13 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './image-prev.component.html',
   styleUrls: ['./image-prev.component.scss'],
 })
-export class ImagePrevComponent {
-  private test: string[] = [
-    'kjsjnksld',
-    'kjsjnksld',
-    'kjsjnksld',
-    'kjsjnksld',
-    'kjsjnksld',
-    'kjsjnksld',
-  ];
-}
+export class ImagePrevComponent {}

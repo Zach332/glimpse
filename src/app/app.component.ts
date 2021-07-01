@@ -6,5 +6,15 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'glimpse';
+  public arr = Array;
+
+  public num = 20;
+
+  public value = 300;
+
+  public max = 500;
+
+  public min = 200;
+
+  public step = 1;
 }
