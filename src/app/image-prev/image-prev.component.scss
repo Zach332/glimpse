@@ -4,6 +4,12 @@
 }
 
 .prev-card {
+  padding: 0px;
+}
+.prev-card:hover {
+  background-color: rgb(236, 235, 235);
+}
+.prev-header {
   padding: 5px 4px 0px 4px;
 }
 .prev-title {
@@ -15,6 +21,12 @@
   margin-bottom: 6px !important;
 }
 .prev-image {
-  width: calc(100% + 8px);
-  margin: 0 -4px 0px -4px;
+  width: 100%;
+  margin: 0px;
+}
+.prev-close {
+  margin-left: auto;
+}
+.prev-close:hover {
+  background-color: rgb(223, 223, 223);
 }
