@@ -4,13 +4,13 @@
   [step]="step"
   [(ngModel)]="value"
   (input)="value = $event.value ? $event.value : value"
-  aria-labelledby="example-name-label"
 >
 </mat-slider>
 <div class="flex flex-wrap justify-content-center">
   <app-image-prev
-    *ngFor="let i of arr(num).fill(1)"
+    *ngFor="let tabElement of tabElements"
     [style.width.px]="value"
     class="m-2"
+    [tabData]="tabElement"
   ></app-image-prev>
 </div>

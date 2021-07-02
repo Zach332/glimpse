@@ -1,14 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { PageData } from './page-data';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  public arr = Array;
-
-  public num = 20;
+export class AppComponent implements OnInit {
+  public tabElements: PageData[] = [];
 
   public value = 300;
 
@@ -17,4 +16,14 @@ export class AppComponent {
   public min = 200;
 
   public step = 1;
+
+  ngOnInit() {
+    for (let i = 0; i < 20; i += 1) {
+      this.tabElements.push(<PageData>{
+        title: 'A website',
+        url: 'material.angular.io',
+        imageUrl: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
+      });
+    }
+  }
 }

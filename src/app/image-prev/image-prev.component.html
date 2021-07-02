@@ -1,16 +1,11 @@
 <mat-card class="prev-card">
   <mat-card-header class="prev-header">
     <div mat-card-avatar class="example-header-image"></div>
-    <mat-card-title class="prev-title">Shiba Inu</mat-card-title>
-    <mat-card-subtitle class="prev-site">Dog Breed</mat-card-subtitle>
+    <mat-card-title class="prev-title">{{ tabData.title }}</mat-card-title>
+    <mat-card-subtitle class="prev-site">{{ tabData.url }}</mat-card-subtitle>
     <button mat-icon-button class="prev-close">
       <mat-icon>close</mat-icon>
     </button>
   </mat-card-header>
-  <img
-    mat-card-image
-    class="prev-image"
-    src="https://material.angular.io/assets/img/examples/shiba2.jpg"
-    alt="Photo of a Shiba Inu"
-  />
+  <img mat-card-image class="prev-image" src="{{ tabData.imageUrl }}" />
 </mat-card>
