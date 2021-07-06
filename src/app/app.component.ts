@@ -17,6 +17,8 @@ export class AppComponent implements OnInit {
 
   public step = 1;
 
+  public collapse = false;
+
   ngOnInit() {
     for (let i = 0; i < 20; i += 1) {
       this.tabElements.push(<PageData>{

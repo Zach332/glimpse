@@ -9,4 +9,7 @@ import { PageData } from '../page-data';
 export class PagePrevComponent {
   @Input()
   tabData!: PageData;
+
+  @Input()
+  collapse!: boolean;
 }

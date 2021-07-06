@@ -1,3 +1,4 @@
 <mat-card class="prev-card">
-  <app-image-prev [tabData]="tabData"></app-image-prev>
+  <app-image-prev *ngIf="!collapse" [tabData]="tabData"></app-image-prev>
+  <app-title-prev *ngIf="collapse" [tabData]="tabData"></app-title-prev>
 </mat-card>
