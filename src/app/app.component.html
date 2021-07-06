@@ -7,10 +7,10 @@
 >
 </mat-slider>
 <div class="flex flex-wrap justify-content-center">
-  <app-image-prev
+  <app-page-prev
     *ngFor="let tabElement of tabElements"
     [style.width.px]="value"
     class="m-2"
     [tabData]="tabElement"
-  ></app-image-prev>
+  ></app-page-prev>
 </div>

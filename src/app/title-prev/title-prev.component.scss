@@ -1,0 +1,26 @@
+.example-header-image {
+  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}
+
+.prev-header {
+  padding: 5px 4px 0px 4px;
+}
+.prev-title, .prev-site {
+  margin-left: -8px;
+  margin-right: -8px;
+  margin-bottom: 6px !important;
+}
+.prev-title {
+  font-size: 14px;
+  margin-bottom: 6px !important;
+}
+.prev-site {
+  font-size: 12px;
+}
+.prev-close {
+  margin-left: auto;
+}
+.prev-close:hover {
+  background-color: rgb(223, 223, 223);
+}
