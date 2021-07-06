@@ -12,4 +12,12 @@ export class PagePrevComponent {
 
   @Input()
   collapse!: boolean;
+
+  openPage(): void {
+    window.location.href = this.tabData.imageUrl;
+  }
+
+  removePage($event: MouseEvent): void {
+    $event.stopPropagation();
+  }
 }

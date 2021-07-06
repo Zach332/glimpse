@@ -1,4 +1,12 @@
-<mat-card class="prev-card">
-  <app-image-prev *ngIf="!collapse" [tabData]="tabData"></app-image-prev>
-  <app-title-prev *ngIf="collapse" [tabData]="tabData"></app-title-prev>
+<mat-card class="prev-card" (click)="openPage()">
+  <app-image-prev
+    *ngIf="!collapse"
+    [tabData]="tabData"
+    (removePage)="removePage($event)"
+  ></app-image-prev>
+  <app-title-prev
+    *ngIf="collapse"
+    [tabData]="tabData"
+    (removePage)="removePage($event)"
+  ></app-title-prev>
 </mat-card>

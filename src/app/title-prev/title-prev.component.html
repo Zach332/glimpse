@@ -2,7 +2,7 @@
   <div mat-card-avatar class="example-header-image"></div>
   <mat-card-title class="prev-title">{{ tabData.title }}</mat-card-title>
   <mat-card-subtitle class="prev-site">{{ tabData.url }}</mat-card-subtitle>
-  <button mat-icon-button class="prev-close">
+  <button mat-icon-button (click)="close($event)" class="prev-close">
     <mat-icon>close</mat-icon>
   </button>
 </mat-card-header>

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PageData } from '../page-data';
 
 @Component({
@@ -9,4 +9,10 @@ import { PageData } from '../page-data';
 export class ImagePrevComponent {
   @Input()
   tabData!: PageData;
+
+  @Output() removePage = new EventEmitter<MouseEvent>();
+
+  close($event: MouseEvent): void {
+    this.removePage.next($event);
+  }
 }

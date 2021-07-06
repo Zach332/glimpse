@@ -1,2 +1,2 @@
-<app-title-prev [tabData]="tabData"></app-title-prev>
+<app-title-prev [tabData]="tabData" (removePage)="close($event)"></app-title-prev>
 <img mat-card-image class="prev-image" src="{{ tabData.imageUrl }}" />
