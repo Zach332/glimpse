@@ -12,13 +12,17 @@
 .prev-header {
   padding: 5px 4px 0px 4px;
 }
+.prev-title, .prev-site {
+  margin-left: -8px;
+  margin-right: -8px;
+  margin-bottom: 6px !important;
+}
 .prev-title {
   font-size: 14px;
   margin-bottom: 6px !important;
 }
 .prev-site {
   font-size: 12px;
-  margin-bottom: 6px !important;
 }
 .prev-image {
   width: 100%;
