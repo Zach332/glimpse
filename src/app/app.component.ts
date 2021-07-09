@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { PageData } from './interfaces/page-data';
 import { SelectableCollection } from './interfaces/selectable-collection';
+import { SelectablePageData } from './interfaces/selectable-page-data';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +8,8 @@ import { SelectableCollection } from './interfaces/selectable-collection';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  public tabElements: SelectableCollection<PageData> = new SelectableCollection<PageData>();
+  public tabElements: SelectableCollection<SelectablePageData> =
+    new SelectableCollection<SelectablePageData>();
 
   public value = 300;
 
@@ -22,7 +23,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     for (let i = 0; i < 20; i += 1) {
-      this.tabElements.push(<PageData>{
+      this.tabElements.push(<SelectablePageData>{
         title: 'A website',
         url: 'material.angular.io',
         imageUrl: 'https://material.angular.io/assets/img/examples/shiba2.jpg',

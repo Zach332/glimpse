@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { PageData } from '../interfaces/page-data';
+import { SelectablePageData } from '../interfaces/selectable-page-data';
 
 @Component({
   selector: 'app-page-prev',
@@ -8,7 +8,7 @@ import { PageData } from '../interfaces/page-data';
 })
 export class PagePrevComponent {
   @Input()
-  tabData!: PageData;
+  tabData!: SelectablePageData;
 
   @Input()
   collapse!: boolean;
