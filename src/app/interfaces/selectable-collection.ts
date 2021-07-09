@@ -24,11 +24,18 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
 
   public [Symbol.iterator]() {
     const { collection } = this;
+    let pointer = 0;
     return {
-      next() {
+      next(): IteratorResult<Type> {
+        if (pointer < collection.length) {
+          return {
+            done: false,
+            value: collection[pointer++],
+          };
+        }
         return {
-          done: collection[0] === collection[1],
-          value: collection[1],
+          done: true,
+          value: null,
         };
       },
     };
