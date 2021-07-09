@@ -1,7 +1,6 @@
-import { Selectable } from './selectable';
-
-export interface PageData extends Selectable {
+export interface PageData {
   title: string;
   url: string;
   imageUrl: string;
+  id: string;
 }

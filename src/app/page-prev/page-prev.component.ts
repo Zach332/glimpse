@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { PageData } from '../interfaces/page-data';
+import { SelectablePageData } from '../interfaces/selectable-page-data';
 import { PageManagerService } from '../page-prev-display/page-manager.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { PageManagerService } from '../page-prev-display/page-manager.service';
 })
 export class PagePrevComponent {
   @Input()
-  tabData!: PageData;
+  tabData!: SelectablePageData;
 
   @Input()
   collapse!: boolean;
