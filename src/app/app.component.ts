@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { PageData } from './page-data';
+import { PageData } from './interfaces/page-data';
+import { SelectableCollection } from './interfaces/selectable-collection';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +8,7 @@ import { PageData } from './page-data';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  public tabElements: PageData[] = [];
+  public tabElements: SelectableCollection<PageData> = new SelectableCollection<PageData>();
 
   public value = 300;
 

@@ -1,4 +1,4 @@
-<mat-card class="prev-card" (click)="openPage()">
+<mat-card class="prev-card" [ngClass]="{ selected: tabData.isSelected }" (click)="onClick($event)">
   <app-image-prev
     *ngIf="!collapse"
     [tabData]="tabData"

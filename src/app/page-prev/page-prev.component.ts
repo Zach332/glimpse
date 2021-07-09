@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { PageData } from '../page-data';
+import { PageData } from '../interfaces/page-data';
 
 @Component({
   selector: 'app-page-prev',
@@ -13,8 +13,12 @@ export class PagePrevComponent {
   @Input()
   collapse!: boolean;
 
-  openPage(): void {
-    window.location.href = this.tabData.imageUrl;
+  onClick($event: MouseEvent): void {
+    if ($event.metaKey) {
+      this.tabData.isSelected = true;
+    } else {
+      window.location.href = this.tabData.imageUrl;
+    }
   }
 
   removePage($event: MouseEvent): void {

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { PageData } from '../page-data';
+import { PageData } from '../interfaces/page-data';
 
 @Component({
   selector: 'app-image-prev',
