@@ -28,9 +28,11 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     return {
       next(): IteratorResult<Type> {
         if (pointer < collection.length) {
+          const curPointer = pointer;
+          pointer += 1;
           return {
             done: false,
-            value: collection[pointer++],
+            value: collection[curPointer],
           };
         }
         return {

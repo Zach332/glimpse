@@ -9,7 +9,7 @@
 <mat-slide-toggle [(ngModel)]="collapse">Collapse</mat-slide-toggle>
 <div class="flex flex-wrap justify-content-center">
   <app-page-prev
-    *ngFor="let tabElement of tabElements"
+    *ngFor="let tabElement of pageManagerService.tabElements"
     [style.width.px]="value"
     class="m-2"
     [tabData]="tabElement"

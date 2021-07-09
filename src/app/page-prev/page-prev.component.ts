@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { PageData } from '../interfaces/page-data';
+import { PageManagerService } from '../page-prev-display/page-manager.service';
 
 @Component({
   selector: 'app-page-prev',
@@ -13,9 +14,11 @@ export class PagePrevComponent {
   @Input()
   collapse!: boolean;
 
+  constructor(private pageManagerService: PageManagerService) {}
+
   onClick($event: MouseEvent): void {
     if ($event.metaKey) {
-      this.tabData.isSelected = true;
+      this.pageManagerService.tabElements.toggleId(this.tabData.id);
     } else {
       window.location.href = this.tabData.imageUrl;
     }

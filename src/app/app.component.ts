@@ -1,14 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { PageData } from './interfaces/page-data';
-import { SelectableCollection } from './interfaces/selectable-collection';
+import { Component } from '@angular/core';
+import { PageManagerService } from './page-prev-display/page-manager.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
-  public tabElements: SelectableCollection<PageData> = new SelectableCollection<PageData>();
+export class AppComponent {
+  constructor(public pageManagerService: PageManagerService) {}
 
   public value = 300;
 
@@ -19,14 +18,4 @@ export class AppComponent implements OnInit {
   public step = 1;
 
   public collapse = false;
-
-  ngOnInit() {
-    for (let i = 0; i < 20; i += 1) {
-      this.tabElements.push(<PageData>{
-        title: 'A website',
-        url: 'material.angular.io',
-        imageUrl: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
-      });
-    }
-  }
 }
