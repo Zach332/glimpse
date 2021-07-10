@@ -14,7 +14,7 @@ export class DataService {
   });
 
   async insertPageData(pageData: PageData) {
-    (await this.db).put('pageData', pageData);
+    return (await this.db).put('pageData', pageData);
   }
 
   async getPageData(id: number) {
