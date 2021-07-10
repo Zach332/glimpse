@@ -11,7 +11,7 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     this._collection = newCollection;
   }
 
-  public toggleId(id: string): void {
+  public toggleId(id: number): void {
     const selectedElement = this.collection.find((element) => element.id === id);
     if (selectedElement) {
       selectedElement.isSelected = !selectedElement.isSelected;

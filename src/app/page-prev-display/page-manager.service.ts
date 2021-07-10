@@ -18,7 +18,7 @@ export class PageManagerService {
         title: 'A website',
         url: 'material.angular.io',
         imageUrl: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
-        id: i.toString(),
+        id: i,
       });
     }
   }
