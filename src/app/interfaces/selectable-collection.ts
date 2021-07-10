@@ -13,7 +13,7 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     this._collection = newCollection;
   }
 
-  public toggleId(id: string): void {
+  public toggleId(id: number): void {
     const selectedindex = this.collection.findIndex((element) => element.id === id);
     this.lastToggled = selectedindex;
     const selectedElement = this.collection[selectedindex];
@@ -22,7 +22,7 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     }
   }
 
-  public selectToId(id: string): void {
+  public selectToId(id: number): void {
     const endElement = this.collection.findIndex((element) => element.id === id);
     const collectionRange =
       endElement < this.lastToggled
