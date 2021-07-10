@@ -5,6 +5,8 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
 
   private lastToggled = 0;
 
+  private lastShifted = -1;
+
   public get collection(): Type[] {
     return this._collection;
   }
@@ -14,6 +16,7 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
   }
 
   public toggleId(id: number): void {
+    this.lastShifted = -1;
     const selectedindex = this.collection.findIndex((element) => element.id === id);
     this.lastToggled = selectedindex;
     const selectedElement = this.collection[selectedindex];
@@ -23,14 +26,25 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
   }
 
   public selectToId(id: number): void {
-    const endElement = this.collection.findIndex((element) => element.id === id);
+    if (this.lastShifted !== -1) {
+      const collectionRange =
+        this.lastShifted < this.lastToggled
+          ? this.collection.slice(this.lastShifted, this.lastToggled)
+          : this.collection.slice(this.lastToggled + 1, this.lastShifted + 1);
+      collectionRange.forEach((element) => {
+        element.isSelected = !element.isSelected;
+      });
+    }
+    const endIndex = this.collection.findIndex((element) => element.id === id);
+    this.lastShifted = endIndex;
     const collectionRange =
-      endElement < this.lastToggled
-        ? this.collection.slice(endElement, this.lastToggled)
-        : this.collection.slice(this.lastToggled + 1, endElement + 1);
+      endIndex < this.lastToggled
+        ? this.collection.slice(endIndex, this.lastToggled)
+        : this.collection.slice(this.lastToggled + 1, endIndex + 1);
     collectionRange.forEach((element) => {
       element.isSelected = !element.isSelected;
     });
+    this.lastShifted = endIndex;
   }
 
   public push(newElement: Type): void {
