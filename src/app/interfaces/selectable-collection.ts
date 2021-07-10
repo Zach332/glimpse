@@ -3,6 +3,8 @@ import { Selectable } from './selectable';
 export class SelectableCollection<Type extends Selectable> implements Iterable<Type> {
   private _collection: Type[] = [];
 
+  private lastToggled = 0;
+
   public get collection(): Type[] {
     return this._collection;
   }
@@ -12,10 +14,23 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
   }
 
   public toggleId(id: string): void {
-    const selectedElement = this.collection.find((element) => element.id === id);
+    const selectedindex = this.collection.findIndex((element) => element.id === id);
+    this.lastToggled = selectedindex;
+    const selectedElement = this.collection[selectedindex];
     if (selectedElement) {
       selectedElement.isSelected = !selectedElement.isSelected;
     }
+  }
+
+  public selectToId(id: string): void {
+    const endElement = this.collection.findIndex((element) => element.id === id);
+    const collectionRange =
+      endElement < this.lastToggled
+        ? this.collection.slice(endElement, this.lastToggled)
+        : this.collection.slice(this.lastToggled + 1, endElement + 1);
+    collectionRange.forEach((element) => {
+      element.isSelected = !element.isSelected;
+    });
   }
 
   public push(newElement: Type): void {

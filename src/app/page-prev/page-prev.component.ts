@@ -19,6 +19,8 @@ export class PagePrevComponent {
   onClick($event: MouseEvent): void {
     if ($event.metaKey) {
       this.pageManagerService.tabElements.toggleId(this.tabData.id);
+    } else if ($event.shiftKey) {
+      this.pageManagerService.tabElements.selectToId(this.tabData.id);
     } else {
       window.location.href = this.tabData.imageUrl;
     }
