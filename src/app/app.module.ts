@@ -8,9 +8,16 @@ import { ImagePrevComponent } from './image-prev/image-prev.component';
 import { MaterialModule } from './material/material.module';
 import { PagePrevComponent } from './page-prev/page-prev.component';
 import { TitlePrevComponent } from './title-prev/title-prev.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @NgModule({
-  declarations: [AppComponent, ImagePrevComponent, PagePrevComponent, TitlePrevComponent],
+  declarations: [
+    AppComponent,
+    ImagePrevComponent,
+    PagePrevComponent,
+    TitlePrevComponent,
+    SidebarComponent,
+  ],
   imports: [BrowserModule, BrowserAnimationsModule, MaterialModule, FormsModule],
   providers: [],
   bootstrap: [AppComponent],
