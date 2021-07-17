@@ -1,4 +1,7 @@
 <div class="flex-col">
-  <button cdkDropList mat-stroked-button class="page-category">Windows</button>
-  <button cdkDropList mat-stroked-button class="page-category">History</button>
+  <app-sidebar-button
+    *ngFor="let button of sidebarButtons"
+    [category]="button.category"
+    [label]="button.label"
+  ></app-sidebar-button>
 </div>

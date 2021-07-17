@@ -9,6 +9,7 @@ import { MaterialModule } from './material/material.module';
 import { PagePrevComponent } from './page-prev/page-prev.component';
 import { TitlePrevComponent } from './title-prev/title-prev.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { SidebarButtonComponent } from './sidebar/sidebar-button/sidebar-button.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     PagePrevComponent,
     TitlePrevComponent,
     SidebarComponent,
+    SidebarButtonComponent,
   ],
   imports: [BrowserModule, BrowserAnimationsModule, MaterialModule, FormsModule],
   providers: [],
