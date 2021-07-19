@@ -15,6 +15,10 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     this._collection = newCollection;
   }
 
+  public getById(id: number): Type | undefined {
+    return this.collection.find((element) => element.id === id);
+  }
+
   public toggleId(id: number): void {
     this.lastShifted = -1;
     const selectedindex = this.collection.findIndex((element) => element.id === id);

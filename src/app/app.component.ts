@@ -1,3 +1,4 @@
+import { CdkDragStart } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { PageManagerService } from './page-prev-display/page-manager.service';
 
@@ -11,8 +12,9 @@ export class AppComponent {
 
   public collapse = false;
 
-  public onDragStart() {
+  public onDragStart($event: CdkDragStart) {
     this.pageManagerService.dragging = true;
+    this.pageManagerService.draggedElement = $event.source.element.nativeElement.id;
   }
 
   public drop() {

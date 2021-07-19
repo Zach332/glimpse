@@ -22,7 +22,8 @@
         *ngFor="let tabElement of pageManagerService.tabElements"
         [tabData]="tabElement"
         [collapse]="collapse"
-        (cdkDragStarted)="onDragStart()"
+        (cdkDragStarted)="onDragStart($event)"
+        id="{{ tabElement.id }}"
         cdkDrag
       >
         <app-drag-prev *cdkDragPreview></app-drag-prev>

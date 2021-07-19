@@ -2,14 +2,18 @@ import { Injectable } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { PageData } from '../interfaces/page-data';
 import { SelectableCollection } from '../interfaces/selectable-collection';
+import { SelectablePageData } from '../interfaces/selectable-page-data';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PageManagerService {
-  public tabElements: SelectableCollection<PageData> = new SelectableCollection<PageData>();
+  public tabElements: SelectableCollection<SelectablePageData> =
+    new SelectableCollection<SelectablePageData>();
 
   public dragging: boolean = false;
+
+  public draggedElement: string = '';
 
   public pagePrevWidth: number = 300;
 
