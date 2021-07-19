@@ -34,7 +34,7 @@ export class PageManagerService {
       this.tabElements.push(<PageData>{
         title: 'A website',
         url: 'material.angular.io',
-        imageUrl: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
+        image: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
         id: i,
       });
     }
