@@ -10,6 +10,7 @@ import { PagePrevComponent } from './page-prev/page-prev.component';
 import { TitlePrevComponent } from './title-prev/title-prev.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { SidebarButtonComponent } from './sidebar/sidebar-button/sidebar-button.component';
+import { DragPrevComponent } from './drag-prev/drag-prev.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { SidebarButtonComponent } from './sidebar/sidebar-button/sidebar-button.
     TitlePrevComponent,
     SidebarComponent,
     SidebarButtonComponent,
+    DragPrevComponent,
   ],
   imports: [BrowserModule, BrowserAnimationsModule, MaterialModule, FormsModule],
   providers: [],

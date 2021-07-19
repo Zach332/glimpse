@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 
 @Component({
   selector: 'app-sidebar-button',
@@ -12,7 +13,9 @@ export class SidebarButtonComponent {
   @Input()
   category!: string;
 
-  public drop(event: any) {
-    console.log(event);
+  constructor(private pageManagerService: PageManagerService) {}
+
+  public drop() {
+    this.pageManagerService.dragging = false;
   }
 }

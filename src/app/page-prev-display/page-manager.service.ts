@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatSliderChange } from '@angular/material/slider';
 import { PageData } from '../interfaces/page-data';
 import { SelectableCollection } from '../interfaces/selectable-collection';
 
@@ -7,6 +8,18 @@ import { SelectableCollection } from '../interfaces/selectable-collection';
 })
 export class PageManagerService {
   public tabElements: SelectableCollection<PageData> = new SelectableCollection<PageData>();
+
+  public dragging: boolean = false;
+
+  public pagePrevWidth: number = 300;
+
+  public pagePrevMax = 500;
+
+  public pagePrevMin = 200;
+
+  public pagePrevStep = 1;
+
+  public pagePrevCollapse = false;
 
   constructor() {
     this.init();
@@ -21,5 +34,9 @@ export class PageManagerService {
         id: i,
       });
     }
+  }
+
+  public updatePageWidth($event: MatSliderChange): void {
+    this.pagePrevWidth = $event.value ? $event.value : this.pagePrevWidth;
   }
 }

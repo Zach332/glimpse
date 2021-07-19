@@ -14,7 +14,7 @@ export class PagePrevComponent {
   @Input()
   collapse!: boolean;
 
-  constructor(private pageManagerService: PageManagerService) {}
+  constructor(public pageManagerService: PageManagerService) {}
 
   onClick($event: MouseEvent): void {
     if ($event.metaKey) {
@@ -28,5 +28,12 @@ export class PagePrevComponent {
 
   removePage($event: MouseEvent): void {
     $event.stopPropagation();
+  }
+
+  dragging(): boolean {
+    if (this.tabData.isSelected && this.pageManagerService.dragging) {
+      return true;
+    }
+    return false;
   }
 }

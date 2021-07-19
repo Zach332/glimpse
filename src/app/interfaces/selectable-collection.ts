@@ -51,6 +51,13 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     this.collection.push(newElement);
   }
 
+  public getNumSelected(): number {
+    return this.collection.reduce(
+      (counter, element) => (element.isSelected ? (counter += 1) : counter),
+      0,
+    );
+  }
+
   public [Symbol.iterator]() {
     const { collection } = this;
     let pointer = 0;

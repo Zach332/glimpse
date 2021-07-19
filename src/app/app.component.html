@@ -4,23 +4,30 @@
   ></mat-sidenav>
   <mat-sidenav-content>
     <mat-slider
-      [max]="max"
-      [min]="min"
-      [step]="step"
-      [(ngModel)]="value"
-      (input)="value = $event.value ? $event.value : value"
+      [max]="pageManagerService.pagePrevMax"
+      [min]="pageManagerService.pagePrevMin"
+      [step]="pageManagerService.pagePrevStep"
+      [(ngModel)]="pageManagerService.pagePrevWidth"
+      (input)="pageManagerService.updatePageWidth($event)"
     >
     </mat-slider>
-    <mat-slide-toggle [(ngModel)]="collapse">Collapse</mat-slide-toggle>
-    <div class="flex flex-wrap justify-content-center" cdkDropList cdkDropListSortingDisabled>
+    <mat-slide-toggle [(ngModel)]="pageManagerService.pagePrevCollapse">Collapse</mat-slide-toggle>
+    <div
+      class="flex flex-wrap justify-content-center"
+      cdkDropList
+      cdkDropListSortingDisabled
+      (cdkDropListDropped)="drop()"
+    >
       <app-page-prev
         *ngFor="let tabElement of pageManagerService.tabElements"
-        [style.width.px]="value"
-        class="m-2"
         [tabData]="tabElement"
         [collapse]="collapse"
+        (cdkDragStarted)="onDragStart()"
         cdkDrag
-      ></app-page-prev>
+      >
+        <app-drag-prev *cdkDragPreview></app-drag-prev>
+        <div *cdkDragPlaceholder></div>
+      </app-page-prev>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
