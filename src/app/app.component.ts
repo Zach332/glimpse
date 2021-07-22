@@ -10,8 +10,6 @@ import { PageManagerService } from './page-prev-display/page-manager.service';
 export class AppComponent {
   constructor(public pageManagerService: PageManagerService) {}
 
-  public collapse = false;
-
   public onDragStart($event: CdkDragStart) {
     this.pageManagerService.dragging = true;
     this.pageManagerService.draggedElement = $event.source.element.nativeElement.id;
