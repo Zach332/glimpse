@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SidebarButton } from '../interfaces/sidebar-button';
 
 @Component({
   selector: 'app-sidebar',
@@ -6,8 +7,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
-  sidebarButtons = [
-    { category: 'window', label: 'Window' },
-    { category: 'history', label: 'History' },
+  sidebarButtons: SidebarButton[] = [
+    { id: 'window', label: 'Window' },
+    { id: 'history', label: 'History' },
+    { id: 'test', label: 'test', parent: 'history' },
   ];
 }

@@ -1,9 +1,10 @@
 <button
   cdkDropList
   (cdkDropListDropped)="drop()"
-  id="{{ category }}"
+  id="{{ buttonData.id }}"
   mat-stroked-button
   class="page-category"
+  [ngClass]="{ child: buttonData.parent }"
 >
-  {{ label }}
+  {{ buttonData.label }}
 </button>

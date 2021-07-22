@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { SidebarButton } from 'src/app/interfaces/sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 
 @Component({
@@ -8,10 +9,7 @@ import { PageManagerService } from 'src/app/page-prev-display/page-manager.servi
 })
 export class SidebarButtonComponent {
   @Input()
-  label!: string;
-
-  @Input()
-  category!: string;
+  buttonData!: SidebarButton;
 
   constructor(private pageManagerService: PageManagerService) {}
 

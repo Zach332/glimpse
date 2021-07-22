@@ -1,7 +1,7 @@
 <div class="flex-col">
   <app-sidebar-button
     *ngFor="let button of sidebarButtons"
-    [category]="button.category"
-    [label]="button.label"
+    [buttonData]="button"
+    class="flex"
   ></app-sidebar-button>
 </div>
