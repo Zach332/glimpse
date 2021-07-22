@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { SidebarButton } from '../interfaces/sidebar-button';
+import { PageManagerService } from '../page-prev-display/page-manager.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,4 +13,14 @@ export class SidebarComponent {
     { id: 'history', label: 'History' },
     { id: 'test', label: 'test', parent: 'history' },
   ];
+
+  constructor(private pageManagerService: PageManagerService) {}
+
+  selectAll(): void {
+    this.pageManagerService.tabElements.selectAll();
+  }
+
+  deselectAll(): void {
+    this.pageManagerService.tabElements.deselectAll();
+  }
 }

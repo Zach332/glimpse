@@ -1,4 +1,12 @@
-<div class="flex-col">
+<div class="flex-col header-space">
+  <div class="flex space-around">
+    <div>
+      <button mat-raised-button (click)="selectAll()">Select all</button>
+    </div>
+    <div>
+      <button mat-raised-button (click)="deselectAll()">Deselect all</button>
+    </div>
+  </div>
   <app-sidebar-button
     *ngFor="let button of sidebarButtons"
     [buttonData]="button"

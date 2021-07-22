@@ -62,6 +62,14 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     );
   }
 
+  public selectAll(): void {
+    this.collection.forEach((element) => (element.isSelected = true));
+  }
+
+  public deselectAll(): void {
+    this.collection.forEach((element) => (element.isSelected = false));
+  }
+
   public [Symbol.iterator]() {
     const { collection } = this;
     let pointer = 0;
