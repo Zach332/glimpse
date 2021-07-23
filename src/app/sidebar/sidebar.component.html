@@ -10,6 +10,7 @@
   <app-sidebar-button
     *ngFor="let button of sidebarButtons"
     [buttonData]="button"
+    [elementIsCollapsed]="elementIsCollapsed"
     class="flex"
   ></app-sidebar-button>
 </div>

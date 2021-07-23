@@ -11,9 +11,21 @@ export class SidebarButtonComponent {
   @Input()
   buttonData!: SidebarButton;
 
+  @Input()
+  elementIsCollapsed!: (data: SidebarButton) => boolean;
+
   constructor(private pageManagerService: PageManagerService) {}
 
   public drop() {
     this.pageManagerService.dragging = false;
+  }
+
+  toggleExpand($event: MouseEvent): void {
+    $event.stopPropagation();
+    this.buttonData.expanded = !this.buttonData.expanded;
+  }
+
+  isHidden(): boolean {
+    return this.elementIsCollapsed(this.buttonData);
   }
 }
