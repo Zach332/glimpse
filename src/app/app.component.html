@@ -3,15 +3,6 @@
     ><app-sidebar></app-sidebar
   ></mat-sidenav>
   <mat-sidenav-content>
-    <mat-slider
-      [max]="pageManagerService.pagePrevMax"
-      [min]="pageManagerService.pagePrevMin"
-      [step]="pageManagerService.pagePrevStep"
-      [(ngModel)]="pageManagerService.pagePrevWidth"
-      (input)="pageManagerService.updatePageWidth($event)"
-    >
-    </mat-slider>
-    <mat-slide-toggle [(ngModel)]="pageManagerService.pagePrevCollapse">Collapse</mat-slide-toggle>
     <div
       class="flex flex-wrap justify-content-center"
       cdkDropList

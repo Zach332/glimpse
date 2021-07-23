@@ -22,7 +22,7 @@ export class SidebarComponent {
     return false;
   };
 
-  constructor(private pageManagerService: PageManagerService) {}
+  constructor(public pageManagerService: PageManagerService) {}
 
   selectAll(): void {
     this.pageManagerService.tabElements.selectAll();
