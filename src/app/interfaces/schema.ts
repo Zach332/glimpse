@@ -5,5 +5,6 @@ export interface Schema extends DBSchema {
   pageData: {
     key: number;
     value: PageData;
+    indexes: { tabId: number };
   };
 }

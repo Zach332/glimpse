@@ -1,31 +1,45 @@
-import { Injectable } from '@angular/core';
 import { openDB } from 'idb';
 import { Schema } from './interfaces/schema';
 import { PageData } from './interfaces/page-data';
+import { TabPageData } from './interfaces/tab-page-data';
 
-@Injectable({
-  providedIn: 'root',
-})
 export class DataService {
-  private db = openDB<Schema>('glimpse', 1, {
-    upgrade(db) {
-      db.createObjectStore('pageData', { autoIncrement: true, keyPath: 'id' });
-    },
-  });
-
-  async insertPageData(pageData: PageData) {
-    return (await this.db).put('pageData', pageData);
+  static getDB() {
+    return openDB<Schema>('glimpse', 1, {
+      upgrade(db) {
+        const store = db.createObjectStore('pageData', { autoIncrement: true, keyPath: 'id' });
+        store.createIndex('tabId', 'tabId');
+      },
+    });
   }
 
-  async getPageData(id: number) {
-    return (await this.db).get('pageData', id);
+  static async insertPageData(pageData: PageData) {
+    return (await DataService.getDB()).add('pageData', pageData);
   }
 
-  async updatePageData(pageData: PageData) {
-    (await this.db).put('pageData', pageData);
+  static async getAllPageData() {
+    return (await DataService.getDB()).getAll('pageData');
   }
 
-  async deletePageData(id: number) {
-    (await this.db).delete('pageData', id);
+  static async getPageDataCount() {
+    return (await DataService.getDB()).count('pageData');
+  }
+
+  static async getPageData(id: number) {
+    return (await DataService.getDB()).get('pageData', id);
+  }
+
+  static async getTabPageData(tabId: number): Promise<TabPageData | undefined> {
+    return (await DataService.getDB()).getFromIndex('pageData', 'tabId', tabId) as Promise<
+      TabPageData | undefined
+    >;
+  }
+
+  static async updatePageData(pageData: PageData) {
+    (await DataService.getDB()).put('pageData', pageData);
+  }
+
+  static async deletePageData(id: number) {
+    (await DataService.getDB()).delete('pageData', id);
   }
 }
