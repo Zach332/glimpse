@@ -2,6 +2,9 @@ import { openDB } from 'idb';
 import { Schema } from './interfaces/schema';
 import { PageData } from './interfaces/page-data';
 import { TabPageData } from './interfaces/tab-page-data';
+import { PageDataType } from './interfaces/page-data-type';
+import { SavedPageData } from './interfaces/saved-page-data';
+import { HistoryPageData } from './interfaces/history-page-data';
 
 export class DataService {
   static getDB() {
@@ -9,6 +12,7 @@ export class DataService {
       upgrade(db) {
         const store = db.createObjectStore('pageData', { autoIncrement: true, keyPath: 'id' });
         store.createIndex('tabId', 'tabId');
+        store.createIndex('type', 'type');
       },
     });
   }
@@ -19,6 +23,30 @@ export class DataService {
 
   static async getAllPageData() {
     return (await DataService.getDB()).getAll('pageData');
+  }
+
+  static async getAllTabPageData() {
+    return (await DataService.getDB()).getAllFromIndex(
+      'pageData',
+      'type',
+      PageDataType.Tab,
+    ) as Promise<TabPageData[]>;
+  }
+
+  static async getAllSavedPageData() {
+    return (await DataService.getDB()).getAllFromIndex(
+      'pageData',
+      'type',
+      PageDataType.Saved,
+    ) as Promise<SavedPageData[]>;
+  }
+
+  static async getAllHistoryPageData() {
+    return (await DataService.getDB()).getAllFromIndex(
+      'pageData',
+      'type',
+      PageDataType.History,
+    ) as Promise<HistoryPageData[]>;
   }
 
   static async getPageDataCount() {
