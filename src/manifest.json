@@ -6,8 +6,7 @@
   "background": {
     "scripts": ["background.js", "runtime.js"]
   },
-  "TODO": "only get the necessary permissions",
-  "permissions": ["activeTab", "tabs", "<all_urls>", "tabCapture", "webNavigation"],
+  "permissions": ["<all_urls>", "tabs", "webNavigation"],
   "browser_action": {},
   "chrome_url_overrides": {
     "newtab": "index.html"
