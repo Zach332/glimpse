@@ -47,3 +47,18 @@ chrome.webNavigation.onCompleted.addListener((details) => {
     });
   }
 });
+
+// TODO: Remove timeout once Chrome 93 is released (Aug 31st?)
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  setTimeout(() => {
+    chrome.tabs.captureVisibleTab(async (dataUrl) => {
+      if (!chrome.runtime.lastError) {
+        const tabPageData = await DataService.getTabPageData(activeInfo.tabId);
+        if (tabPageData) {
+          tabPageData.image = dataUrl;
+          DataService.updatePageData(tabPageData);
+        }
+      }
+    });
+  }, 500);
+});
