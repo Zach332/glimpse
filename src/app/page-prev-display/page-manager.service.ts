@@ -39,9 +39,9 @@ export class PageManagerService {
     //   });
     // }
 
-    DataService.insertSavedFolder({ id: 1, name: 'Uncategorized', pageIds: [] });
-    DataService.insertSavedFolder({ id: 10, name: 'Folder 1', pageIds: [] });
-    DataService.insertSavedFolder({ id: 25, name: 'Folder 2', pageIds: [] });
+    DataService.upsertSavedFolder({ id: 1, name: 'Uncategorized', pageIds: [] });
+    DataService.upsertSavedFolder({ id: 10, name: 'Folder 1', pageIds: [] });
+    DataService.upsertSavedFolder({ id: 25, name: 'Folder 2', pageIds: [] });
   }
 
   public updatePageWidth($event: MatSliderChange): void {

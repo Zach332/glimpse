@@ -19,8 +19,8 @@ export class DataService {
     });
   }
 
-  static async insertSavedFolder(savedFolder: SavedFolder) {
-    return (await DataService.getDB()).add('savedFolder', savedFolder);
+  static async upsertSavedFolder(savedFolder: SavedFolder) {
+    return (await DataService.getDB()).put('savedFolder', savedFolder);
   }
 
   static async getAllSavedFolders(): Promise<SavedFolder[]> {
