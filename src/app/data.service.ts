@@ -77,7 +77,7 @@ export class DataService {
     >;
   }
 
-  static async updatePageData(pageData: PageData) {
+  static async upsertPageData(pageData: PageData) {
     (await DataService.getDB()).put('pageData', pageData);
   }
 
