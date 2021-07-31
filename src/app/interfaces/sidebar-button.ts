@@ -1,6 +1,6 @@
 export interface SidebarButton {
-  id: string;
+  id: number;
   label: string;
-  parent?: string;
+  parent?: number;
   expanded?: boolean;
 }

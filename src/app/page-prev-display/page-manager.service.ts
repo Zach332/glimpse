@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
-import { PageData } from '../interfaces/page-data';
+import { DataService } from '../data.service';
 import { SelectableCollection } from '../interfaces/selectable-collection';
 import { SelectablePageData } from '../interfaces/selectable-page-data';
 
@@ -30,14 +30,18 @@ export class PageManagerService {
   }
 
   init() {
-    for (let i = 0; i < 20; i += 1) {
-      this.tabElements.push(<PageData>{
-        title: 'A website',
-        url: 'material.angular.io',
-        image: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
-        id: i,
-      });
-    }
+    // for (let i = 0; i < 20; i += 1) {
+    //   this.tabElements.push(<PageData>{
+    //     title: 'A website',
+    //     url: 'material.angular.io',
+    //     image: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
+    //     id: i,
+    //   });
+    // }
+
+    DataService.insertSavedFolder({ id: 1, name: 'Uncategorized', pageIds: [] });
+    DataService.insertSavedFolder({ id: 10, name: 'Folder 1', pageIds: [] });
+    DataService.insertSavedFolder({ id: 25, name: 'Folder 2', pageIds: [] });
   }
 
   public updatePageWidth($event: MatSliderChange): void {

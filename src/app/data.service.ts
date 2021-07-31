@@ -5,16 +5,30 @@ import { TabPageData } from './interfaces/tab-page-data';
 import { PageDataType } from './interfaces/page-data-type';
 import { SavedPageData } from './interfaces/saved-page-data';
 import { HistoryPageData } from './interfaces/history-page-data';
+import { SavedFolder } from './interfaces/saved-folder';
 
 export class DataService {
   static getDB() {
-    return openDB<Schema>('glimpse', 1, {
+    return openDB<Schema>('glimpse', 2, {
       upgrade(db) {
         const store = db.createObjectStore('pageData', { autoIncrement: true, keyPath: 'id' });
+        db.createObjectStore('savedFolder', { autoIncrement: true, keyPath: 'id' });
         store.createIndex('tabId', 'tabId');
         store.createIndex('type', 'type');
       },
     });
+  }
+
+  static async insertSavedFolder(savedFolder: SavedFolder) {
+    return (await DataService.getDB()).add('savedFolder', savedFolder);
+  }
+
+  static async getAllSavedFolders(): Promise<SavedFolder[]> {
+    return (await DataService.getDB()).getAll('savedFolder');
+  }
+
+  static async getSavedFolder(id: number) {
+    return (await DataService.getDB()).get('savedFolder', id);
   }
 
   static async insertPageData(pageData: PageData) {

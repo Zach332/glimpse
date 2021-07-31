@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { DataService } from '../data.service';
 import { SidebarButton } from '../interfaces/sidebar-button';
 import { PageManagerService } from '../page-prev-display/page-manager.service';
 
@@ -7,13 +8,19 @@ import { PageManagerService } from '../page-prev-display/page-manager.service';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
 })
-export class SidebarComponent {
-  sidebarButtons: SidebarButton[] = [
-    { id: 'window', label: 'Window' },
-    { id: 'testa', label: 'test', parent: 'window' },
-    { id: 'history', label: 'History' },
-    { id: 'test', label: 'test', parent: 'history' },
-  ];
+export class SidebarComponent implements OnInit {
+  sidebarButtons: SidebarButton[] = [];
+
+  ngOnInit() {
+    this.sidebarButtons.push({ id: 1, label: 'Saved' });
+    DataService.getAllSavedFolders().then((folders) => {
+      folders.forEach((folder) => {
+        if (folder.id !== 1) {
+          this.sidebarButtons.push({ id: folder.id, label: folder.name, parent: 1 });
+        }
+      });
+    });
+  }
 
   elementIsCollapsed = (buttonData: SidebarButton): boolean => {
     if (buttonData.parent) {
