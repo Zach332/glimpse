@@ -1,4 +1,4 @@
-export enum PageDataType {
+export enum PageDataSource {
   Tab,
   Saved,
   History,

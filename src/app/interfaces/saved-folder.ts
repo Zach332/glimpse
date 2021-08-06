@@ -1,5 +1,4 @@
 export interface SavedFolder {
-  id: number;
+  folderId: number;
   name: string;
-  pageIds: number[];
 }

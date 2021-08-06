@@ -2,19 +2,23 @@ import { openDB } from 'idb';
 import { Schema } from './interfaces/schema';
 import { PageData } from './interfaces/page-data';
 import { TabPageData } from './interfaces/tab-page-data';
-import { PageDataType } from './interfaces/page-data-type';
+import { PageDataSource } from './interfaces/page-data-source';
 import { SavedPageData } from './interfaces/saved-page-data';
 import { HistoryPageData } from './interfaces/history-page-data';
 import { SavedFolder } from './interfaces/saved-folder';
 
 export class DataService {
   static getDB() {
-    return openDB<Schema>('glimpse', 2, {
+    return openDB<Schema>('glimpse', 3, {
       upgrade(db) {
-        const store = db.createObjectStore('pageData', { autoIncrement: true, keyPath: 'id' });
-        db.createObjectStore('savedFolder', { autoIncrement: true, keyPath: 'id' });
-        store.createIndex('tabId', 'tabId');
-        store.createIndex('type', 'type');
+        const pageDataStore = db.createObjectStore('pageData', {
+          autoIncrement: true,
+          keyPath: 'glimpseId',
+        });
+        pageDataStore.createIndex('tabId', 'tabId');
+        pageDataStore.createIndex('type', 'type');
+        db.createObjectStore('savedFolder', { autoIncrement: true, keyPath: 'folderId' });
+        db.createObjectStore('window', { keyPath: 'windowId' });
       },
     });
   }
@@ -43,7 +47,7 @@ export class DataService {
     return (await DataService.getDB()).getAllFromIndex(
       'pageData',
       'type',
-      PageDataType.Tab,
+      PageDataSource.Tab,
     ) as Promise<TabPageData[]>;
   }
 
@@ -51,7 +55,7 @@ export class DataService {
     return (await DataService.getDB()).getAllFromIndex(
       'pageData',
       'type',
-      PageDataType.Saved,
+      PageDataSource.Saved,
     ) as Promise<SavedPageData[]>;
   }
 
@@ -59,7 +63,7 @@ export class DataService {
     return (await DataService.getDB()).getAllFromIndex(
       'pageData',
       'type',
-      PageDataType.History,
+      PageDataSource.History,
     ) as Promise<HistoryPageData[]>;
   }
 

@@ -1,9 +1,9 @@
-import { PageDataType } from './page-data-type';
+import { PageDataSource } from './page-data-source';
 
 export interface PageData {
   id: number;
   title: string;
   url: string;
   image: string;
-  type: PageDataType;
+  type: PageDataSource;
 }
