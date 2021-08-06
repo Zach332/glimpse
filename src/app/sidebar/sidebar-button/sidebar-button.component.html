@@ -5,7 +5,8 @@
   id="{{ buttonData.id }}"
   mat-stroked-button
   class="page-category"
-  [ngClass]="{ child: buttonData.parent }"
+  (click)="onClick($event)"
+  [ngClass]="{ child: buttonData.parent, selected: buttonData.isSelected }"
 >
   <div class="flex align-items-center">
     <button

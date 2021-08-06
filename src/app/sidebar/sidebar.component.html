@@ -8,7 +8,7 @@
     </div>
   </div>
   <app-sidebar-button
-    *ngFor="let button of sidebarButtons"
+    *ngFor="let button of sidebarManagerService.sidebarButtons"
     [buttonData]="button"
     [elementIsCollapsed]="elementIsCollapsed"
     class="flex"
