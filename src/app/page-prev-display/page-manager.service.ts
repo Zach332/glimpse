@@ -30,18 +30,9 @@ export class PageManagerService {
   }
 
   init() {
-    // for (let i = 0; i < 20; i += 1) {
-    //   this.tabElements.push(<PageData>{
-    //     title: 'A website',
-    //     url: 'material.angular.io',
-    //     image: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
-    //     id: i,
-    //   });
-    // }
-
-    DataService.upsertSavedFolder({ id: 1, name: 'Uncategorized', pageIds: [] });
-    DataService.upsertSavedFolder({ id: 10, name: 'Folder 1', pageIds: [] });
-    DataService.upsertSavedFolder({ id: 25, name: 'Folder 2', pageIds: [] });
+    DataService.upsertSavedFolder({ folderId: 1, name: 'Uncategorized' });
+    DataService.upsertSavedFolder({ folderId: 10, name: 'Folder 1' });
+    DataService.upsertSavedFolder({ folderId: 25, name: 'Folder 2' });
   }
 
   public updatePageWidth($event: MatSliderChange): void {

@@ -12,7 +12,7 @@ export class DataService {
     return openDB<Schema>('glimpse', 2, {
       upgrade(db) {
         const store = db.createObjectStore('pageData', { autoIncrement: true, keyPath: 'id' });
-        db.createObjectStore('savedFolder', { autoIncrement: true, keyPath: 'id' });
+        db.createObjectStore('savedFolder', { autoIncrement: true, keyPath: 'folderId' });
         store.createIndex('tabId', 'tabId');
         store.createIndex('type', 'type');
       },
