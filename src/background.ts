@@ -1,5 +1,4 @@
 import { DataService } from './app/data.service';
-import { TabPageData } from './app/interfaces/tab-page-data';
 
 chrome.webNavigation.onCommitted.addListener((details) => {
   // Do not index extension or browser pages
@@ -18,11 +17,7 @@ chrome.webNavigation.onCommitted.addListener((details) => {
         // TODO: Change to upsert
         const tabPageData = await DataService.getTabPageData(details.tabId);
         if (!tabPageData) {
-          DataService.insertPageData(<TabPageData>{
-            title: currentTab.title,
-            url: currentTab.url,
-            tabId: currentTab.id,
-          });
+          DataService.insertTabPageData(currentTab.title!, currentTab.url!, currentTab.id);
         }
       }
     });

@@ -1,3 +1,5 @@
 import { PageData } from './page-data';
 
-export interface SavedPageData extends PageData {}
+export interface SavedPageData extends PageData {
+  folderId: number;
+}

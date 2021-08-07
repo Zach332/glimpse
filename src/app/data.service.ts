@@ -13,7 +13,7 @@ export class DataService {
       upgrade(db) {
         const pageDataStore = db.createObjectStore('pageData', {
           autoIncrement: true,
-          keyPath: 'glimpseId',
+          keyPath: 'id',
         });
         pageDataStore.createIndex('tabId', 'tabId');
         pageDataStore.createIndex('type', 'type');
@@ -35,8 +35,27 @@ export class DataService {
     return (await DataService.getDB()).get('savedFolder', id);
   }
 
-  static async insertPageData(pageData: PageData) {
-    return (await DataService.getDB()).add('pageData', pageData);
+  static async insertTabPageData(title: string, url: string, tabId: number) {
+    return (await DataService.getDB()).add('pageData', <TabPageData>{
+      title,
+      url,
+      tabId,
+    });
+  }
+
+  static async convertTabToSavedPageData(tabId: number, folderId: number) {
+    const tabPageData = await (await DataService.getDB()).getFromIndex('pageData', 'tabId', tabId);
+    const savedPageData = tabPageData as SavedPageData;
+    savedPageData.type = PageDataSource.Saved;
+    savedPageData.folderId = folderId;
+    DataService.updatePageData(savedPageData);
+  }
+
+  static async convertTabToHistoryPageData(tabId: number) {
+    const tabPageData = await DataService.getTabPageData(tabId);
+    const historyPageData = tabPageData as HistoryPageData;
+    historyPageData.type = PageDataSource.History;
+    DataService.updatePageData(historyPageData);
   }
 
   static async getAllPageData() {
