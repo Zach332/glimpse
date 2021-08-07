@@ -1,4 +1,11 @@
 <div class="flex-col header-space">
+  <app-sidebar-button
+    *ngFor="let button of sidebarManagerService.sidebarButtons"
+    [buttonData]="button"
+    [elementIsCollapsed]="elementIsCollapsed"
+    class="flex"
+  ></app-sidebar-button>
+  <mat-divider class="divider-margin"></mat-divider>
   <div class="flex space-around">
     <div>
       <button mat-raised-button (click)="selectAll()">Select all</button>
@@ -7,12 +14,6 @@
       <button mat-raised-button (click)="deselectAll()">Deselect all</button>
     </div>
   </div>
-  <app-sidebar-button
-    *ngFor="let button of sidebarManagerService.sidebarButtons"
-    [buttonData]="button"
-    [elementIsCollapsed]="elementIsCollapsed"
-    class="flex"
-  ></app-sidebar-button>
   <div class="flex space-around align-items-center">
     <mat-slider
       [max]="pageManagerService.pagePrevMax"
