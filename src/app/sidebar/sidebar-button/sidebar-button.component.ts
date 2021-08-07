@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
+import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
 import { SidebarButton } from 'src/app/interfaces/sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
+import { SidebarManagerService } from '../sidebar-manager.service';
 
 @Component({
   selector: 'app-sidebar-button',
@@ -9,12 +11,15 @@ import { PageManagerService } from 'src/app/page-prev-display/page-manager.servi
 })
 export class SidebarButtonComponent {
   @Input()
-  buttonData!: SidebarButton;
+  buttonData!: SelectableSidebarButton;
 
   @Input()
   elementIsCollapsed!: (data: SidebarButton) => boolean;
 
-  constructor(private pageManagerService: PageManagerService) {}
+  constructor(
+    private pageManagerService: PageManagerService,
+    private sidebarManagerService: SidebarManagerService,
+  ) {}
 
   public drop() {
     this.pageManagerService.dragging = false;
@@ -27,5 +32,13 @@ export class SidebarButtonComponent {
 
   isHidden(): boolean {
     return this.elementIsCollapsed(this.buttonData);
+  }
+
+  onClick($event: MouseEvent): void {
+    if ($event.metaKey) {
+      this.sidebarManagerService.sidebarButtons.toggleId(this.buttonData.id);
+    } else if ($event.shiftKey) {
+      this.sidebarManagerService.sidebarButtons.selectToId(this.buttonData.id);
+    }
   }
 }

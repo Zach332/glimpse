@@ -23,8 +23,8 @@ export class DataService {
     });
   }
 
-  static async insertSavedFolder(savedFolder: SavedFolder) {
-    return (await DataService.getDB()).add('savedFolder', savedFolder);
+  static async upsertSavedFolder(savedFolder: SavedFolder) {
+    return (await DataService.getDB()).put('savedFolder', savedFolder);
   }
 
   static async getAllSavedFolders(): Promise<SavedFolder[]> {
@@ -81,7 +81,7 @@ export class DataService {
     >;
   }
 
-  static async updatePageData(pageData: PageData) {
+  static async upsertPageData(pageData: PageData) {
     (await DataService.getDB()).put('pageData', pageData);
   }
 

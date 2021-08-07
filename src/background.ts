@@ -15,6 +15,7 @@ chrome.webNavigation.onCommitted.addListener((details) => {
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
       const currentTab = tabs[0];
       if (currentTab.id === details.tabId) {
+        // TODO: Change to upsert
         const tabPageData = await DataService.getTabPageData(details.tabId);
         if (!tabPageData) {
           DataService.insertPageData(<TabPageData>{
@@ -41,7 +42,7 @@ chrome.webNavigation.onCompleted.addListener((details) => {
             tabPageData.url = tab.url;
           }
           tabPageData.image = dataUrl;
-          DataService.updatePageData(tabPageData);
+          DataService.upsertPageData(tabPageData);
         });
       }
     });
@@ -56,7 +57,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
         const tabPageData = await DataService.getTabPageData(activeInfo.tabId);
         if (tabPageData) {
           tabPageData.image = dataUrl;
-          DataService.updatePageData(tabPageData);
+          DataService.upsertPageData(tabPageData);
         }
       }
     });
