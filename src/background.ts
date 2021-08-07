@@ -42,7 +42,7 @@ chrome.webNavigation.onCompleted.addListener((details) => {
             tabPageData.url = tab.url;
           }
           tabPageData.image = dataUrl;
-          DataService.upsertPageData(tabPageData);
+          DataService.updatePageData(tabPageData);
         });
       }
     });
@@ -57,7 +57,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
         const tabPageData = await DataService.getTabPageData(activeInfo.tabId);
         if (tabPageData) {
           tabPageData.image = dataUrl;
-          DataService.upsertPageData(tabPageData);
+          DataService.updatePageData(tabPageData);
         }
       }
     });
