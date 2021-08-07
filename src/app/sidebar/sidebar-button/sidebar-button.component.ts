@@ -35,10 +35,10 @@ export class SidebarButtonComponent {
   }
 
   onClick($event: MouseEvent): void {
-    if ($event.metaKey) {
-      this.sidebarManagerService.sidebarButtons.toggleId(this.buttonData.id);
-    } else if ($event.shiftKey) {
+    if ($event.shiftKey) {
       this.sidebarManagerService.sidebarButtons.selectToId(this.buttonData.id);
+    } else {
+      this.sidebarManagerService.sidebarButtons.toggleId(this.buttonData.id);
     }
   }
 }
