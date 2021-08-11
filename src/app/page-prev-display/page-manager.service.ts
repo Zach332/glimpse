@@ -30,9 +30,9 @@ export class PageManagerService {
   }
 
   init() {
-    DataService.upsertSavedFolder({ folderId: 1, name: 'Uncategorized' });
-    DataService.upsertSavedFolder({ folderId: 10, name: 'Folder 1' });
-    DataService.upsertSavedFolder({ folderId: 25, name: 'Folder 2' });
+    DataService.insertSavedFolder('Uncategorized', 1);
+    DataService.insertSavedFolder('Folder 1', 10);
+    DataService.insertSavedFolder('Folder 2', 25);
   }
 
   public updatePageWidth($event: MatSliderChange): void {

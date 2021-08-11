@@ -7,7 +7,7 @@ export interface Schema extends DBSchema {
   pageData: {
     key: number;
     value: PageData;
-    indexes: { tabId: number; type: PageDataSource };
+    indexes: { tabId: number; folderId: number; type: PageDataSource };
   };
   savedFolder: {
     key: number;

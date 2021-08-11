@@ -15,7 +15,7 @@ chrome.webNavigation.onCommitted.addListener((details) => {
       const currentTab = tabs[0];
       if (currentTab.id === details.tabId) {
         // TODO: Change to upsert
-        const tabPageData = await DataService.getTabPageData(details.tabId);
+        const tabPageData = await DataService.getPageDataByTabId(details.tabId);
         if (!tabPageData) {
           DataService.insertTabPageData(currentTab.title!, currentTab.url!, currentTab.id);
         }
@@ -27,7 +27,7 @@ chrome.webNavigation.onCommitted.addListener((details) => {
 chrome.webNavigation.onCompleted.addListener((details) => {
   if (details.frameId === 0) {
     chrome.tabs.captureVisibleTab(async (dataUrl) => {
-      const tabPageData = await DataService.getTabPageData(details.tabId);
+      const tabPageData = await DataService.getPageDataByTabId(details.tabId);
       if (tabPageData) {
         chrome.tabs.get(details.tabId, (tab) => {
           if (tab.title) {
@@ -49,7 +49,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   setTimeout(() => {
     chrome.tabs.captureVisibleTab(async (dataUrl) => {
       if (!chrome.runtime.lastError) {
-        const tabPageData = await DataService.getTabPageData(activeInfo.tabId);
+        const tabPageData = await DataService.getPageDataByTabId(activeInfo.tabId);
         if (tabPageData) {
           tabPageData.image = dataUrl;
           DataService.updatePageData(tabPageData);
