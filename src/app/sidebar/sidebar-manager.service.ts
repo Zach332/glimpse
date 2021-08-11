@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { DataService } from '../data.service';
-import { SelectableCollection } from '../interfaces/selectable-collection';
 import { SelectableSidebarButton } from '../interfaces/selectable-sidebar-button';
+import { SelectableTree } from '../interfaces/selectable-tree';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SidebarManagerService {
-  public sidebarButtons: SelectableCollection<SelectableSidebarButton> =
-    new SelectableCollection<SelectableSidebarButton>();
+  public sidebarButtons: SelectableTree<SelectableSidebarButton> =
+    new SelectableTree<SelectableSidebarButton>();
 
   constructor() {
     this.init();
