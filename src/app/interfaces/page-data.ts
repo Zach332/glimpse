@@ -6,4 +6,5 @@ export interface PageData {
   url: string;
   image: string;
   type: PageDataSource;
+  timestamp: Date;
 }

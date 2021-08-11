@@ -31,6 +31,7 @@ export class DataService {
       title,
       url,
       tabId,
+      timestamp: new Date(),
     });
   }
 
@@ -39,6 +40,7 @@ export class DataService {
     const savedPageData = tabPageData as SavedPageData;
     savedPageData.type = PageDataSource.Saved;
     savedPageData.folderId = folderId;
+    savedPageData.timestamp = new Date();
     DataService.updatePageData(savedPageData);
   }
 
@@ -46,6 +48,7 @@ export class DataService {
     const tabPageData = await DataService.getPageDataByTabId(tabId);
     const historyPageData = tabPageData as HistoryPageData;
     historyPageData.type = PageDataSource.History;
+    historyPageData.timestamp = new Date();
     DataService.updatePageData(historyPageData);
   }
 
