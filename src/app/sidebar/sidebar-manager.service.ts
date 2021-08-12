@@ -16,10 +16,10 @@ export class SidebarManagerService {
 
   init() {
     this.sidebarButtons.push({ id: 1, label: 'Saved' });
-    DataService.getAllSavedFolders().then((folders) => {
+    DataService.getAllSavedFolderDataSources().then((folders) => {
       folders.forEach((folder) => {
-        if (folder.folderId !== 1) {
-          this.sidebarButtons.push({ id: folder.folderId, label: folder.name, parent: 1 });
+        if (folder.id !== 1) {
+          this.sidebarButtons.push({ id: folder.id, label: folder.name, parent: 1 });
         }
       });
     });

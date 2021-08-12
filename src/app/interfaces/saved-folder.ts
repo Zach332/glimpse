@@ -1,4 +1,3 @@
-export interface SavedFolder {
-  folderId: number;
-  name: string;
-}
+import { DataSource } from './data-source';
+
+export interface SavedFolderDataSource extends DataSource {}

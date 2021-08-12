@@ -1,20 +1,17 @@
 import { DBSchema } from 'idb';
+import { DataSource } from './data-source';
+import { DataSourceType } from './data-source-type';
 import { PageData } from './page-data';
-import { PageDataSource } from './page-data-source';
-import { SavedFolder } from './saved-folder';
 
 export interface Schema extends DBSchema {
   pageData: {
     key: number;
     value: PageData;
-    indexes: { tabId: number; folderId: number; type: PageDataSource };
+    indexes: { tabId: number; folderId: number; source: DataSourceType };
   };
-  savedFolder: {
+  dataSource: {
     key: number;
-    value: SavedFolder;
-  };
-  window: {
-    key: number;
-    value: Window;
+    value: DataSource;
+    indexes: { type: DataSourceType };
   };
 }
