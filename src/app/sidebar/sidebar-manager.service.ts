@@ -25,15 +25,14 @@ export class SidebarManagerService {
 
   init() {
     this.sidebarButtons.push({ id: SidebarManagerService.RESERVED_IDS.Saved, label: 'Saved' });
-    DataService.getAllSavedFolders().then((folders) => {
+    DataService.getAllSavedFolderDataSources().then((folders) => {
+      console.log(folders);
       folders.forEach((folder) => {
-        if (folder.folderId !== 1) {
-          this.sidebarButtons.push({
-            id: folder.folderId,
-            label: folder.name,
-            parent: SidebarManagerService.RESERVED_IDS.Saved,
-          });
-        }
+        this.sidebarButtons.push({
+          id: folder.id,
+          label: folder.name,
+          parent: SidebarManagerService.RESERVED_IDS.Saved,
+        });
       });
       this.sidebarButtons.push({
         id: SidebarManagerService.RESERVED_IDS['New Folder'],
@@ -45,7 +44,7 @@ export class SidebarManagerService {
 
   async insertSavedFolder(): Promise<void> {
     const newFolderLabel = 'New Folder';
-    const newFolderId = await DataService.insertSavedFolder(newFolderLabel);
+    const newFolderId = await DataService.insertSavedFolderDataSource(newFolderLabel);
     this.sidebarButtons.insertBeforeId(
       { id: newFolderId, label: newFolderLabel, parent: SidebarManagerService.RESERVED_IDS.Saved },
       SidebarManagerService.RESERVED_IDS['New Folder'],

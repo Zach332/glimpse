@@ -1,15 +1,15 @@
 import { openDB } from 'idb';
 import { Schema } from './interfaces/schema';
-import { PageData } from './interfaces/page-data';
 import { TabPageData } from './interfaces/tab-page-data';
-import { PageDataSource } from './interfaces/page-data-source';
 import { SavedPageData } from './interfaces/saved-page-data';
 import { HistoryPageData } from './interfaces/history-page-data';
-import { SavedFolder } from './interfaces/saved-folder';
+import { SavedFolderDataSource } from './interfaces/saved-folder';
+import { DataSourceType } from './interfaces/data-source-type';
+import { WindowDataSource } from './interfaces/window';
 
 export class DataService {
   static getDB() {
-    return openDB<Schema>('glimpse', 4, {
+    return openDB<Schema>('glimpse', 5, {
       upgrade(db) {
         const pageDataStore = db.createObjectStore('pageData', {
           autoIncrement: true,
@@ -17,9 +17,12 @@ export class DataService {
         });
         pageDataStore.createIndex('tabId', 'tabId');
         pageDataStore.createIndex('folderId', 'folderId');
-        pageDataStore.createIndex('type', 'type');
-        db.createObjectStore('savedFolder', { autoIncrement: true, keyPath: 'folderId' });
-        db.createObjectStore('window', { keyPath: 'windowId' });
+        pageDataStore.createIndex('source', 'source');
+        const dataSourceStore = db.createObjectStore('dataSource', {
+          autoIncrement: true,
+          keyPath: 'id',
+        });
+        dataSourceStore.createIndex('type', 'type');
         // TODO: Create RESERVED_IDS objects here
       },
     });
@@ -32,6 +35,7 @@ export class DataService {
       title,
       url,
       tabId,
+      source: DataSourceType.Window,
       timestamp: new Date(),
     });
   }
@@ -39,18 +43,18 @@ export class DataService {
   static async convertTabToSavedPageData(tabId: number, folderId: number) {
     const tabPageData = await (await DataService.getDB()).getFromIndex('pageData', 'tabId', tabId);
     const savedPageData = tabPageData as SavedPageData;
-    savedPageData.type = PageDataSource.Saved;
-    savedPageData.folderId = folderId;
+    savedPageData.source = DataSourceType.SavedFolder;
     savedPageData.timestamp = new Date();
-    DataService.updatePageData(savedPageData);
+    savedPageData.folderId = folderId;
+    DataService.updateSavedPageData(savedPageData);
   }
 
   static async convertTabToHistoryPageData(tabId: number) {
     const tabPageData = await DataService.getPageDataByTabId(tabId);
     const historyPageData = tabPageData as HistoryPageData;
-    historyPageData.type = PageDataSource.History;
+    historyPageData.source = DataSourceType.History;
     historyPageData.timestamp = new Date();
-    DataService.updatePageData(historyPageData);
+    DataService.updateHistoryPageData(historyPageData);
   }
 
   static async getPageData(id: number) {
@@ -64,24 +68,24 @@ export class DataService {
   static async getAllTabPageData() {
     return (await DataService.getDB()).getAllFromIndex(
       'pageData',
-      'type',
-      PageDataSource.Tab,
+      'source',
+      DataSourceType.Window,
     ) as Promise<TabPageData[]>;
   }
 
   static async getAllSavedPageData() {
     return (await DataService.getDB()).getAllFromIndex(
       'pageData',
-      'type',
-      PageDataSource.Saved,
+      'source',
+      DataSourceType.SavedFolder,
     ) as Promise<SavedPageData[]>;
   }
 
   static async getAllHistoryPageData() {
     return (await DataService.getDB()).getAllFromIndex(
       'pageData',
-      'type',
-      PageDataSource.History,
+      'source',
+      DataSourceType.History,
     ) as Promise<HistoryPageData[]>;
   }
 
@@ -101,54 +105,77 @@ export class DataService {
     >;
   }
 
-  static async updatePageData(pageData: PageData) {
-    (await DataService.getDB()).put('pageData', pageData);
+  static async updateTabPageData(tabPageData: TabPageData) {
+    (await DataService.getDB()).put('pageData', tabPageData);
+  }
+
+  static async updateSavedPageData(savedPageData: SavedPageData) {
+    (await DataService.getDB()).put('pageData', savedPageData);
+  }
+
+  static async updateHistoryPageData(historyPageData: HistoryPageData) {
+    (await DataService.getDB()).put('pageData', historyPageData);
   }
 
   static async deletePageData(id: number) {
     (await DataService.getDB()).delete('pageData', id);
   }
 
-  // Saved folders
+  // Data sources
 
-  static async insertSavedFolder(name: string, folderId?: number) {
-    return (await DataService.getDB()).add('savedFolder', <SavedFolder>{
+  static async insertWindowDataSource(name: string, windowId: number) {
+    return (await DataService.getDB()).add('dataSource', <WindowDataSource>{
       name,
-      folderId,
+      windowId,
+      type: DataSourceType.Window,
     });
   }
 
-  static async getSavedFolder(folderId: number) {
-    return (await DataService.getDB()).get('savedFolder', folderId);
+  static async insertSavedFolderDataSource(name: string, id?: number) {
+    return (await DataService.getDB()).add('dataSource', <SavedFolderDataSource>{
+      id,
+      name,
+      type: DataSourceType.SavedFolder,
+    });
   }
 
-  static async getAllSavedFolders() {
-    return (await DataService.getDB()).getAll('savedFolder');
+  static async getDataSource(id: number) {
+    return (await DataService.getDB()).get('dataSource', id);
   }
 
-  static async updateSavedFolder(savedFolder: SavedFolder) {
-    (await DataService.getDB()).put('savedFolder', savedFolder);
+  static async getAllDataSources() {
+    return (await DataService.getDB()).getAll('dataSource');
   }
 
-  static async deleteSavedFolder(folderId: number) {
-    (await DataService.getDB()).delete('savedFolder', folderId);
+  static async getAllWindowDataSources() {
+    return (await DataService.getDB()).getAllFromIndex('dataSource', 'type', DataSourceType.Window);
   }
 
-  // Windows
-
-  static async upsertWindow(window: Window) {
-    (await DataService.getDB()).put('window', window);
+  static async getAllSavedFolderDataSources() {
+    return (await DataService.getDB()).getAllFromIndex(
+      'dataSource',
+      'type',
+      DataSourceType.SavedFolder,
+    );
   }
 
-  static async getWindow(windowId: number) {
-    return (await DataService.getDB()).get('window', windowId);
+  static async getAllHistoryDataSources() {
+    return (await DataService.getDB()).getAllFromIndex(
+      'dataSource',
+      'type',
+      DataSourceType.History,
+    );
   }
 
-  static async getAllWindows() {
-    return (await DataService.getDB()).getAll('window');
+  static async updateWindowDataSource(windowDataSource: WindowDataSource) {
+    (await DataService.getDB()).put('dataSource', windowDataSource);
   }
 
-  static async deleteWindow(windowId: number) {
-    (await DataService.getDB()).delete('window', windowId);
+  static async updateSavedFolderDataSource(savedFolderDataSource: SavedFolderDataSource) {
+    (await DataService.getDB()).put('dataSource', savedFolderDataSource);
+  }
+
+  static async deleteDataSource(id: number) {
+    (await DataService.getDB()).delete('dataSource', id);
   }
 }
