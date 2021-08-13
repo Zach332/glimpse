@@ -131,9 +131,8 @@ export class DataService {
     });
   }
 
-  static async insertSavedFolderDataSource(name: string, id?: number) {
+  static async insertSavedFolderDataSource(name: string) {
     return (await DataService.getDB()).add('dataSource', <SavedFolderDataSource>{
-      id,
       name,
       type: DataSourceType.SavedFolder,
     });

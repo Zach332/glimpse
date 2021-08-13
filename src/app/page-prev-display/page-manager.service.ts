@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
-import { DataService } from '../data.service';
 import { SelectableCollection } from '../interfaces/selectable-collection';
 import { SelectablePageData } from '../interfaces/selectable-page-data';
 
@@ -24,16 +23,6 @@ export class PageManagerService {
   public pagePrevStep = 1;
 
   public pagePrevCollapse = false;
-
-  constructor() {
-    this.init();
-  }
-
-  init() {
-    DataService.insertSavedFolderDataSource('Uncategorized', 1);
-    DataService.insertSavedFolderDataSource('Folder 1', 10);
-    DataService.insertSavedFolderDataSource('Folder 2', 25);
-  }
 
   public updatePageWidth($event: MatSliderChange): void {
     this.pagePrevWidth = $event.value ? $event.value : this.pagePrevWidth;
