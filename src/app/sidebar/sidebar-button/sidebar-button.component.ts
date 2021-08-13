@@ -34,8 +34,17 @@ export class SidebarButtonComponent {
     return this.elementIsCollapsed(this.buttonData);
   }
 
+  isAddNew(): boolean {
+    return (
+      this.buttonData.id === SidebarManagerService.RESERVED_IDS['New Folder'] ||
+      this.buttonData.id === SidebarManagerService.RESERVED_IDS['New Window']
+    );
+  }
+
   onClick($event: MouseEvent): void {
-    if ($event.shiftKey) {
+    if (this.buttonData.id === SidebarManagerService.RESERVED_IDS['New Folder']) {
+      this.sidebarManagerService.insertSavedFolder();
+    } else if ($event.shiftKey) {
       this.sidebarManagerService.sidebarButtons.selectToId(this.buttonData.id);
     } else {
       this.sidebarManagerService.sidebarButtons.toggleId(this.buttonData.id);

@@ -19,9 +19,13 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     return this.collection.find((element) => element.id === id);
   }
 
+  public getIndexById(id: number): number {
+    return this.collection.findIndex((element) => element.id === id);
+  }
+
   public toggleId(id: number): void {
     this.lastShifted = -1;
-    const selectedindex = this.collection.findIndex((element) => element.id === id);
+    const selectedindex = this.getIndexById(id);
     this.lastToggled = selectedindex;
     const selectedElement = this.collection[selectedindex];
     if (selectedElement) {
@@ -39,7 +43,7 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
         element.isSelected = !element.isSelected;
       });
     }
-    const endIndex = this.collection.findIndex((element) => element.id === id);
+    const endIndex = this.getIndexById(id);
     this.lastShifted = endIndex;
     const collectionRange =
       endIndex < this.lastToggled
@@ -53,6 +57,11 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
 
   public push(newElement: Type): void {
     this.collection.push(newElement);
+  }
+
+  public insertBeforeId(newElement: Type, id: number) {
+    const idIndex = this.getIndexById(id);
+    this.collection.splice(idIndex, 0, newElement);
   }
 
   public getNumSelected(): number {

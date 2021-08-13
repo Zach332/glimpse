@@ -25,6 +25,7 @@
     >
       <mat-icon>chevron_right</mat-icon>
     </button>
+    <mat-icon *ngIf="isAddNew()" class="m-4">add_circle_outline</mat-icon>
     <div>
       {{ buttonData.label }}
     </div>

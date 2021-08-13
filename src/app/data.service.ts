@@ -20,6 +20,7 @@ export class DataService {
         pageDataStore.createIndex('type', 'type');
         db.createObjectStore('savedFolder', { autoIncrement: true, keyPath: 'folderId' });
         db.createObjectStore('window', { keyPath: 'windowId' });
+        // TODO: Create RESERVED_IDS objects here
       },
     });
   }
