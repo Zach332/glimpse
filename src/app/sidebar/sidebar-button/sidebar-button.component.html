@@ -32,6 +32,7 @@
     <button
       mat-icon-button
       [matMenuTriggerFor]="menu"
+      class="menu"
       *ngIf="buttonData.parent && !isAddNew()"
       (click)="$event.stopPropagation()"
     >
