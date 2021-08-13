@@ -53,5 +53,7 @@ export class SidebarManagerService {
 
   delete(id: number): void {
     this.sidebarButtons.remove(id);
+    DataService.deleteDataSource(id);
+    // TODO: Remove all the page data items as well
   }
 }
