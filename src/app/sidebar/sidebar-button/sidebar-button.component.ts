@@ -41,6 +41,10 @@ export class SidebarButtonComponent {
     );
   }
 
+  delete(): void {
+    this.sidebarManagerService.delete(this.buttonData.id);
+  }
+
   onClick($event: MouseEvent): void {
     if (this.buttonData.id === SidebarManagerService.RESERVED_IDS['New Folder']) {
       this.sidebarManagerService.insertSavedFolder();

@@ -29,5 +29,21 @@
     <div>
       {{ buttonData.label }}
     </div>
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="menu"
+      *ngIf="buttonData.parent && !isAddNew()"
+      (click)="$event.stopPropagation()"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>
+        <span>Rename</span>
+      </button>
+      <button mat-menu-item (click)="delete()">
+        <span>Delete</span>
+      </button>
+    </mat-menu>
   </div>
 </button>

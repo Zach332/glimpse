@@ -50,4 +50,8 @@ export class SidebarManagerService {
       SidebarManagerService.RESERVED_IDS['New Folder'],
     );
   }
+
+  delete(id: number): void {
+    this.sidebarButtons.remove(id);
+  }
 }

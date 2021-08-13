@@ -7,6 +7,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   exports: [
@@ -18,6 +19,7 @@ import { MatDividerModule } from '@angular/material/divider';
     MatSidenavModule,
     DragDropModule,
     MatDividerModule,
+    MatMenuModule,
   ],
 })
 export class MaterialModule {}

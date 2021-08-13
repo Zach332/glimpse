@@ -59,6 +59,13 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     this.collection.push(newElement);
   }
 
+  public remove(id: number): void {
+    const index = this.getIndexById(id);
+    if (index > -1) {
+      this.collection.splice(index, 1);
+    }
+  }
+
   public insertBeforeId(newElement: Type, id: number) {
     const idIndex = this.getIndexById(id);
     this.collection.splice(idIndex, 0, newElement);
