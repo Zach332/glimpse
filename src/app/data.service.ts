@@ -1,4 +1,4 @@
-import { openDB } from 'idb';
+import { IDBPObjectStore, openDB } from 'idb';
 import { Schema } from './interfaces/schema';
 import { TabPageData } from './interfaces/tab-page-data';
 import { SavedPageData } from './interfaces/saved-page-data';
@@ -6,6 +6,7 @@ import { HistoryPageData } from './interfaces/history-page-data';
 import { SavedFolderDataSource } from './interfaces/saved-folder';
 import { DataSourceType } from './interfaces/data-source-type';
 import { WindowDataSource } from './interfaces/window';
+import { SidebarManagerService } from './sidebar/sidebar-manager.service';
 
 export class DataService {
   static getDB() {
@@ -23,8 +24,25 @@ export class DataService {
           keyPath: 'id',
         });
         dataSourceStore.createIndex('type', 'type');
-        // TODO: Create RESERVED_IDS objects here
+        DataService.addReservedDataSources(dataSourceStore);
       },
+    });
+  }
+
+  static addReservedDataSources(
+    dataSourceStore: IDBPObjectStore<
+      Schema,
+      ('pageData' | 'dataSource')[],
+      'dataSource',
+      'versionchange'
+    >,
+  ) {
+    Object.values(SidebarManagerService.RESERVED_IDS).forEach((reservedId) => {
+      dataSourceStore.add({
+        name: 'Reserved',
+        id: reservedId,
+        type: DataSourceType.Other,
+      });
     });
   }
 
