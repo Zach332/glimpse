@@ -78,6 +78,10 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     );
   }
 
+  public areAllSelected(): boolean {
+    return this.collection.every((element) => element.isSelected);
+  }
+
   public selectAll(): void {
     this.collection.forEach((element) => (element.isSelected = true));
   }

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { SidebarButton } from '../interfaces/sidebar-button';
 import { PageManagerService } from '../page-prev-display/page-manager.service';
-import { SidebarManagerService } from './sidebar-manager.service';
+import { SidebarManagerService } from './sidebar-management/sidebar-manager.service';
 
 @Component({
   selector: 'app-sidebar',

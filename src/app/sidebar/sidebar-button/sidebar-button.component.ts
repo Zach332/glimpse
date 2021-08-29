@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
 import { SidebarButton } from 'src/app/interfaces/sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
-import { SidebarManagerService } from '../sidebar-manager.service';
+import { SidebarManagerService } from '../sidebar-management/sidebar-manager.service';
 
 @Component({
   selector: 'app-sidebar-button',
@@ -12,9 +12,6 @@ import { SidebarManagerService } from '../sidebar-manager.service';
 export class SidebarButtonComponent {
   @Input()
   buttonData!: SelectableSidebarButton;
-
-  @Input()
-  elementIsCollapsed!: (data: SidebarButton) => boolean;
 
   constructor(
     private pageManagerService: PageManagerService,
@@ -32,13 +29,6 @@ export class SidebarButtonComponent {
 
   isHidden(): boolean {
     return this.elementIsCollapsed(this.buttonData);
-  }
-
-  isAddNew(): boolean {
-    return (
-      this.buttonData.id === SidebarManagerService.RESERVED_IDS['New Folder'] ||
-      this.buttonData.id === SidebarManagerService.RESERVED_IDS['New Window']
-    );
   }
 
   delete(): void {
