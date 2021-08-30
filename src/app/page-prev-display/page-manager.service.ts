@@ -32,9 +32,19 @@ export class PageManagerService {
   async getPageData() {
     // TODO: Update the tabElements array when new page data are added
     // This code will only update page data on new tabs
-    (await DataService.getAllPageData()).forEach((pageData) => {
-      this.tabElements.push(pageData);
-    });
+    // When you do this, it will probably make sense to separate the logic
+    // to convert from PageData to SelectablePageData
+    (await DataService.getAllPageData())
+      .map((pageData) => {
+        const selectablePageData: SelectablePageData = {
+          ...pageData,
+          isSelected: false,
+        };
+        return selectablePageData;
+      })
+      .forEach((pageData) => {
+        this.tabElements.push(pageData);
+      });
   }
 
   public updatePageWidth($event: MatSliderChange): void {

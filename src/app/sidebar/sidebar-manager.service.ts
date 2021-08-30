@@ -24,7 +24,11 @@ export class SidebarManagerService {
   }
 
   init() {
-    this.sidebarButtons.push({ id: SidebarManagerService.RESERVED_IDS.Saved, label: 'Saved' });
+    this.sidebarButtons.push({
+      id: SidebarManagerService.RESERVED_IDS.Saved,
+      label: 'Saved',
+      isSelected: false,
+    });
     DataService.getAllSavedFolderDataSources().then((folders) => {
       console.log(folders);
       folders.forEach((folder) => {
@@ -32,12 +36,14 @@ export class SidebarManagerService {
           id: folder.id,
           label: folder.name,
           parent: SidebarManagerService.RESERVED_IDS.Saved,
+          isSelected: false,
         });
       });
       this.sidebarButtons.push({
         id: SidebarManagerService.RESERVED_IDS['New Folder'],
         label: 'New Folder',
         parent: SidebarManagerService.RESERVED_IDS.Saved,
+        isSelected: false,
       });
     });
   }
@@ -46,7 +52,12 @@ export class SidebarManagerService {
     const newFolderLabel = 'New Folder';
     const newFolderId = await DataService.insertSavedFolderDataSource(newFolderLabel);
     this.sidebarButtons.insertBeforeId(
-      { id: newFolderId, label: newFolderLabel, parent: SidebarManagerService.RESERVED_IDS.Saved },
+      {
+        id: newFolderId,
+        label: newFolderLabel,
+        parent: SidebarManagerService.RESERVED_IDS.Saved,
+        isSelected: false,
+      },
       SidebarManagerService.RESERVED_IDS['New Folder'],
     );
   }
