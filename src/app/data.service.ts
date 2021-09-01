@@ -6,16 +6,19 @@ import { HistoryPageData } from './interfaces/history-page-data';
 import { SavedFolderDataSource } from './interfaces/saved-folder';
 import { DataSourceType } from './interfaces/data-source-type';
 import { WindowDataSource } from './interfaces/window';
+import { DataSource } from './interfaces/data-source';
+import { PageData } from './interfaces/page-data';
 
 export class DataService {
   static getDB() {
-    return openDB<Schema>('glimpse', 5, {
+    return openDB<Schema>('glimpse', 6, {
       upgrade(db) {
         const pageDataStore = db.createObjectStore('pageData', {
           autoIncrement: true,
           keyPath: 'id',
         });
         pageDataStore.createIndex('tabId', 'tabId');
+        pageDataStore.createIndex('windowId', 'windowId');
         pageDataStore.createIndex('folderId', 'folderId');
         pageDataStore.createIndex('source', 'source');
         const dataSourceStore = db.createObjectStore('dataSource', {
@@ -62,6 +65,45 @@ export class DataService {
 
   static async getAllPageData() {
     return (await DataService.getDB()).getAll('pageData');
+  }
+
+  static async getPageDataByDataSources(dataSources: DataSource[]) {
+    const pageDataListPromises: Promise<PageData[]>[] = [];
+    dataSources.forEach(async (dataSource) => {
+      switch (dataSource.type) {
+        case DataSourceType.Window: {
+          pageDataListPromises.push(
+            (await DataService.getDB()).getAllFromIndex('pageData', 'windowId', dataSource.id),
+          );
+          break;
+        }
+        case DataSourceType.SavedFolder: {
+          pageDataListPromises.push(
+            (await DataService.getDB()).getAllFromIndex('pageData', 'folderId', dataSource.id),
+          );
+          break;
+        }
+        case DataSourceType.History: {
+          pageDataListPromises.push(
+            (await DataService.getDB()).getAllFromIndex('pageData', 'source', dataSource.type),
+          );
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    });
+
+    return Promise.all(pageDataListPromises).then((pageDataListList) => {
+      const pageDataPromises: PageData[] = [];
+      pageDataListList.forEach((pageDataList) => {
+        pageDataList.forEach((pageData) => {
+          pageDataPromises.push(pageData);
+        });
+      });
+      return pageDataPromises;
+    });
   }
 
   static async getAllTabPageData() {

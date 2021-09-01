@@ -25,11 +25,36 @@ export class SidebarManagerService {
   public newSavedButton: SelectableSidebarButton;
 
   constructor() {
-    this.windowRootButton = { id: 1, label: 'Windows', type: DataSourceType.Window };
-    this.savedRootButton = { id: 1, label: 'Saved', type: DataSourceType.SavedFolder };
-    this.historySidebarButton = { id: 1, label: 'History', type: DataSourceType.History };
-    this.newWindowButton = { id: 1, label: 'New Window', type: DataSourceType.Window };
-    this.newSavedButton = { id: 1, label: 'New Folder', type: DataSourceType.Window };
+    this.windowRootButton = {
+      id: 1,
+      label: 'Windows',
+      type: DataSourceType.Window,
+      isSelected: false,
+    };
+    this.savedRootButton = {
+      id: 1,
+      label: 'Saved',
+      type: DataSourceType.SavedFolder,
+      isSelected: false,
+    };
+    this.historySidebarButton = {
+      id: 1,
+      label: 'History',
+      type: DataSourceType.History,
+      isSelected: false,
+    };
+    this.newWindowButton = {
+      id: 1,
+      label: 'New Window',
+      type: DataSourceType.Window,
+      isSelected: false,
+    };
+    this.newSavedButton = {
+      id: 1,
+      label: 'New Folder',
+      type: DataSourceType.Window,
+      isSelected: false,
+    };
     this.init();
   }
 
@@ -40,6 +65,7 @@ export class SidebarManagerService {
           id: folder.id,
           label: folder.name,
           type: DataSourceType.SavedFolder,
+          isSelected: false,
         });
       });
     });
@@ -52,6 +78,7 @@ export class SidebarManagerService {
       id: newFolderId,
       label: newFolderLabel,
       type: DataSourceType.SavedFolder,
+      isSelected: false,
     });
   }
 
