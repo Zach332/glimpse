@@ -1,0 +1,16 @@
+<button
+  cdkDropList
+  (cdkDropListDropped)="drop()"
+  id="{{ buttonData.id }}"
+  mat-stroked-button
+  class="page-category child"
+  (click)="onClick()"
+  [ngClass]="{ selected: buttonData.isSelected }"
+>
+  <div class="flex align-items-center">
+    <mat-icon class="m-4">add_circle_outline</mat-icon>
+    <div>
+      {{ buttonData.label }}
+    </div>
+  </div>
+</button>

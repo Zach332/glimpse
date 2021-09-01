@@ -1,42 +1,46 @@
 import { Injectable } from '@angular/core';
+import { DataSourceType } from 'src/app/interfaces/data-source-type';
 import { DataService } from '../../data.service';
 import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
-import { DataSourceType } from 'src/app/interfaces/data-source-type';
-import { DataSource } from '../../interfaces/data-source';
-import { NewButton } from '../sidebar-button/new-button';
-import { RootButton } from '../sidebar-button/root-button';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SidebarManagerService {
-  public windowSidebarButtons: SelectableCollection<NewButton> =
-    new SelectableCollection<NewButton>();
+  public windowSidebarButtons: SelectableCollection<SelectableSidebarButton> =
+    new SelectableCollection<SelectableSidebarButton>();
+
   public savedSidebarButtons: SelectableCollection<SelectableSidebarButton> =
     new SelectableCollection<SelectableSidebarButton>();
-  public windowRootButton: RootButton;
+
+  public windowRootButton: SelectableSidebarButton;
+
+  public savedRootButton: SelectableSidebarButton;
+
+  public historySidebarButton: SelectableSidebarButton;
+
+  public newWindowButton: SelectableSidebarButton;
+
+  public newSavedButton: SelectableSidebarButton;
 
   constructor() {
-    this.windowRootButton = new RootButton(1, "Windows", DataSourceType.Window, si)
+    this.windowRootButton = { id: 1, label: 'Windows', type: DataSourceType.Window };
+    this.savedRootButton = { id: 1, label: 'Saved', type: DataSourceType.SavedFolder };
+    this.historySidebarButton = { id: 1, label: 'History', type: DataSourceType.History };
+    this.newWindowButton = { id: 1, label: 'New Window', type: DataSourceType.Window };
+    this.newSavedButton = { id: 1, label: 'New Folder', type: DataSourceType.Window };
     this.init();
   }
 
   init() {
-    this.sidebarButtons.push({ id: SidebarManagerService.RESERVED_IDS.Saved, label: 'Saved' });
     DataService.getAllSavedFolderDataSources().then((folders) => {
-      console.log(folders);
       folders.forEach((folder) => {
-        this.sidebarButtons.push({
+        this.savedSidebarButtons.push({
           id: folder.id,
           label: folder.name,
-          parent: SidebarManagerService.RESERVED_IDS.Saved,
+          type: DataSourceType.SavedFolder,
         });
-      });
-      this.sidebarButtons.push({
-        id: SidebarManagerService.RESERVED_IDS['New Folder'],
-        label: 'New Folder',
-        parent: SidebarManagerService.RESERVED_IDS.Saved,
       });
     });
   }
@@ -44,10 +48,11 @@ export class SidebarManagerService {
   async insertSavedFolder(): Promise<void> {
     const newFolderLabel = 'New Folder';
     const newFolderId = await DataService.insertSavedFolderDataSource(newFolderLabel);
-    this.sidebarButtons.insertBeforeId(
-      { id: newFolderId, label: newFolderLabel, parent: SidebarManagerService.RESERVED_IDS.Saved },
-      SidebarManagerService.RESERVED_IDS['New Folder'],
-    );
+    this.savedSidebarButtons.push({
+      id: newFolderId,
+      label: newFolderLabel,
+      type: DataSourceType.SavedFolder,
+    });
   }
 
   delete(type: DataSourceType, id: number): void {
@@ -68,13 +73,31 @@ export class SidebarManagerService {
     return this.getDataSource(type).areAllSelected();
   }
 
+  public toggleRoot(type: DataSourceType): void {
+    if (this.areAllSelected(type)) {
+      this.getDataSource(type).deselectAll();
+    } else {
+      this.getDataSource(type).selectAll();
+    }
+  }
+
+  public isCollapsed(type: DataSourceType): boolean {
+    if (type === DataSourceType.Window) {
+      return this.windowRootButton.expanded || false;
+    }
+    if (type === DataSourceType.SavedFolder) {
+      return this.savedRootButton.expanded || false;
+    }
+    return false;
+  }
+
   private getDataSource(type: DataSourceType): SelectableCollection<SelectableSidebarButton> {
     if (type === DataSourceType.Window) {
       return this.windowSidebarButtons;
-    } else if (type === DataSourceType.SavedFolder) {
-      return this.savedSidebarButtons;
-    } else {
-      return new SelectableCollection<SelectableSidebarButton>();
     }
+    if (type === DataSourceType.SavedFolder) {
+      return this.savedSidebarButtons;
+    }
+    return new SelectableCollection<SelectableSidebarButton>();
   }
 }

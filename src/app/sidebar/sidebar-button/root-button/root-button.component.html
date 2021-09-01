@@ -1,0 +1,31 @@
+<button
+  cdkDropList
+  (cdkDropListDropped)="drop()"
+  id="{{ buttonData.id }}"
+  mat-stroked-button
+  class="page-category"
+  (click)="onClick()"
+  [ngClass]="{ selected: isSelected() }"
+>
+  <div class="flex align-items-center">
+    <button
+      mat-icon-button
+      *ngIf="buttonData.expanded"
+      (click)="toggleExpand($event)"
+      class="expand-icon"
+    >
+      <mat-icon>expand_more</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      *ngIf="!buttonData.expanded"
+      (click)="toggleExpand($event)"
+      class="expand-icon"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <div>
+      {{ buttonData.label }}
+    </div>
+  </div>
+</button>

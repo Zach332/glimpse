@@ -1,10 +1,27 @@
 <div class="flex-col header-space">
-  <app-sidebar-button
-    *ngFor="let button of sidebarManagerService.sidebarButtons"
-    [buttonData]="button"
-    [elementIsCollapsed]="elementIsCollapsed"
+  <app-root-button
+    [buttonData]="sidebarManagerService.windowRootButton"
     class="flex"
-  ></app-sidebar-button>
+  ></app-root-button>
+  <app-data-source-button
+    *ngFor="let button of sidebarManagerService.windowSidebarButtons"
+    [buttonData]="button"
+    class="flex"
+  ></app-data-source-button>
+  <app-new-button
+    [buttonData]="sidebarManagerService.newWindowButton"
+    class="flex"
+  ></app-new-button>
+  <app-root-button
+    [buttonData]="sidebarManagerService.savedRootButton"
+    class="flex"
+  ></app-root-button>
+  <app-data-source-button
+    *ngFor="let button of sidebarManagerService.savedSidebarButtons"
+    [buttonData]="button"
+    class="flex"
+  ></app-data-source-button>
+  <app-new-button [buttonData]="sidebarManagerService.newSavedButton" class="flex"></app-new-button>
   <mat-divider class="divider-margin"></mat-divider>
   <div class="flex space-around">
     <div>

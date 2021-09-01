@@ -1,8 +1,8 @@
-import { DataSource } from './data-source';
+import { DataSourceType } from './data-source-type';
 
 export interface SidebarButton {
   readonly id: number;
   label: string;
-  parentType?: DataSource;
-  onClick: ($event: MouseEvent) => void;
+  type: DataSourceType;
+  expanded?: boolean;
 }

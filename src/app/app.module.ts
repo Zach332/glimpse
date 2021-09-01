@@ -9,8 +9,10 @@ import { MaterialModule } from './material/material.module';
 import { PagePrevComponent } from './page-prev/page-prev.component';
 import { TitlePrevComponent } from './title-prev/title-prev.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
-import { SidebarButtonComponent } from './sidebar/sidebar-button/sidebar-button.component';
 import { DragPrevComponent } from './drag-prev/drag-prev.component';
+import { NewButtonComponent } from './sidebar/sidebar-button/new-button/new-button.component';
+import { RootButtonComponent } from './sidebar/sidebar-button/root-button/root-button.component';
+import { DataSourceButtonComponent } from './sidebar/sidebar-button/data-source-button/data-source-button.component';
 
 @NgModule({
   declarations: [
@@ -19,8 +21,10 @@ import { DragPrevComponent } from './drag-prev/drag-prev.component';
     PagePrevComponent,
     TitlePrevComponent,
     SidebarComponent,
-    SidebarButtonComponent,
     DragPrevComponent,
+    NewButtonComponent,
+    RootButtonComponent,
+    DataSourceButtonComponent,
   ],
   imports: [BrowserModule, BrowserAnimationsModule, MaterialModule, FormsModule],
   providers: [],

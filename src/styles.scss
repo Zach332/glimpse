@@ -58,6 +58,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   justify-content: space-around;
 }
 
+.selected {
+  background-color: rgb(197, 196, 196) !important;
+}
 
 // Margins
 .m-1 {

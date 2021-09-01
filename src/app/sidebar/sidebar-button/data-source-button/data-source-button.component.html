@@ -4,28 +4,11 @@
   (cdkDropListDropped)="drop()"
   id="{{ buttonData.id }}"
   mat-stroked-button
-  class="page-category"
+  class="page-category child"
   (click)="onClick($event)"
-  [ngClass]="{ child: buttonData.parent, selected: buttonData.isSelected }"
+  [ngClass]="{ selected: buttonData.isSelected }"
 >
   <div class="flex align-items-center">
-    <button
-      mat-icon-button
-      *ngIf="!buttonData.parent && buttonData.expanded"
-      (click)="toggleExpand($event)"
-      class="expand-icon"
-    >
-      <mat-icon>expand_more</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      *ngIf="!buttonData.parent && !buttonData.expanded"
-      (click)="toggleExpand($event)"
-      class="expand-icon"
-    >
-      <mat-icon>chevron_right</mat-icon>
-    </button>
-    <mat-icon *ngIf="isAddNew()" class="m-4">add_circle_outline</mat-icon>
     <div>
       {{ buttonData.label }}
     </div>
@@ -33,7 +16,6 @@
       mat-icon-button
       [matMenuTriggerFor]="menu"
       class="menu"
-      *ngIf="buttonData.parent && !isAddNew()"
       (click)="$event.stopPropagation()"
     >
       <mat-icon>more_vert</mat-icon>
