@@ -52,7 +52,7 @@ export class SidebarManagerService {
     this.newSavedButton = {
       id: 1,
       label: 'New Folder',
-      type: DataSourceType.Window,
+      type: DataSourceType.SavedFolder,
       isSelected: false,
     };
     this.init();
@@ -100,6 +100,10 @@ export class SidebarManagerService {
     return this.getDataSource(type).areAllSelected();
   }
 
+  public hasChildren(type: DataSourceType): boolean {
+    return this.getDataSource(type).collection.length > 0;
+  }
+
   public toggleRoot(type: DataSourceType): void {
     if (this.areAllSelected(type)) {
       this.getDataSource(type).deselectAll();
@@ -110,10 +114,10 @@ export class SidebarManagerService {
 
   public isCollapsed(type: DataSourceType): boolean {
     if (type === DataSourceType.Window) {
-      return this.windowRootButton.expanded || false;
+      return !this.windowRootButton.expanded || false;
     }
     if (type === DataSourceType.SavedFolder) {
-      return this.savedRootButton.expanded || false;
+      return !this.savedRootButton.expanded || false;
     }
     return false;
   }

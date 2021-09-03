@@ -31,6 +31,9 @@ export class RootButtonComponent {
   }
 
   isSelected(): boolean {
-    return this.sidebarManagerService.areAllSelected(this.buttonData.type);
+    return (
+      this.sidebarManagerService.areAllSelected(this.buttonData.type) &&
+      this.sidebarManagerService.hasChildren(this.buttonData.type)
+    );
   }
 }

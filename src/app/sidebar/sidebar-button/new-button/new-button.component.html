@@ -1,5 +1,6 @@
 <button
   cdkDropList
+  *ngIf="!isHidden()"
   (cdkDropListDropped)="drop()"
   id="{{ buttonData.id }}"
   mat-stroked-button
