@@ -13,6 +13,7 @@ import { DragPrevComponent } from './drag-prev/drag-prev.component';
 import { NewButtonComponent } from './sidebar/sidebar-button/new-button/new-button.component';
 import { RootButtonComponent } from './sidebar/sidebar-button/root-button/root-button.component';
 import { DataSourceButtonComponent } from './sidebar/sidebar-button/data-source-button/data-source-button.component';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { DataSourceButtonComponent } from './sidebar/sidebar-button/data-source-
     NewButtonComponent,
     RootButtonComponent,
     DataSourceButtonComponent,
+    SearchComponent,
   ],
   imports: [BrowserModule, BrowserAnimationsModule, MaterialModule, FormsModule],
   providers: [],

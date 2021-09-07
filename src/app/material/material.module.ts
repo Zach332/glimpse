@@ -8,6 +8,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   exports: [
@@ -20,6 +21,7 @@ import { MatMenuModule } from '@angular/material/menu';
     DragDropModule,
     MatDividerModule,
     MatMenuModule,
+    MatInputModule,
   ],
 })
 export class MaterialModule {}
