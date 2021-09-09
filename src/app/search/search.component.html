@@ -1,5 +1,5 @@
-<mat-form-field class="example-form-field" appearance="fill">
-  <mat-label>Clearable input</mat-label>
+<mat-form-field class="search-input" appearance="fill">
+  <mat-label>Filter</mat-label>
   <input matInput #searchInput type="text" [(ngModel)]="value" />
   <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value = ''">
     <mat-icon>close</mat-icon>
