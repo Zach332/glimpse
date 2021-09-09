@@ -7,11 +7,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class HotkeyManagerService {
-  constructor(private eventManager: EventManager, @Inject(DOCUMENT) private document: Document) {
-    this.addShortcut('x').subscribe((res: KeyboardEvent) => console.log(res));
-  }
+  constructor(private eventManager: EventManager, @Inject(DOCUMENT) private document: Document) {}
 
-  private addShortcut(keys: string, ignoreInput: boolean = true) {
+  public addShortcut(keys: string, ignoreInput: boolean = true) {
     const keyEvent = `keydown.${keys}`;
     return new Observable<KeyboardEvent>((observer) => {
       const handler = (event: KeyboardEvent) => {
