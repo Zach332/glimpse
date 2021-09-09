@@ -4,7 +4,10 @@
   "description": "Visual history and tab manager",
   "manifest_version": 2,
   "background": {
-    "scripts": ["background.js", "runtime.js"]
+    "scripts": ["background.js", "runtime.js", "browser-polyfill.js"]
+  },
+  "content_scripts": {
+    "js": ["browser-polyfill.js"]
   },
   "permissions": ["<all_urls>", "tabs", "webNavigation"],
   "browser_action": {},
