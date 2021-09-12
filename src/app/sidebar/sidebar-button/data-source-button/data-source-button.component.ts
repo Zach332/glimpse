@@ -1,7 +1,9 @@
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.service';
+import { RenameDialogComponent } from './rename-dialog.component';
 
 @Component({
   selector: 'app-data-source-button',
@@ -15,6 +17,7 @@ export class DataSourceButtonComponent {
   constructor(
     private pageManagerService: PageManagerService,
     private sidebarManagerService: SidebarManagerService,
+    private renameDialog: MatDialog,
   ) {}
 
   public drop() {
@@ -35,5 +38,16 @@ export class DataSourceButtonComponent {
     } else {
       this.sidebarManagerService.toggleId(this.buttonData.type, this.buttonData.id);
     }
+  }
+
+  openRenameDialog(): void {
+    const dialogRef = this.renameDialog.open(RenameDialogComponent, {
+      data: { newName: '' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      // TODO: rename
+      console.log(result);
+    });
   }
 }

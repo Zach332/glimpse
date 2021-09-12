@@ -14,6 +14,7 @@ import { NewButtonComponent } from './sidebar/sidebar-button/new-button/new-butt
 import { RootButtonComponent } from './sidebar/sidebar-button/root-button/root-button.component';
 import { DataSourceButtonComponent } from './sidebar/sidebar-button/data-source-button/data-source-button.component';
 import { SearchComponent } from './search/search.component';
+import { RenameDialogComponent } from './sidebar/sidebar-button/data-source-button/rename-dialog.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { SearchComponent } from './search/search.component';
     RootButtonComponent,
     DataSourceButtonComponent,
     SearchComponent,
+    RenameDialogComponent,
   ],
   imports: [BrowserModule, BrowserAnimationsModule, MaterialModule, FormsModule],
   providers: [],
