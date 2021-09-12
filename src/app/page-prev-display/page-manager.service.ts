@@ -25,6 +25,8 @@ export class PageManagerService {
 
   public pagePrevCollapse = false;
 
+  public dragMode: 'copy' | 'move' = 'move';
+
   constructor() {
     this.getPageData();
   }

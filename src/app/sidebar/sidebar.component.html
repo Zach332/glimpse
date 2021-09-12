@@ -42,4 +42,10 @@
     </mat-slider>
     <mat-slide-toggle [(ngModel)]="pageManagerService.pagePrevCollapse">Collapse</mat-slide-toggle>
   </div>
+  <div class="flex space-around align-items-center">
+    <mat-button-toggle-group [(ngModel)]="pageManagerService.dragMode">
+      <mat-button-toggle value="move">Move</mat-button-toggle>
+      <mat-button-toggle value="copy">Copy</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
 </div>

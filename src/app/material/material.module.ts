@@ -10,6 +10,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   exports: [
@@ -24,6 +25,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatMenuModule,
     MatInputModule,
     MatDialogModule,
+    MatButtonToggleModule,
   ],
 })
 export class MaterialModule {}
