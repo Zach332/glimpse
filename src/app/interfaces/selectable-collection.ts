@@ -3,7 +3,7 @@ import { Selectable } from './selectable';
 export class SelectableCollection<Type extends Selectable> implements Iterable<Type> {
   private _collection: Type[] = [];
 
-  private lastToggled = 0;
+  private lastToggled = -1;
 
   private lastShifted = -1;
 
