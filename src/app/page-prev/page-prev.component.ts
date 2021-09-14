@@ -22,7 +22,8 @@ export class PagePrevComponent {
     } else if ($event.shiftKey) {
       this.pageManagerService.tabElements.selectToId(this.tabData.id);
     } else {
-      window.location.href = this.tabData.image;
+      // TODO: Handle null later
+      window.location.href = this.tabData.image!;
     }
   }
 

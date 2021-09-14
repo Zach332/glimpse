@@ -1,7 +1,6 @@
-import { DataSourceType } from './data-source-type';
+import { GlimpseId } from './glimpse-id';
 
 export interface DataSource {
-  id: number;
+  readonly glimpseId: GlimpseId;
   name: string;
-  type: DataSourceType;
 }

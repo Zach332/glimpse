@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
-import { DataService } from '../data.service';
 import { SelectableCollection } from '../interfaces/selectable-collection';
 import { SelectablePageData } from '../interfaces/selectable-page-data';
 
@@ -25,27 +24,31 @@ export class PageManagerService {
 
   public pagePrevCollapse = false;
 
-  constructor() {
-    this.getPageData();
-  }
+  // constructor() {
+  //   // this.getPages();
+  // }
 
-  async getPageData() {
-    // TODO: Update the tabElements array when new page data are added
-    // This code will only update page data on new tabs
-    // When you do this, it will probably make sense to separate the logic
-    // to convert from PageData to SelectablePageData
-    (await DataService.getAllPageData())
-      .map((pageData) => {
-        const selectablePageData: SelectablePageData = {
-          ...pageData,
-          isSelected: false,
-        };
-        return selectablePageData;
-      })
-      .forEach((pageData) => {
-        this.tabElements.push(pageData);
-      });
-  }
+  // async getPages() {
+  //   this.tabElements.
+  //   return this.dataService.get
+  //   return Data(
+  //     // TODO: Update the tabElements array when new page data are added
+  //     // This code will only update page data on new tabs
+  //     // When you do this, it will probably make sense to separate the logic
+  //     // to convert from PageData to SelectablePageData
+  //     await DataService.getAllPageData(),
+  //   )
+  //     .map((pageData) => {
+  //       const selectablePageData: SelectablePageData = {
+  //         ...pageData,
+  //         isSelected: false,
+  //       };
+  //       return selectablePageData;
+  //     })
+  //     .forEach((pageData) => {
+  //       this.tabElements.push(pageData);
+  //     });
+  // }
 
   public updatePageWidth($event: MatSliderChange): void {
     this.pagePrevWidth = $event.value ? $event.value : this.pagePrevWidth;

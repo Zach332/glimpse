@@ -22,10 +22,10 @@ export class NewButtonComponent {
   }
 
   isHidden(): boolean {
-    return this.sidebarManagerService.isCollapsed(this.buttonData.type);
+    return this.sidebarManagerService.isCollapsed(this.buttonData.glimpseId[0]);
   }
 
   onClick(): void {
-    this.sidebarManagerService.insertSavedFolder();
+    // this.sidebarManagerService.insertSavedFolder();
   }
 }

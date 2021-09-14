@@ -6,9 +6,12 @@
   "background": {
     "scripts": ["background.js", "runtime.js", "browser-polyfill.js"]
   },
-  "content_scripts": {
-    "js": ["browser-polyfill.js"]
-  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["browser-polyfill.js"]
+    }
+  ],
   "permissions": ["<all_urls>", "tabs", "webNavigation"],
   "browser_action": {},
   "chrome_url_overrides": {

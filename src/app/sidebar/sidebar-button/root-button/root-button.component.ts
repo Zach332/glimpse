@@ -22,7 +22,7 @@ export class RootButtonComponent {
   }
 
   onClick(): void {
-    this.sidebarManagerService.toggleRoot(this.buttonData.type);
+    this.sidebarManagerService.toggleRoot(this.buttonData.glimpseId[0]);
   }
 
   toggleExpand($event: MouseEvent): void {
@@ -32,8 +32,8 @@ export class RootButtonComponent {
 
   isSelected(): boolean {
     return (
-      this.sidebarManagerService.areAllSelected(this.buttonData.type) &&
-      this.sidebarManagerService.hasChildren(this.buttonData.type)
+      this.sidebarManagerService.areAllSelected(this.buttonData.glimpseId[0]) &&
+      this.sidebarManagerService.hasChildren(this.buttonData.glimpseId[0])
     );
   }
 }
