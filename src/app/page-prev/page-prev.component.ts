@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { SelectablePageData } from '../interfaces/selectable-page-data';
+import { SelectablePage } from '../interfaces/selectable-page-data';
 import { PageManagerService } from '../page-prev-display/page-manager.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { PageManagerService } from '../page-prev-display/page-manager.service';
 })
 export class PagePrevComponent {
   @Input()
-  tabData!: SelectablePageData;
+  tabData!: SelectablePage;
 
   @Input()
   collapse!: boolean;
@@ -18,9 +18,9 @@ export class PagePrevComponent {
 
   onClick($event: MouseEvent): void {
     if ($event.metaKey) {
-      this.pageManagerService.tabElements.toggleId(this.tabData.id);
+      this.pageManagerService.pageElements.toggleId(this.tabData.id);
     } else if ($event.shiftKey) {
-      this.pageManagerService.tabElements.selectToId(this.tabData.id);
+      this.pageManagerService.pageElements.selectToId(this.tabData.id);
     } else {
       // TODO: Handle null later
       window.location.href = this.tabData.image!;

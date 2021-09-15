@@ -14,10 +14,10 @@ export class SidebarComponent {
   ) {}
 
   selectAll(): void {
-    this.pageManagerService.tabElements.selectAll();
+    this.pageManagerService.pageElements.selectAll();
   }
 
   deselectAll(): void {
-    this.pageManagerService.tabElements.deselectAll();
+    this.pageManagerService.pageElements.deselectAll();
   }
 }

@@ -15,6 +15,10 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     this._collection = newCollection;
   }
 
+  public getSelectedItems() {
+    return this._collection.filter((selectable) => selectable.isSelected);
+  }
+
   public getById(id: number): Type | undefined {
     return this.collection.find((element) => element.id === id);
   }

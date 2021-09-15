@@ -20,18 +20,18 @@ export class DataService {
     });
   }
 
-  public async getBookmarkDataSources() {
-    // TODO: Handle errors
-    return (await browser.bookmarks.getTree())
-      .filter((treeNode) => treeNode.title === this.GLIMPSE_BOOKMARK_FOLDER_NAME)
-      .map((treeNode) => {
-        const dataSource: DataSource = {
-          glimpseId: [DataSourceType.Bookmark, treeNode.id],
-          name: treeNode.title,
-        };
-        return dataSource;
-      });
-  }
+  // public async getBookmarkDataSources() {
+  //   // TODO: Handle errors
+  //   return (await browser.bookmarks.getTree())
+  //     .filter((treeNode) => treeNode.title === this.GLIMPSE_BOOKMARK_FOLDER_NAME)
+  //     .map((treeNode) => {
+  //       const dataSource: DataSource = {
+  //         glimpseId: [DataSourceType.Bookmark, treeNode.id],
+  //         name: treeNode.title,
+  //       };
+  //       return dataSource;
+  //     });
+  // }
 
   public async getPagesByDataSources(dataSources: DataSource[]) {
     return Promise.all(
@@ -41,7 +41,15 @@ export class DataService {
         }
         return this.getPagesByBookmarkId(dataSource.glimpseId[1]);
       }),
-    );
+    ).then((pagesList) => {
+      const pages: Page[] = [];
+      pagesList.forEach((pageList) => {
+        pageList.forEach((page) => {
+          pages.push(page);
+        });
+      });
+      return pages;
+    });
   }
 
   public async getPagesByWindowId(windowId: number) {
