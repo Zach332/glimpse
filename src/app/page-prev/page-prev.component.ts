@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { SelectablePage } from '../interfaces/selectable-page-data';
+import { SelectablePage } from '../interfaces/selectable-page';
 import { PageManagerService } from '../page-prev-display/page-manager.service';
 
 @Component({

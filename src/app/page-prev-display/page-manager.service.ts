@@ -3,7 +3,7 @@ import { MatSliderChange } from '@angular/material/slider';
 import { DataService } from '../data.service';
 import { IdGeneratorService } from '../id-generator-serivce';
 import { SelectableCollection } from '../interfaces/selectable-collection';
-import { SelectablePage } from '../interfaces/selectable-page-data';
+import { SelectablePage } from '../interfaces/selectable-page';
 import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-manager.service';
 
 @Injectable({
