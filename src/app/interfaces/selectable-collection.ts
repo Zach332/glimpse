@@ -7,6 +7,12 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
 
   private lastShifted = -1;
 
+  constructor(elements?: Type[]) {
+    if (elements) {
+      this.collection = elements;
+    }
+  }
+
   public get collection(): Type[] {
     return this._collection;
   }
