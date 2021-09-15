@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { PageData } from '../interfaces/page-data';
+import { Page } from '../interfaces/page';
 
 @Component({
   selector: 'app-title-prev',
@@ -8,7 +8,7 @@ import { PageData } from '../interfaces/page-data';
 })
 export class TitlePrevComponent {
   @Input()
-  tabData!: PageData;
+  tabData!: Page;
 
   @Output() removePage = new EventEmitter<MouseEvent>();
 

@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { DataService } from '../data.service';
+import { IdGeneratorService } from '../id-generator-serivce';
 import { SelectableCollection } from '../interfaces/selectable-collection';
-import { SelectablePageData } from '../interfaces/selectable-page-data';
+import { SelectablePage } from '../interfaces/selectable-page-data';
+import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-manager.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PageManagerService {
-  public tabElements: SelectableCollection<SelectablePageData> =
-    new SelectableCollection<SelectablePageData>();
+  public pageElements: SelectableCollection<SelectablePage> =
+    new SelectableCollection<SelectablePage>();
 
   public dragging: boolean = false;
 
@@ -27,26 +29,30 @@ export class PageManagerService {
 
   public dragMode: 'copy' | 'move' = 'move';
 
-  constructor() {
-    this.getPageData();
-  }
-
-  async getPageData() {
-    // TODO: Update the tabElements array when new page data are added
-    // This code will only update page data on new tabs
-    // When you do this, it will probably make sense to separate the logic
-    // to convert from PageData to SelectablePageData
-    (await DataService.getAllPageData())
-      .map((pageData) => {
-        const selectablePageData: SelectablePageData = {
-          ...pageData,
+  constructor(
+    private sidebarManagerService: SidebarManagerService,
+    private dataService: DataService,
+    private idGeneratorService: IdGeneratorService,
+  ) {
+    this.getPages().then((pages) =>
+      pages.forEach((page) => {
+        const selectablePage: SelectablePage = {
+          ...page,
+          id: idGeneratorService.getId(),
           isSelected: false,
         };
-        return selectablePageData;
-      })
-      .forEach((pageData) => {
-        this.tabElements.push(pageData);
-      });
+        this.pageElements.push(selectablePage);
+      }),
+    );
+  }
+
+  async getPages() {
+    // TODO: Remove this and fix the race condition between sidebar manager and
+    // page manager
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return this.dataService.getPagesByDataSources(
+      this.sidebarManagerService.getSelectedSidebarButtons(),
+    );
   }
 
   public updatePageWidth($event: MatSliderChange): void {

@@ -1,4 +1,4 @@
-import { PageData } from './page-data';
+import { Page } from './page';
 import { Selectable } from './selectable';
 
-export interface SelectablePageData extends PageData, Selectable {}
+export interface SelectablePage extends Page, Selectable {}

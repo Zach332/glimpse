@@ -25,18 +25,18 @@ export class DataSourceButtonComponent {
   }
 
   isHidden(): boolean {
-    return this.sidebarManagerService.isCollapsed(this.buttonData.type);
+    return this.sidebarManagerService.isCollapsed(this.buttonData.glimpseId[0]);
   }
 
   delete(): void {
-    this.sidebarManagerService.delete(this.buttonData.type, this.buttonData.id);
+    // this.sidebarManagerService.delete(this.buttonData.glimpseId[0], this.buttonData.glimpseId);
   }
 
   onClick($event: MouseEvent): void {
     if ($event.shiftKey) {
-      this.sidebarManagerService.selectToId(this.buttonData.type, this.buttonData.id);
+      this.sidebarManagerService.selectToId(this.buttonData.glimpseId[0], this.buttonData.id);
     } else {
-      this.sidebarManagerService.toggleId(this.buttonData.type, this.buttonData.id);
+      this.sidebarManagerService.toggleId(this.buttonData.glimpseId[0], this.buttonData.id);
     }
   }
 

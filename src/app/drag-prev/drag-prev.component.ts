@@ -10,9 +10,9 @@ export class DragPrevComponent {
   constructor(private pageManagerService: PageManagerService) {}
 
   getPreviewText(): string {
-    let numSelected = this.pageManagerService.tabElements.getNumSelected();
+    let numSelected = this.pageManagerService.pageElements.getNumSelected();
     if (
-      !this.pageManagerService.tabElements.getById(
+      !this.pageManagerService.pageElements.getById(
         parseInt(this.pageManagerService.draggedElement, 10),
       )?.isSelected
     ) {

@@ -1,4 +1,6 @@
+import { DataSource } from './data-source';
 import { Selectable } from './selectable';
-import { SidebarButton } from './sidebar-button';
 
-export interface SelectableSidebarButton extends SidebarButton, Selectable {}
+export interface SelectableSidebarButton extends DataSource, Selectable {
+  expanded?: boolean;
+}

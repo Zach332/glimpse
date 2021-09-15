@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataSourceType } from 'src/app/interfaces/data-source-type';
+import { IdGeneratorService } from 'src/app/id-generator-serivce';
 import { DataService } from '../../data.service';
 import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
@@ -18,74 +19,85 @@ export class SidebarManagerService {
 
   public savedRootButton: SelectableSidebarButton;
 
-  public historySidebarButton: SelectableSidebarButton;
-
   public newWindowButton: SelectableSidebarButton;
 
   public newSavedButton: SelectableSidebarButton;
 
-  constructor() {
+  constructor(private dataService: DataService, private idGeneratorService: IdGeneratorService) {
+    // TODO: These should use a new interface or something
+    // And maybe rename SelectableSidebarButton to SelectableDataSource
     this.windowRootButton = {
+      glimpseId: [DataSourceType.Window, 1],
       id: 1,
-      label: 'Windows',
-      type: DataSourceType.Window,
+      name: 'Windows',
       isSelected: false,
     };
     this.savedRootButton = {
+      glimpseId: [DataSourceType.Bookmark, '1'],
       id: 1,
-      label: 'Saved',
-      type: DataSourceType.SavedFolder,
-      isSelected: false,
-    };
-    this.historySidebarButton = {
-      id: 1,
-      label: 'History',
-      type: DataSourceType.History,
+      name: 'Saved',
       isSelected: false,
     };
     this.newWindowButton = {
+      glimpseId: [DataSourceType.Window, 1],
       id: 1,
-      label: 'New Window',
-      type: DataSourceType.Window,
+      name: 'New Window',
       isSelected: false,
     };
     this.newSavedButton = {
+      glimpseId: [DataSourceType.Bookmark, '1'],
       id: 1,
-      label: 'New Folder',
-      type: DataSourceType.SavedFolder,
+      name: 'New Folder',
       isSelected: false,
     };
     this.init();
   }
 
-  init() {
-    DataService.getAllSavedFolderDataSources().then((folders) => {
-      folders.forEach((folder) => {
-        this.savedSidebarButtons.push({
-          id: folder.id,
-          label: folder.name,
-          type: DataSourceType.SavedFolder,
-          isSelected: false,
-        });
+  async init() {
+    this.dataService.getWindowDataSources().then((windows) => {
+      windows.forEach((window) => {
+        const sidebarButton: SelectableSidebarButton = {
+          ...window,
+          id: this.idGeneratorService.getId(),
+          isSelected: true,
+        };
+        this.windowSidebarButtons.push(sidebarButton);
       });
     });
+
+    // this.dataService.getBookmarkDataSources().then((folders) => {
+    //   folders.forEach((folder) => {
+    //     const sidebarButton: SelectableSidebarButton = {
+    //       ...folder,
+    //       id: 1,
+    //       isSelected: false,
+    //     };
+    //     this.savedSidebarButtons.push(sidebarButton);
+    //   });
+    // });
   }
 
-  async insertSavedFolder(): Promise<void> {
-    const newFolderLabel = 'New Folder';
-    const newFolderId = await DataService.insertSavedFolderDataSource(newFolderLabel);
-    this.savedSidebarButtons.push({
-      id: newFolderId,
-      label: newFolderLabel,
-      type: DataSourceType.SavedFolder,
-      isSelected: false,
-    });
-  }
+  // async insertSavedFolder(): Promise<void> {
+  //   const newFolderLabel = 'New Folder';
+  //   const newFolderId = await DataService.insertSavedFolderDataSource(newFolderLabel);
+  //   this.savedSidebarButtons.push({
+  //     glimpseId: newFolderId,
+  //     label: newFolderLabel,
+  //     type: DataSourceType.Bookmark,
+  //     isSelected: false,
+  //   });
+  // }
 
-  delete(type: DataSourceType, id: number): void {
-    this.getDataSource(type).remove(id);
-    DataService.deleteDataSource(id);
-    // TODO: Remove all the page data items as well. Handle deleting windows.
+  // delete(type: DataSourceType, id: number): void {
+  //   this.getDataSource(type).remove(id);
+  //   DataService.deleteDataSource(id);
+  //   // TODO: Remove all the page data items as well. Handle deleting windows.
+  // }
+
+  public getSelectedSidebarButtons() {
+    return this.windowSidebarButtons
+      .getSelectedItems()
+      .concat(this.savedSidebarButtons.getSelectedItems());
   }
 
   public selectToId(type: DataSourceType, id: number): void {
@@ -116,7 +128,7 @@ export class SidebarManagerService {
     if (type === DataSourceType.Window) {
       return !this.windowRootButton.expanded || false;
     }
-    if (type === DataSourceType.SavedFolder) {
+    if (type === DataSourceType.Bookmark) {
       return !this.savedRootButton.expanded || false;
     }
     return false;
@@ -126,7 +138,7 @@ export class SidebarManagerService {
     if (type === DataSourceType.Window) {
       return this.windowSidebarButtons;
     }
-    if (type === DataSourceType.SavedFolder) {
+    if (type === DataSourceType.Bookmark) {
       return this.savedSidebarButtons;
     }
     return new SelectableCollection<SelectableSidebarButton>();
