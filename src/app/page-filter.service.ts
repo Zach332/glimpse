@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SelectableCollection } from './interfaces/selectable-collection';
-import { SelectablePage } from './interfaces/selectable-page-data';
+import { SelectablePage } from './interfaces/selectable-page';
 
 @Injectable({
   providedIn: 'root',
