@@ -23,7 +23,7 @@ export class PagePrevComponent {
       this.pageManagerService.pageElements.selectToId(this.tabData.id);
     } else {
       // TODO: Handle null later
-      window.location.href = this.tabData.image!;
+      window.location.href = this.tabData.url;
     }
   }
 
