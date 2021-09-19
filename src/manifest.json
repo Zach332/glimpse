@@ -12,7 +12,7 @@
       "js": ["browser-polyfill.js"]
     }
   ],
-  "permissions": ["<all_urls>", "tabs", "webNavigation"],
+  "permissions": ["<all_urls>", "tabs", "webNavigation", "bookmarks"],
   "browser_action": {},
   "chrome_url_overrides": {
     "newtab": "index.html"
