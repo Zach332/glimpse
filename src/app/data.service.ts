@@ -8,6 +8,7 @@ import { ImageService } from './image-service';
   providedIn: 'root',
 })
 export class DataService {
+  // TODO: Potentially switch this to using a fixed id to improve performance
   readonly GLIMPSE_BOOKMARK_FOLDER_NAME = 'glimpse-dev';
 
   public async getWindowDataSources() {
@@ -20,18 +21,18 @@ export class DataService {
     });
   }
 
-  // public async getBookmarkDataSources() {
-  //   // TODO: Handle errors
-  //   return (await browser.bookmarks.getTree())
-  //     .filter((treeNode) => treeNode.title === this.GLIMPSE_BOOKMARK_FOLDER_NAME)
-  //     .map((treeNode) => {
-  //       const dataSource: DataSource = {
-  //         glimpseId: [DataSourceType.Bookmark, treeNode.id],
-  //         name: treeNode.title,
-  //       };
-  //       return dataSource;
-  //     });
-  // }
+  public async getFolderDataSources() {
+    // TODO: Handle errors
+    return browser.bookmarks.getChildren((await this.getRootGlimpseFolder()).id).then((folders) => {
+      return folders.map((folder) => {
+        const dataSource: DataSource = {
+          glimpseId: [DataSourceType.Folder, folder.id],
+          name: folder.title,
+        };
+        return dataSource;
+      });
+    });
+  }
 
   public async getPagesByDataSources(dataSources: DataSource[]) {
     return Promise.all(
@@ -39,7 +40,7 @@ export class DataService {
         if (dataSource.glimpseId[0] === DataSourceType.Window) {
           return this.getPagesByWindowId(dataSource.glimpseId[1]);
         }
-        return this.getPagesByBookmarkId(dataSource.glimpseId[1]);
+        return this.getPagesByFolderId(dataSource.glimpseId[1]);
       }),
     ).then((pagesList) => {
       const pages: Page[] = [];
@@ -53,6 +54,8 @@ export class DataService {
   }
 
   public async getPagesByWindowId(windowId: number) {
+    // TODO: Switch this to use .then?
+    // Also for other methods in DataService
     return Promise.all(
       (await browser.tabs.query({ windowId })).map(async (tab) => {
         const page: Page = {
@@ -66,26 +69,28 @@ export class DataService {
     );
   }
 
-  public async getPagesByBookmarkId(bookmarkId: string) {
-    // TODO: Handle errors
-    return Promise.all(
-      (await browser.bookmarks.getChildren((await this.getRootBookmarkNode()).id)).map(
-        async (bookmark) => {
+  public async getPagesByFolderId(folderId: string) {
+    return browser.bookmarks.getChildren(folderId).then((folder) => {
+      return Promise.all(
+        folder.map(async (bookmark) => {
           const page: Page = {
-            glimpseId: [DataSourceType.Bookmark, bookmarkId],
+            glimpseId: [DataSourceType.Folder, folderId],
             title: bookmark.title,
             url: bookmark.url!,
-            image: await ImageService.getImage([DataSourceType.Bookmark, bookmarkId]),
+            image: await ImageService.getImage([DataSourceType.Folder, folderId]),
           };
           return page;
-        },
-      ),
-    );
+        }),
+      );
+    });
   }
 
-  async getRootBookmarkNode() {
+  async getRootGlimpseFolder() {
     // TODO: Handle errors
-    return (await browser.bookmarks.getTree()).filter(
+    const otherBookmarksNode = (await browser.bookmarks.getTree())[0].children!.filter(
+      (treeNode) => treeNode.title === 'Other bookmarks' || treeNode.title === 'Other Bookmarks',
+    )[0];
+    return otherBookmarksNode.children!.filter(
       (treeNode) => treeNode.title === this.GLIMPSE_BOOKMARK_FOLDER_NAME,
     )[0];
   }

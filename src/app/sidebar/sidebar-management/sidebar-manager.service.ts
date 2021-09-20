@@ -34,7 +34,7 @@ export class SidebarManagerService {
       isSelected: false,
     };
     this.savedRootButton = {
-      glimpseId: [DataSourceType.Bookmark, '1'],
+      glimpseId: [DataSourceType.Folder, '1'],
       id: 1,
       name: 'Saved',
       isSelected: false,
@@ -46,7 +46,7 @@ export class SidebarManagerService {
       isSelected: false,
     };
     this.newSavedButton = {
-      glimpseId: [DataSourceType.Bookmark, '1'],
+      glimpseId: [DataSourceType.Folder, '1'],
       id: 1,
       name: 'New Folder',
       isSelected: false,
@@ -66,7 +66,16 @@ export class SidebarManagerService {
       });
     });
 
-    // TODO: initialize saved
+    this.dataService.getFolderDataSources().then((folders) => {
+      folders.forEach((folder) => {
+        const sidebarButton: SelectableSidebarButton = {
+          ...folder,
+          id: this.idGeneratorService.getId(),
+          isSelected: true,
+        };
+        this.pushData(DataSourceType.Folder, sidebarButton);
+      });
+    });
   }
 
   // async insertSavedFolder(): Promise<void> {
@@ -75,7 +84,7 @@ export class SidebarManagerService {
   //   this.savedSidebarButtons.push({
   //     glimpseId: newFolderId,
   //     label: newFolderLabel,
-  //     type: DataSourceType.Bookmark,
+  //     type: DataSourceType.Folder,
   //     isSelected: false,
   //   });
   // }
@@ -114,7 +123,7 @@ export class SidebarManagerService {
     if (type === DataSourceType.Window) {
       return !this.windowRootButton.expanded || false;
     }
-    if (type === DataSourceType.Bookmark) {
+    if (type === DataSourceType.Folder) {
       return !this.savedRootButton.expanded || false;
     }
     return false;
@@ -139,7 +148,7 @@ export class SidebarManagerService {
     if (type === DataSourceType.Window) {
       return this.windowSidebarButtons;
     }
-    if (type === DataSourceType.Bookmark) {
+    if (type === DataSourceType.Folder) {
       return this.savedSidebarButtons;
     }
     return new BehaviorSubject<SelectableCollection<SelectableSidebarButton>>(

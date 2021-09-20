@@ -43,7 +43,7 @@ export class PageManagerService {
     private idGeneratorService: IdGeneratorService,
   ) {
     this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
-      this.lock.runExclusive(() => this.updatePages(DataSourceType.Bookmark, selectedButtons)),
+      this.lock.runExclusive(() => this.updatePages(DataSourceType.Folder, selectedButtons)),
     );
     this.sidebarManagerService.windowSidebarButtons.subscribe((selectedButtons) =>
       this.lock.runExclusive(() => this.updatePages(DataSourceType.Window, selectedButtons)),
@@ -62,7 +62,7 @@ export class PageManagerService {
     dataSourceType: DataSourceType,
     dataSources: SelectableCollection<SelectableSidebarButton>,
   ) {
-    if (dataSourceType === DataSourceType.Bookmark) {
+    if (dataSourceType === DataSourceType.Folder) {
       this.savedPageElements = new SelectableCollection<SelectablePage>();
     } else if (dataSourceType === DataSourceType.Window) {
       this.windowPageElements = new SelectableCollection<SelectablePage>();
@@ -81,7 +81,7 @@ export class PageManagerService {
   }
 
   private getPageElementsOfType(type: DataSourceType): SelectableCollection<SelectablePage> {
-    if (type === DataSourceType.Bookmark) {
+    if (type === DataSourceType.Folder) {
       return this.savedPageElements;
     }
     if (type === DataSourceType.Window) {
