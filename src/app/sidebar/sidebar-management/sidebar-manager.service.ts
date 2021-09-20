@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataSourceType } from 'src/app/interfaces/data-source-type';
 import { IdGeneratorService } from 'src/app/id-generator-serivce';
+import { BehaviorSubject } from 'rxjs';
 import { DataService } from '../../data.service';
 import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
@@ -9,11 +10,11 @@ import { SelectableCollection } from '../../interfaces/selectable-collection';
   providedIn: 'root',
 })
 export class SidebarManagerService {
-  public windowSidebarButtons: SelectableCollection<SelectableSidebarButton> =
-    new SelectableCollection<SelectableSidebarButton>();
+  public windowSidebarButtons: BehaviorSubject<SelectableCollection<SelectableSidebarButton>> =
+    new BehaviorSubject(new SelectableCollection<SelectableSidebarButton>());
 
-  public savedSidebarButtons: SelectableCollection<SelectableSidebarButton> =
-    new SelectableCollection<SelectableSidebarButton>();
+  public savedSidebarButtons: BehaviorSubject<SelectableCollection<SelectableSidebarButton>> =
+    new BehaviorSubject(new SelectableCollection<SelectableSidebarButton>());
 
   public windowRootButton: SelectableSidebarButton;
 
@@ -61,20 +62,11 @@ export class SidebarManagerService {
           id: this.idGeneratorService.getId(),
           isSelected: true,
         };
-        this.windowSidebarButtons.push(sidebarButton);
+        this.pushData(DataSourceType.Window, sidebarButton);
       });
     });
 
-    // this.dataService.getBookmarkDataSources().then((folders) => {
-    //   folders.forEach((folder) => {
-    //     const sidebarButton: SelectableSidebarButton = {
-    //       ...folder,
-    //       id: 1,
-    //       isSelected: false,
-    //     };
-    //     this.savedSidebarButtons.push(sidebarButton);
-    //   });
-    // });
+    // TODO: initialize saved
   }
 
   // async insertSavedFolder(): Promise<void> {
@@ -94,33 +86,27 @@ export class SidebarManagerService {
   //   // TODO: Remove all the page data items as well. Handle deleting windows.
   // }
 
-  public getSelectedSidebarButtons() {
-    return this.windowSidebarButtons
-      .getSelectedItems()
-      .concat(this.savedSidebarButtons.getSelectedItems());
-  }
-
   public selectToId(type: DataSourceType, id: number): void {
-    this.getDataSource(type).selectToId(id);
+    this.updateDataSource(type, (dataSource) => dataSource.selectToId(id));
   }
 
   public toggleId(type: DataSourceType, id: number): void {
-    this.getDataSource(type).toggleId(id);
+    this.updateDataSource(type, (dataSource) => dataSource.toggleId(id));
   }
 
   public areAllSelected(type: DataSourceType): boolean {
-    return this.getDataSource(type).areAllSelected();
+    return this.getDataSourceObservable(type).value.areAllSelected();
   }
 
   public hasChildren(type: DataSourceType): boolean {
-    return this.getDataSource(type).collection.length > 0;
+    return this.getDataSourceObservable(type).value.collection.length > 0;
   }
 
   public toggleRoot(type: DataSourceType): void {
     if (this.areAllSelected(type)) {
-      this.getDataSource(type).deselectAll();
+      this.updateDataSource(type, (dataSource) => dataSource.deselectAll());
     } else {
-      this.getDataSource(type).selectAll();
+      this.updateDataSource(type, (dataSource) => dataSource.selectAll());
     }
   }
 
@@ -134,13 +120,30 @@ export class SidebarManagerService {
     return false;
   }
 
-  private getDataSource(type: DataSourceType): SelectableCollection<SelectableSidebarButton> {
+  public updateDataSource(
+    type: DataSourceType,
+    update: (original: SelectableCollection<SelectableSidebarButton>) => void,
+  ) {
+    const dataSource = this.getDataSourceObservable(type).value;
+    update(dataSource);
+    this.getDataSourceObservable(type).next(dataSource);
+  }
+
+  private pushData(type: DataSourceType, data: SelectableSidebarButton) {
+    this.updateDataSource(type, (dataSource) => dataSource.push(data));
+  }
+
+  private getDataSourceObservable(
+    type: DataSourceType,
+  ): BehaviorSubject<SelectableCollection<SelectableSidebarButton>> {
     if (type === DataSourceType.Window) {
       return this.windowSidebarButtons;
     }
     if (type === DataSourceType.Bookmark) {
       return this.savedSidebarButtons;
     }
-    return new SelectableCollection<SelectableSidebarButton>();
+    return new BehaviorSubject<SelectableCollection<SelectableSidebarButton>>(
+      new SelectableCollection<SelectableSidebarButton>(),
+    );
   }
 }

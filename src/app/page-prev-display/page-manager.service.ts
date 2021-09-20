@@ -1,16 +1,22 @@
 import { Injectable } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
+import { Mutex } from 'async-mutex';
 import { DataService } from '../data.service';
 import { IdGeneratorService } from '../id-generator-serivce';
+import { DataSourceType } from '../interfaces/data-source-type';
 import { SelectableCollection } from '../interfaces/selectable-collection';
 import { SelectablePage } from '../interfaces/selectable-page';
+import { SelectableSidebarButton } from '../interfaces/selectable-sidebar-button';
 import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-manager.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PageManagerService {
-  public pageElements: SelectableCollection<SelectablePage> =
+  public windowPageElements: SelectableCollection<SelectablePage> =
+    new SelectableCollection<SelectablePage>();
+
+  public savedPageElements: SelectableCollection<SelectablePage> =
     new SelectableCollection<SelectablePage>();
 
   public dragging: boolean = false;
@@ -29,33 +35,58 @@ export class PageManagerService {
 
   public dragMode: 'copy' | 'move' = 'move';
 
+  private lock = new Mutex();
+
   constructor(
     private sidebarManagerService: SidebarManagerService,
     private dataService: DataService,
     private idGeneratorService: IdGeneratorService,
   ) {
-    this.getPages().then((pages) =>
-      pages.forEach((page) => {
-        const selectablePage: SelectablePage = {
-          ...page,
-          id: idGeneratorService.getId(),
-          isSelected: false,
-        };
-        this.pageElements.push(selectablePage);
-      }),
+    this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
+      this.lock.runExclusive(() => this.updatePages(DataSourceType.Bookmark, selectedButtons)),
+    );
+    this.sidebarManagerService.windowSidebarButtons.subscribe((selectedButtons) =>
+      this.lock.runExclusive(() => this.updatePages(DataSourceType.Window, selectedButtons)),
     );
   }
 
-  async getPages() {
-    // TODO: Remove this and fix the race condition between sidebar manager and
-    // page manager
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return this.dataService.getPagesByDataSources(
-      this.sidebarManagerService.getSelectedSidebarButtons(),
-    );
+  public get pageElements() {
+    return this.windowPageElements.concat(this.savedPageElements);
   }
 
   public updatePageWidth($event: MatSliderChange): void {
     this.pagePrevWidth = $event.value ? $event.value : this.pagePrevWidth;
+  }
+
+  private async updatePages(
+    dataSourceType: DataSourceType,
+    dataSources: SelectableCollection<SelectableSidebarButton>,
+  ) {
+    if (dataSourceType === DataSourceType.Bookmark) {
+      this.savedPageElements = new SelectableCollection<SelectablePage>();
+    } else if (dataSourceType === DataSourceType.Window) {
+      this.windowPageElements = new SelectableCollection<SelectablePage>();
+    }
+    const selectedDataSources = dataSources.getSelectedItems();
+    await this.dataService.getPagesByDataSources(selectedDataSources).then((pages) => {
+      pages.forEach((page) => {
+        const selectablePage: SelectablePage = {
+          ...page,
+          id: this.idGeneratorService.getId(),
+          isSelected: false,
+        };
+        this.getPageElementsOfType(dataSourceType).push(selectablePage);
+      });
+    });
+  }
+
+  private getPageElementsOfType(type: DataSourceType): SelectableCollection<SelectablePage> {
+    if (type === DataSourceType.Bookmark) {
+      return this.savedPageElements;
+    }
+    if (type === DataSourceType.Window) {
+      return this.windowPageElements;
+    }
+    return new SelectableCollection<SelectablePage>();
   }
 }

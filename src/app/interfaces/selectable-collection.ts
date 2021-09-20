@@ -100,6 +100,10 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     this.collection.forEach((element) => (element.isSelected = false));
   }
 
+  public concat(other: SelectableCollection<Type>): SelectableCollection<Type> {
+    return new SelectableCollection<Type>(this.collection.concat(other._collection));
+  }
+
   public [Symbol.iterator]() {
     const { collection } = this;
     let pointer = 0;

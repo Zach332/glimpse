@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { PageManagerService } from '../page-prev-display/page-manager.service';
 import { SidebarManagerService } from './sidebar-management/sidebar-manager.service';
+import { DataSourceType } from '../interfaces/data-source-type';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,6 +13,10 @@ export class SidebarComponent {
     public pageManagerService: PageManagerService,
     public sidebarManagerService: SidebarManagerService,
   ) {}
+
+  public get DataSourceType() {
+    return DataSourceType;
+  }
 
   selectAll(): void {
     this.pageManagerService.pageElements.selectAll();
