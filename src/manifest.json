@@ -6,7 +6,7 @@
   "background": {
     "scripts": ["background.js", "runtime.js"]
   },
-  "permissions": ["<all_urls>", "tabs", "webNavigation", "bookmarks"],
+  "permissions": ["<all_urls>", "activeTab", "tabs", "webNavigation", "bookmarks"],
   "browser_action": {},
   "chrome_url_overrides": {
     "newtab": "index.html"

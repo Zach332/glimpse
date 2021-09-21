@@ -86,6 +86,16 @@ export class DataService {
     });
   }
 
+  // Returns false is page should not be indexed or shown by glimpse
+  public static isValidPage(url: string) {
+    return !(
+      url.startsWith('moz-extension://') ||
+      url.startsWith('chrome-extension://') ||
+      url.startsWith('about:') ||
+      url.startsWith('chrome://')
+    );
+  }
+
   async getRootGlimpseFolder() {
     // TODO: Handle errors
     const otherBookmarksNode = (await browser.bookmarks.getTree())[0].children!.filter(
