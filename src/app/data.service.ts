@@ -90,6 +90,22 @@ export class DataService {
     });
   }
 
+  public async removeDataSource(dataSource: DataSource) {
+    if (dataSource.glimpseId[0] === DataSourceType.Window) {
+      browser.windows.remove(dataSource.glimpseId[1]);
+    } else {
+      browser.bookmarks.remove(dataSource.glimpseId[1]);
+    }
+  }
+
+  public async removePage(page: Page) {
+    if (page.glimpseId[0] === DataSourceType.Window) {
+      browser.tabs.remove(page.glimpseId[1]);
+    } else {
+      browser.bookmarks.remove(page.glimpseId[1]);
+    }
+  }
+
   // Returns false if page should not be indexed or shown by glimpse
   public static isValidPage(url: string) {
     return !(
