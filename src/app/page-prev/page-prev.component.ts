@@ -17,7 +17,7 @@ export class PagePrevComponent {
   constructor(public pageManagerService: PageManagerService) {}
 
   onClick($event: MouseEvent): void {
-    if ($event.metaKey) {
+    if ($event.ctrlKey || $event.metaKey) {
       this.pageManagerService.pageElements.toggleId(this.tabData.id);
     } else if ($event.shiftKey) {
       this.pageManagerService.pageElements.selectToId(this.tabData.id);
