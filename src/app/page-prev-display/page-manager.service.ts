@@ -35,6 +35,8 @@ export class PageManagerService {
 
   public dragMode: 'copy' | 'move' = 'move';
 
+  public searchQuery = '';
+
   private lock = new Mutex();
 
   constructor(

@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { HotkeyManagerService } from '../hotkey-manager.service';
 
 @Component({
@@ -9,9 +10,10 @@ import { HotkeyManagerService } from '../hotkey-manager.service';
 export class SearchComponent {
   @ViewChild('searchInput') searchInput!: ElementRef;
 
-  value = '';
-
-  constructor(private hotkeyManagerService: HotkeyManagerService) {}
+  constructor(
+    private hotkeyManagerService: HotkeyManagerService,
+    public pageManagerService: PageManagerService,
+  ) {}
 
   ngAfterViewInit(): void {
     this.hotkeyManagerService
