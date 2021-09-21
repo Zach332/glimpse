@@ -1,14 +1,11 @@
-import { Injectable } from '@angular/core';
+import { DataSourceType } from './interfaces/data-source-type';
+import { GlimpseId } from './interfaces/glimpse-id';
 
-@Injectable({
-  providedIn: 'root',
-})
 export class IdGeneratorService {
-  // TODO: This component needs to live forever
-  private id = 100;
-
-  public getId() {
-    this.id += 1;
-    return this.id;
+  public static getIdFromGlimpseId(glimpseId: GlimpseId) {
+    if (glimpseId[0] === DataSourceType.Window) {
+      return glimpseId[1] * -1;
+    }
+    return parseInt(glimpseId[1], 10);
   }
 }

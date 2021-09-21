@@ -40,7 +40,6 @@ export class PageManagerService {
   constructor(
     private sidebarManagerService: SidebarManagerService,
     private dataService: DataService,
-    private idGeneratorService: IdGeneratorService,
   ) {
     this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
       this.lock.runExclusive(() => this.updatePages(DataSourceType.Folder, selectedButtons)),
@@ -68,7 +67,7 @@ export class PageManagerService {
       pages.forEach((page) => {
         const selectablePage: SelectablePage = {
           ...page,
-          id: this.idGeneratorService.getId(),
+          id: IdGeneratorService.getIdFromGlimpseId(page.glimpseId),
           isSelected: false,
         };
         this.getPageElementsOfType(dataSourceType).push(selectablePage);

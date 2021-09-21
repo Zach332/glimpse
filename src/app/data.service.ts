@@ -90,7 +90,7 @@ export class DataService {
     });
   }
 
-  // Returns false is page should not be indexed or shown by glimpse
+  // Returns false if page should not be indexed or shown by glimpse
   public static isValidPage(url: string) {
     return !(
       url.startsWith('moz-extension://') ||
