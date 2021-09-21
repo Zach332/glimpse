@@ -58,30 +58,34 @@ export class DataService {
     // TODO: Switch this to use .then?
     // Also for other methods in DataService
     return Promise.all(
-      (await browser.tabs.query({ windowId })).map(async (tab) => {
-        const page: Page = {
-          glimpseId: [DataSourceType.Window, tab.id!],
-          title: tab.title!,
-          url: tab.url!,
-          image: await ImageService.getImage([DataSourceType.Window, tab.id!]),
-        };
-        return page;
-      }),
+      (await browser.tabs.query({ windowId }))
+        .filter((tab) => DataService.isValidPage(tab.url!))
+        .map(async (tab) => {
+          const page: Page = {
+            glimpseId: [DataSourceType.Window, tab.id!],
+            title: tab.title!,
+            url: tab.url!,
+            image: await ImageService.getImage([DataSourceType.Window, tab.id!]),
+          };
+          return page;
+        }),
     );
   }
 
   public async getPagesByFolderId(folderId: string) {
     return browser.bookmarks.getChildren(folderId).then((folder) => {
       return Promise.all(
-        folder.map(async (bookmark) => {
-          const page: Page = {
-            glimpseId: [DataSourceType.Folder, folderId],
-            title: bookmark.title,
-            url: bookmark.url!,
-            image: await ImageService.getImage([DataSourceType.Folder, folderId]),
-          };
-          return page;
-        }),
+        folder
+          .filter((bookmark) => DataService.isValidPage(bookmark.url!))
+          .map(async (bookmark) => {
+            const page: Page = {
+              glimpseId: [DataSourceType.Folder, folderId],
+              title: bookmark.title,
+              url: bookmark.url!,
+              image: await ImageService.getImage([DataSourceType.Folder, folderId]),
+            };
+            return page;
+          }),
       );
     });
   }
