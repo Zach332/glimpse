@@ -13,11 +13,11 @@ import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-man
   providedIn: 'root',
 })
 export class PageManagerService {
-  public windowPageElements: SelectableCollection<SelectablePage> =
-    new SelectableCollection<SelectablePage>();
+  public windowPageElements: SelectablePage[] = [];
 
-  public savedPageElements: SelectableCollection<SelectablePage> =
-    new SelectableCollection<SelectablePage>();
+  public savedPageElements: SelectablePage[] = [];
+
+  public pageElements = new SelectableCollection<SelectablePage>();
 
   public dragging: boolean = false;
 
@@ -50,10 +50,6 @@ export class PageManagerService {
     );
   }
 
-  public get pageElements() {
-    return this.windowPageElements.concat(this.savedPageElements);
-  }
-
   public updatePageWidth($event: MatSliderChange): void {
     this.pagePrevWidth = $event.value ? $event.value : this.pagePrevWidth;
   }
@@ -63,9 +59,9 @@ export class PageManagerService {
     dataSources: SelectableCollection<SelectableSidebarButton>,
   ) {
     if (dataSourceType === DataSourceType.Folder) {
-      this.savedPageElements = new SelectableCollection<SelectablePage>();
+      this.savedPageElements = [];
     } else if (dataSourceType === DataSourceType.Window) {
-      this.windowPageElements = new SelectableCollection<SelectablePage>();
+      this.windowPageElements = [];
     }
     const selectedDataSources = dataSources.getSelectedItems();
     await this.dataService.getPagesByDataSources(selectedDataSources).then((pages) => {
@@ -78,15 +74,16 @@ export class PageManagerService {
         this.getPageElementsOfType(dataSourceType).push(selectablePage);
       });
     });
+    this.pageElements.adjustCollection(this.savedPageElements.concat(this.windowPageElements));
   }
 
-  private getPageElementsOfType(type: DataSourceType): SelectableCollection<SelectablePage> {
+  private getPageElementsOfType(type: DataSourceType): SelectablePage[] {
     if (type === DataSourceType.Folder) {
       return this.savedPageElements;
     }
     if (type === DataSourceType.Window) {
       return this.windowPageElements;
     }
-    return new SelectableCollection<SelectablePage>();
+    return [];
   }
 }
