@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as browser from 'webextension-polyfill';
 import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
