@@ -24,7 +24,7 @@ export class SidebarManagerService {
 
   public newSavedButton: SelectableSidebarButton;
 
-  constructor(private dataService: DataService, private idGeneratorService: IdGeneratorService) {
+  constructor(private dataService: DataService) {
     // TODO: These should use a new interface or something
     // And maybe rename SelectableSidebarButton to SelectableDataSource
     this.windowRootButton = {
@@ -59,7 +59,7 @@ export class SidebarManagerService {
       windows.forEach((window) => {
         const sidebarButton: SelectableSidebarButton = {
           ...window,
-          id: this.idGeneratorService.getId(),
+          id: IdGeneratorService.getIdFromGlimpseId(window.glimpseId),
           isSelected: true,
         };
         this.pushData(DataSourceType.Window, sidebarButton);
@@ -70,7 +70,7 @@ export class SidebarManagerService {
       folders.forEach((folder) => {
         const sidebarButton: SelectableSidebarButton = {
           ...folder,
-          id: this.idGeneratorService.getId(),
+          id: IdGeneratorService.getIdFromGlimpseId(folder.glimpseId),
           isSelected: true,
         };
         this.pushData(DataSourceType.Folder, sidebarButton);
