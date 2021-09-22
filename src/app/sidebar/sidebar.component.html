@@ -48,4 +48,15 @@
       <mat-button-toggle value="copy">Copy</mat-button-toggle>
     </mat-button-toggle-group>
   </div>
+  <div
+    class="flex space-around pad-buttons"
+    *ngIf="pageManagerService.displayPageElements.areAnySelected()"
+  >
+    <div>
+      <button mat-raised-button (click)="removeAll()">Remove all</button>
+    </div>
+    <div>
+      <button mat-raised-button (click)="openAll()">Open all</button>
+    </div>
+  </div>
 </div>

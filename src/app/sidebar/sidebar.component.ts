@@ -25,4 +25,12 @@ export class SidebarComponent {
   deselectAll(): void {
     this.pageManagerService.displayPageElements.deselectAll();
   }
+
+  removeAll(): void {
+    this.pageManagerService.removeAll();
+  }
+
+  openAll(): void {
+    // TODO this.pageManagerService.displayPageElements.openAll();
+  }
 }

@@ -69,6 +69,14 @@ export class PageManagerService {
     this.dataService.removePage(page);
   }
 
+  public removeAll() {
+    this.displayPageElements.collection.forEach((element) => {
+      if (element.isSelected) {
+        this.removePage(element);
+      }
+    });
+  }
+
   private async updatePages(
     dataSourceType: DataSourceType,
     dataSources: SelectableCollection<SelectableSidebarButton>,
