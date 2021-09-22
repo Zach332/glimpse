@@ -1,12 +1,18 @@
 <mat-form-field class="search-input" appearance="fill">
   <mat-label>Filter</mat-label>
-  <input matInput #searchInput type="text" [(ngModel)]="pageManagerService.searchQuery" />
+  <input
+    matInput
+    #searchInput
+    type="text"
+    [ngModel]="pageManagerService.searchQuery | async"
+    (ngModelChange)="pageManagerService.searchQuery.next($event)"
+  />
   <button
     *ngIf="pageManagerService.searchQuery"
     matSuffix
     mat-icon-button
     aria-label="Clear"
-    (click)="pageManagerService.searchQuery = ''"
+    (click)="pageManagerService.searchQuery.next('')"
   >
     <mat-icon>close</mat-icon>
   </button>

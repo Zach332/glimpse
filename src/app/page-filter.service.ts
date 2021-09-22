@@ -12,7 +12,8 @@ export class PageFilterService {
   ): SelectableCollection<SelectablePage> {
     return new SelectableCollection(
       pages.collection.filter(
-        (page: SelectablePage) => page.title.includes(query) || page.url.includes(query),
+        (page: SelectablePage) =>
+          page.title.match(new RegExp(query, 'i')) || page.url.match(new RegExp(query, 'i')),
       ),
     );
   }

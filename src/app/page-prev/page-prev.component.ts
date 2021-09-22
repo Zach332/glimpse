@@ -18,9 +18,9 @@ export class PagePrevComponent {
 
   onClick($event: MouseEvent): void {
     if ($event.ctrlKey || $event.metaKey) {
-      this.pageManagerService.pageElements.toggleId(this.tabData.id);
+      this.pageManagerService.displayPageElements.toggleId(this.tabData.id);
     } else if ($event.shiftKey) {
-      this.pageManagerService.pageElements.selectToId(this.tabData.id);
+      this.pageManagerService.displayPageElements.selectToId(this.tabData.id);
     } else {
       // TODO: Handle null later
       window.location.href = this.tabData.url;

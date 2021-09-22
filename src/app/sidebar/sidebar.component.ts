@@ -19,10 +19,10 @@ export class SidebarComponent {
   }
 
   selectAll(): void {
-    this.pageManagerService.pageElements.selectAll();
+    this.pageManagerService.displayPageElements.selectAll();
   }
 
   deselectAll(): void {
-    this.pageManagerService.pageElements.deselectAll();
+    this.pageManagerService.displayPageElements.deselectAll();
   }
 }

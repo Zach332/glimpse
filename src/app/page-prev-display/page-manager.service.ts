@@ -1,23 +1,27 @@
 import { Injectable } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { Mutex } from 'async-mutex';
+import { BehaviorSubject } from 'rxjs';
 import { DataService } from '../data.service';
 import { IdGeneratorService } from '../id-generator-serivce';
 import { DataSourceType } from '../interfaces/data-source-type';
 import { SelectableCollection } from '../interfaces/selectable-collection';
 import { SelectablePage } from '../interfaces/selectable-page';
 import { SelectableSidebarButton } from '../interfaces/selectable-sidebar-button';
+import { PageFilterService } from '../page-filter.service';
 import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-manager.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PageManagerService {
-  public windowPageElements: SelectablePage[] = [];
+  private windowPageElements: SelectablePage[] = [];
 
-  public savedPageElements: SelectablePage[] = [];
+  private savedPageElements: SelectablePage[] = [];
 
-  public pageElements = new SelectableCollection<SelectablePage>();
+  private pageElements = new SelectableCollection<SelectablePage>();
+
+  public displayPageElements = new SelectableCollection<SelectablePage>();
 
   public dragging: boolean = false;
 
@@ -35,19 +39,24 @@ export class PageManagerService {
 
   public dragMode: 'copy' | 'move' = 'move';
 
-  public searchQuery = '';
+  public searchQuery = new BehaviorSubject<string>('');
 
   private lock = new Mutex();
 
   constructor(
     private sidebarManagerService: SidebarManagerService,
     private dataService: DataService,
+    private pageFilterService: PageFilterService,
   ) {
     this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
       this.lock.runExclusive(() => this.updatePages(DataSourceType.Folder, selectedButtons)),
     );
     this.sidebarManagerService.windowSidebarButtons.subscribe((selectedButtons) =>
       this.lock.runExclusive(() => this.updatePages(DataSourceType.Window, selectedButtons)),
+    );
+    this.searchQuery.subscribe(
+      (newQuery) =>
+        (this.displayPageElements = pageFilterService.filterByQuery(newQuery, this.pageElements)),
     );
   }
 
@@ -76,6 +85,10 @@ export class PageManagerService {
       });
     });
     this.pageElements.adjustCollection(this.savedPageElements.concat(this.windowPageElements));
+    this.displayPageElements = this.pageFilterService.filterByQuery(
+      this.searchQuery.value,
+      this.pageElements,
+    );
   }
 
   private getPageElementsOfType(type: DataSourceType): SelectablePage[] {

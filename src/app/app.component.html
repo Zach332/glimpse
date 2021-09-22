@@ -11,7 +11,7 @@
       (cdkDropListDropped)="drop()"
     >
       <app-page-prev
-        *ngFor="let tabElement of pageManagerService.pageElements"
+        *ngFor="let tabElement of pageManagerService.displayPageElements"
         [tabData]="tabElement"
         [collapse]="pageManagerService.pagePrevCollapse"
         (cdkDragStarted)="onDragStart($event)"
