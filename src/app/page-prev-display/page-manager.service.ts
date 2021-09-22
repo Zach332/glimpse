@@ -10,6 +10,7 @@ import { SelectablePage } from '../interfaces/selectable-page';
 import { SelectableSidebarButton } from '../interfaces/selectable-sidebar-button';
 import { PageFilterService } from '../page-filter.service';
 import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-manager.service';
+import { HotkeyManagerService } from '../hotkey-manager.service';
 
 @Injectable({
   providedIn: 'root',
@@ -47,6 +48,7 @@ export class PageManagerService {
     private sidebarManagerService: SidebarManagerService,
     private dataService: DataService,
     private pageFilterService: PageFilterService,
+    private hotkeyManagerService: HotkeyManagerService,
   ) {
     this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
       this.lock.runExclusive(() => this.updatePages(DataSourceType.Folder, selectedButtons)),
@@ -58,6 +60,7 @@ export class PageManagerService {
       (newQuery) =>
         (this.displayPageElements = pageFilterService.filterByQuery(newQuery, this.pageElements)),
     );
+    this.hotkeyManagerService.addShortcut('backspace').subscribe(() => this.removeAll());
   }
 
   public updatePageWidth($event: MatSliderChange): void {
