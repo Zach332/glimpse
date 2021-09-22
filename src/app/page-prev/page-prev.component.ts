@@ -29,6 +29,7 @@ export class PagePrevComponent {
 
   removePage($event: MouseEvent): void {
     $event.stopPropagation();
+    this.pageManagerService.removePage(this.tabData);
   }
 
   dragging(): boolean {

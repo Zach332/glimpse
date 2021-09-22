@@ -64,6 +64,11 @@ export class PageManagerService {
     this.pagePrevWidth = $event.value ? $event.value : this.pagePrevWidth;
   }
 
+  public removePage(page: SelectablePage) {
+    this.updatePageElements((currentPageElements) => currentPageElements.remove(page.id));
+    this.dataService.removePage(page);
+  }
+
   private async updatePages(
     dataSourceType: DataSourceType,
     dataSources: SelectableCollection<SelectableSidebarButton>,
@@ -84,10 +89,8 @@ export class PageManagerService {
         this.getPageElementsOfType(dataSourceType).push(selectablePage);
       });
     });
-    this.pageElements.adjustCollection(this.savedPageElements.concat(this.windowPageElements));
-    this.displayPageElements = this.pageFilterService.filterByQuery(
-      this.searchQuery.value,
-      this.pageElements,
+    this.updatePageElements((currentPageElements) =>
+      currentPageElements.adjustCollection(this.savedPageElements.concat(this.windowPageElements)),
     );
   }
 
@@ -99,5 +102,13 @@ export class PageManagerService {
       return this.windowPageElements;
     }
     return [];
+  }
+
+  public updatePageElements(update: (original: SelectableCollection<SelectablePage>) => void) {
+    update(this.pageElements);
+    this.displayPageElements = this.pageFilterService.filterByQuery(
+      this.searchQuery.value,
+      this.pageElements,
+    );
   }
 }
