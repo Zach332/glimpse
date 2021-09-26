@@ -180,7 +180,7 @@ export class DataService {
 
   public async switchToTab(tabId: number) {
     const currentTabId = (await browser.tabs.getCurrent()).id!;
-    browser.tabs.show(tabId);
+    browser.tabs.update(tabId, { active: true });
     this.closeGlimpseTab(currentTabId);
   }
 
