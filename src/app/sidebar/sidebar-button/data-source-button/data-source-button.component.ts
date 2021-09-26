@@ -29,7 +29,7 @@ export class DataSourceButtonComponent {
   }
 
   delete(): void {
-    // this.sidebarManagerService.delete(this.buttonData.glimpseId[0], this.buttonData.glimpseId);
+    this.sidebarManagerService.delete(this.buttonData);
   }
 
   onClick($event: MouseEvent): void {
@@ -45,9 +45,8 @@ export class DataSourceButtonComponent {
       data: { newName: '' },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      // TODO: rename
-      console.log(result);
+    dialogRef.afterClosed().subscribe(() => {
+      // TODO: change above line to (result) => {
     });
   }
 }

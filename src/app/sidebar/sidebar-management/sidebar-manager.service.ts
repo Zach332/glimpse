@@ -89,11 +89,10 @@ export class SidebarManagerService {
   //   });
   // }
 
-  // delete(type: DataSourceType, id: number): void {
-  //   this.getDataSource(type).remove(id);
-  //   DataService.deleteDataSource(id);
-  //   // TODO: Remove all the page data items as well. Handle deleting windows.
-  // }
+  delete(button: SelectableSidebarButton): void {
+    this.updateDataSource(button.glimpseId[0], (dataSource) => dataSource.remove(button.id));
+    this.dataService.removeDataSource(button);
+  }
 
   public selectToId(type: DataSourceType, id: number): void {
     this.updateDataSource(type, (dataSource) => dataSource.selectToId(id));
