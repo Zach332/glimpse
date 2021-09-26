@@ -2,11 +2,12 @@ import { openDB } from 'idb';
 import { Schema } from './interfaces/schema';
 import { GlimpseId } from './interfaces/glimpse-id';
 
-export class ImageService {
+export class IDBService {
   static getDB() {
-    return openDB<Schema>('glimpse', 7, {
+    return openDB<Schema>('glimpse', 8, {
       upgrade(db) {
         db.createObjectStore('images');
+        db.createObjectStore('names');
       },
     });
   }
@@ -17,5 +18,13 @@ export class ImageService {
 
   static async getImage(glimpseId: GlimpseId) {
     return (await this.getDB()).get('images', glimpseId);
+  }
+
+  static async putName(windowId: number, name: string) {
+    return (await this.getDB()).put('names', name, windowId);
+  }
+
+  static async getName(windowId: number) {
+    return (await this.getDB()).get('names', windowId);
   }
 }

@@ -3,7 +3,7 @@ import * as browser from 'webextension-polyfill';
 import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
-import { ImageService } from './image-service';
+import { IDBService } from './idb-service';
 import { Operation } from './interfaces/operation';
 
 @Injectable({
@@ -13,9 +13,15 @@ export class DataService {
   // TODO: Potentially switch this to using a fixed id to improve performance
   readonly GLIMPSE_BOOKMARK_FOLDER_NAME = 'glimpse-dev';
 
-  // TODO: Add name argument
-  public async addWindow() {
-    browser.windows.create({ focused: false });
+  public async addWindow(name?: string) {
+    const windowId = (await browser.windows.create({ focused: false })).id!;
+    if (name) {
+      IDBService.putName(windowId, name);
+    }
+  }
+
+  public async renameWindow(windowId: number, name: string) {
+    IDBService.putName(windowId, name);
   }
 
   public async addFolder(name: string) {
@@ -23,13 +29,15 @@ export class DataService {
   }
 
   public async getWindowDataSources() {
-    return (await browser.windows.getAll()).map((window) => {
-      const dataSource: DataSource = {
-        glimpseId: [DataSourceType.Window, window.id!],
-        name: 'TODO: replace',
-      };
-      return dataSource;
-    });
+    return Promise.all(
+      (await browser.windows.getAll()).map(async (window) => {
+        const dataSource: DataSource = {
+          glimpseId: [DataSourceType.Window, window.id!],
+          name: (await IDBService.getName(window.id!)) || `Window ${window.id!}`,
+        };
+        return dataSource;
+      }),
+    );
   }
 
   public async getFolderDataSources() {
@@ -73,7 +81,7 @@ export class DataService {
           glimpseId: [DataSourceType.Window, tab.id!],
           title: tab.title!,
           url: tab.url!,
-          image: await ImageService.getImage([DataSourceType.Window, tab.id!]),
+          image: await IDBService.getImage([DataSourceType.Window, tab.id!]),
         };
         return page;
       }),
@@ -88,7 +96,7 @@ export class DataService {
             glimpseId: [DataSourceType.Folder, folderId],
             title: bookmark.title,
             url: bookmark.url!,
-            image: await ImageService.getImage([DataSourceType.Folder, folderId]),
+            image: await IDBService.getImage([DataSourceType.Folder, folderId]),
           };
           return page;
         }),

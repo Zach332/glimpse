@@ -1,5 +1,5 @@
 import * as browser from 'webextension-polyfill';
-import { ImageService } from './app/image-service';
+import { IDBService } from './app/idb-service';
 import { DataSourceType } from './app/interfaces/data-source-type';
 
 function isValidPage(url: string) {
@@ -18,7 +18,7 @@ browser.webNavigation.onCompleted.addListener(async (details) => {
       .then((tabs) => tabs[0]);
     const image = browser.tabs.captureVisibleTab();
     if (details.tabId === (await currentTab).id! && isValidPage(details.url)) {
-      ImageService.putImage([DataSourceType.Window, (await currentTab).id!], await image);
+      IDBService.putImage([DataSourceType.Window, (await currentTab).id!], await image);
     }
   }
 });
@@ -31,7 +31,7 @@ browser.tabs.onActivated.addListener((activeInfo) => {
       isValidPage((await browser.tabs.get(activeInfo.tabId)).url!)
     ) {
       const image = browser.tabs.captureVisibleTab();
-      ImageService.putImage([DataSourceType.Window, activeInfo.tabId], await image);
+      IDBService.putImage([DataSourceType.Window, activeInfo.tabId], await image);
     }
   }, 500);
 });

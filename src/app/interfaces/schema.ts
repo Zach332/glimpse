@@ -6,4 +6,8 @@ export interface Schema extends DBSchema {
     key: GlimpseId;
     value: string;
   };
+  names: {
+    key: number;
+    value: string;
+  };
 }
