@@ -45,8 +45,8 @@ export class DataSourceButtonComponent {
       data: { newName: '' },
     });
 
-    dialogRef.afterClosed().subscribe(() => {
-      // TODO: change above line to (result) => {
+    dialogRef.afterClosed().subscribe((result) => {
+      this.sidebarManagerService.rename(this.buttonData, result);
     });
   }
 }

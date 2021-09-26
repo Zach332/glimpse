@@ -89,9 +89,15 @@ export class SidebarManagerService {
   //   });
   // }
 
-  delete(button: SelectableSidebarButton): void {
-    this.updateDataSource(button.glimpseId[0], (dataSource) => dataSource.remove(button.id));
+  public delete(button: SelectableSidebarButton): void {
     this.dataService.removeDataSource(button);
+    this.updateDataSource(button.glimpseId[0], (dataSource) => dataSource.remove(button.id));
+  }
+
+  public rename(button: SelectableSidebarButton, name: string): void {
+    this.dataService.renameDataSource(button, name);
+    button.name = name;
+    this.updateDataSource(button.glimpseId[0]);
   }
 
   public selectToId(type: DataSourceType, id: number): void {
@@ -130,10 +136,12 @@ export class SidebarManagerService {
 
   public updateDataSource(
     type: DataSourceType,
-    update: (original: SelectableCollection<SelectableSidebarButton>) => void,
+    update?: (original: SelectableCollection<SelectableSidebarButton>) => void,
   ) {
     const dataSource = this.getDataSourceObservable(type).value;
-    update(dataSource);
+    if (update) {
+      update(dataSource);
+    }
     this.getDataSourceObservable(type).next(dataSource);
   }
 
