@@ -24,6 +24,18 @@ export class DataService {
     IDBService.putName(windowId, name);
   }
 
+  public async renameFolder(folderId: string, name: string) {
+    browser.bookmarks.update((await this.getRootGlimpseFolder()).id, { title: name });
+  }
+
+  public async renameDataSource(dataSource: DataSource, name: string) {
+    if (dataSource.glimpseId[0] === DataSourceType.Window) {
+      this.renameWindow(dataSource.glimpseId[1], name);
+    } else {
+      this.renameFolder(dataSource.glimpseId[1], name);
+    }
+  }
+
   public async addFolder(name: string) {
     browser.bookmarks.create({ parentId: (await this.getRootGlimpseFolder()).id, title: name });
   }
