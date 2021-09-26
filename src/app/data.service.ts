@@ -13,6 +13,15 @@ export class DataService {
   // TODO: Potentially switch this to using a fixed id to improve performance
   readonly GLIMPSE_BOOKMARK_FOLDER_NAME = 'glimpse-dev';
 
+  // TODO: Add name argument
+  public async addWindow() {
+    browser.windows.create({ focused: false });
+  }
+
+  public async addFolder(name: string) {
+    browser.bookmarks.create({ parentId: (await this.getRootGlimpseFolder()).id, title: name });
+  }
+
   public async getWindowDataSources() {
     return (await browser.windows.getAll()).map((window) => {
       const dataSource: DataSource = {
