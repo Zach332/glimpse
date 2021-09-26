@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
+import { DataSourceType } from '../interfaces/data-source-type';
 import { SelectablePage } from '../interfaces/selectable-page';
 import { PageManagerService } from '../page-prev-display/page-manager.service';
+import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-page-prev',
@@ -14,7 +16,7 @@ export class PagePrevComponent {
   @Input()
   collapse!: boolean;
 
-  constructor(public pageManagerService: PageManagerService) {}
+  constructor(public pageManagerService: PageManagerService, private dataService: DataService) {}
 
   onClick($event: MouseEvent): void {
     if ($event.ctrlKey || $event.metaKey) {
@@ -23,7 +25,11 @@ export class PagePrevComponent {
       this.pageManagerService.displayPageElements.selectToId(this.tabData.id);
     } else {
       // TODO: Handle null later
-      window.location.href = this.tabData.url;
+      if (this.tabData.glimpseId[0] === DataSourceType.Window) {
+        this.dataService.switchToTab(this.tabData.glimpseId[1]);
+      } else {
+        window.location.href = this.tabData.url;
+      }
     }
   }
 

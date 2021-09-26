@@ -26,6 +26,7 @@
         "no-underscore-dangle": "off",
         "no-param-reassign": "off",
         "no-return-assign": "off",
+        "no-lonely-if": "off",
         "@angular-eslint/directive-selector": [
           "error",
           {
