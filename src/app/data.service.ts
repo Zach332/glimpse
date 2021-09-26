@@ -13,26 +13,12 @@ export class DataService {
   // TODO: Potentially switch this to using a fixed id to improve performance
   readonly GLIMPSE_BOOKMARK_FOLDER_NAME = 'glimpse-dev';
 
+  // Data sources
+
   public async addWindow(name?: string) {
     const windowId = (await browser.windows.create({ focused: false })).id!;
     if (name) {
       IDBService.putName(windowId, name);
-    }
-  }
-
-  public async renameWindow(windowId: number, name: string) {
-    IDBService.putName(windowId, name);
-  }
-
-  public async renameFolder(folderId: string, name: string) {
-    browser.bookmarks.update(folderId, { title: name });
-  }
-
-  public async renameDataSource(dataSource: DataSource, name: string) {
-    if (dataSource.glimpseId[0] === DataSourceType.Window) {
-      this.renameWindow(dataSource.glimpseId[1], name);
-    } else {
-      this.renameFolder(dataSource.glimpseId[1], name);
     }
   }
 
@@ -63,6 +49,44 @@ export class DataService {
         return dataSource;
       });
     });
+  }
+
+  public async renameWindow(windowId: number, name: string) {
+    IDBService.putName(windowId, name);
+  }
+
+  public async renameFolder(folderId: string, name: string) {
+    browser.bookmarks.update(folderId, { title: name });
+  }
+
+  public async renameDataSource(dataSource: DataSource, name: string) {
+    if (dataSource.glimpseId[0] === DataSourceType.Window) {
+      this.renameWindow(dataSource.glimpseId[1], name);
+    } else {
+      this.renameFolder(dataSource.glimpseId[1], name);
+    }
+  }
+
+  public async removeDataSource(dataSource: DataSource) {
+    if (dataSource.glimpseId[0] === DataSourceType.Window) {
+      browser.windows.remove(dataSource.glimpseId[1]);
+    } else {
+      browser.bookmarks.remove(dataSource.glimpseId[1]);
+    }
+  }
+
+  // Pages
+
+  async addPage(page: Page, dataSource: DataSource) {
+    if (dataSource.glimpseId[0] === DataSourceType.Window) {
+      browser.tabs.create({ url: page.url, active: false, windowId: dataSource.glimpseId[1] });
+    } else {
+      browser.bookmarks.create({
+        parentId: dataSource.glimpseId[1],
+        title: page.title,
+        url: page.url,
+      });
+    }
   }
 
   public async getPagesByDataSources(dataSources: DataSource[]) {
@@ -116,34 +140,6 @@ export class DataService {
     });
   }
 
-  public async removeDataSource(dataSource: DataSource) {
-    if (dataSource.glimpseId[0] === DataSourceType.Window) {
-      browser.windows.remove(dataSource.glimpseId[1]);
-    } else {
-      browser.bookmarks.remove(dataSource.glimpseId[1]);
-    }
-  }
-
-  public async removePage(page: Page) {
-    if (page.glimpseId[0] === DataSourceType.Window) {
-      browser.tabs.remove(page.glimpseId[1]);
-    } else {
-      browser.bookmarks.remove(page.glimpseId[1]);
-    }
-  }
-
-  async addPage(page: Page, dataSource: DataSource) {
-    if (dataSource.glimpseId[0] === DataSourceType.Window) {
-      browser.tabs.create({ url: page.url, active: false, windowId: dataSource.glimpseId[1] });
-    } else {
-      browser.bookmarks.create({
-        parentId: dataSource.glimpseId[1],
-        title: page.title,
-        url: page.url,
-      });
-    }
-  }
-
   public async movePages(sources: Page[], destination: DataSource) {
     sources.forEach((source) => {
       this.movePage(source, destination);
@@ -180,15 +176,27 @@ export class DataService {
     }
   }
 
-  async closeGlimpseTab(tabId: number) {
-    browser.tabs.remove(tabId);
-  }
+  // Tab management
 
   public async switchToTab(tabId: number) {
     const currentTabId = (await browser.tabs.getCurrent()).id!;
     browser.tabs.show(tabId);
     this.closeGlimpseTab(currentTabId);
   }
+
+  public async removePage(page: Page) {
+    if (page.glimpseId[0] === DataSourceType.Window) {
+      browser.tabs.remove(page.glimpseId[1]);
+    } else {
+      browser.bookmarks.remove(page.glimpseId[1]);
+    }
+  }
+
+  async closeGlimpseTab(tabId: number) {
+    browser.tabs.remove(tabId);
+  }
+
+  // Helper methods
 
   async getRootGlimpseFolder() {
     // TODO: Handle errors
