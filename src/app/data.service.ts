@@ -25,7 +25,7 @@ export class DataService {
   }
 
   public async renameFolder(folderId: string, name: string) {
-    browser.bookmarks.update((await this.getRootGlimpseFolder()).id, { title: name });
+    browser.bookmarks.update(folderId, { title: name });
   }
 
   public async renameDataSource(dataSource: DataSource, name: string) {
