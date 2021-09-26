@@ -4,6 +4,7 @@ import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
 import { ImageService } from './image-service';
+import { Operation } from './interfaces/operation';
 
 @Injectable({
   providedIn: 'root',
@@ -103,6 +104,54 @@ export class DataService {
       browser.tabs.remove(page.glimpseId[1]);
     } else {
       browser.bookmarks.remove(page.glimpseId[1]);
+    }
+  }
+
+  async addPage(page: Page, dataSource: DataSource) {
+    if (dataSource.glimpseId[0] === DataSourceType.Window) {
+      browser.tabs.create({ url: page.url, active: false, windowId: dataSource.glimpseId[1] });
+    } else {
+      browser.bookmarks.create({
+        parentId: dataSource.glimpseId[1],
+        title: page.title,
+        url: page.url,
+      });
+    }
+  }
+
+  public async movePages(sources: Page[], destination: DataSource) {
+    sources.forEach((source) => {
+      this.movePage(source, destination);
+    });
+  }
+
+  public async copyPages(sources: Page[], destination: DataSource) {
+    sources.forEach((source) => {
+      this.copyPage(source, destination);
+    });
+  }
+
+  async movePage(source: Page, destination: DataSource) {
+    this.moveOrCopyPage(source, destination, Operation.Move);
+  }
+
+  async copyPage(source: Page, destination: DataSource) {
+    this.moveOrCopyPage(source, destination, Operation.Copy);
+  }
+
+  async moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
+    // Avoid deleting tab in window -> window move
+    if (
+      source.glimpseId[0] === DataSourceType.Window &&
+      destination.glimpseId[0] === DataSourceType.Window &&
+      operation === Operation.Move
+    ) {
+      browser.tabs.move(source.glimpseId[1], { index: -1, windowId: destination.glimpseId[1] });
+    } else {
+      if (operation === Operation.Move) {
+        this.removePage(source);
+      }
+      this.addPage(source, destination);
     }
   }
 
