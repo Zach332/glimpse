@@ -180,6 +180,16 @@ export class DataService {
     }
   }
 
+  async closeGlimpseTab(tabId: number) {
+    browser.tabs.remove(tabId);
+  }
+
+  public async switchToTab(tabId: number) {
+    const currentTabId = (await browser.tabs.getCurrent()).id!;
+    browser.tabs.show(tabId);
+    this.closeGlimpseTab(currentTabId);
+  }
+
   async getRootGlimpseFolder() {
     // TODO: Handle errors
     const otherBookmarksNode = (await browser.bookmarks.getTree())[0].children!.filter(
