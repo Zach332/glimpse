@@ -1,7 +1,15 @@
 import * as browser from 'webextension-polyfill';
-import { DataService } from './app/data.service';
 import { ImageService } from './app/image-service';
 import { DataSourceType } from './app/interfaces/data-source-type';
+
+function isValidPage(url: string) {
+  return !(
+    url.startsWith('moz-extension://') ||
+    url.startsWith('chrome-extension://') ||
+    url.startsWith('about:') ||
+    url.startsWith('chrome://')
+  );
+}
 
 browser.webNavigation.onCompleted.addListener(async (details) => {
   if (details.frameId === 0) {
@@ -9,7 +17,7 @@ browser.webNavigation.onCompleted.addListener(async (details) => {
       .query({ active: true, currentWindow: true })
       .then((tabs) => tabs[0]);
     const image = browser.tabs.captureVisibleTab();
-    if (details.tabId === (await currentTab).id! && DataService.isValidPage(details.url)) {
+    if (details.tabId === (await currentTab).id! && isValidPage(details.url)) {
       ImageService.putImage([DataSourceType.Window, (await currentTab).id!], await image);
     }
   }
@@ -20,7 +28,7 @@ browser.tabs.onActivated.addListener((activeInfo) => {
   setTimeout(async () => {
     if (
       !browser.runtime.lastError &&
-      DataService.isValidPage((await browser.tabs.get(activeInfo.tabId)).url!)
+      isValidPage((await browser.tabs.get(activeInfo.tabId)).url!)
     ) {
       const image = browser.tabs.captureVisibleTab();
       ImageService.putImage([DataSourceType.Window, activeInfo.tabId], await image);

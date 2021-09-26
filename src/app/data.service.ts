@@ -4,6 +4,7 @@ import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
 import { ImageService } from './image-service';
+import { Operation } from './interfaces/operation';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,15 @@ import { ImageService } from './image-service';
 export class DataService {
   // TODO: Potentially switch this to using a fixed id to improve performance
   readonly GLIMPSE_BOOKMARK_FOLDER_NAME = 'glimpse-dev';
+
+  // TODO: Add name argument
+  public async addWindow() {
+    browser.windows.create({ focused: false });
+  }
+
+  public async addFolder(name: string) {
+    browser.bookmarks.create({ parentId: (await this.getRootGlimpseFolder()).id, title: name });
+  }
 
   public async getWindowDataSources() {
     return (await browser.windows.getAll()).map((window) => {
@@ -58,34 +68,30 @@ export class DataService {
     // TODO: Switch this to use .then?
     // Also for other methods in DataService
     return Promise.all(
-      (await browser.tabs.query({ windowId }))
-        .filter((tab) => DataService.isValidPage(tab.url!))
-        .map(async (tab) => {
-          const page: Page = {
-            glimpseId: [DataSourceType.Window, tab.id!],
-            title: tab.title!,
-            url: tab.url!,
-            image: await ImageService.getImage([DataSourceType.Window, tab.id!]),
-          };
-          return page;
-        }),
+      (await browser.tabs.query({ windowId })).map(async (tab) => {
+        const page: Page = {
+          glimpseId: [DataSourceType.Window, tab.id!],
+          title: tab.title!,
+          url: tab.url!,
+          image: await ImageService.getImage([DataSourceType.Window, tab.id!]),
+        };
+        return page;
+      }),
     );
   }
 
   public async getPagesByFolderId(folderId: string) {
     return browser.bookmarks.getChildren(folderId).then((folder) => {
       return Promise.all(
-        folder
-          .filter((bookmark) => DataService.isValidPage(bookmark.url!))
-          .map(async (bookmark) => {
-            const page: Page = {
-              glimpseId: [DataSourceType.Folder, folderId],
-              title: bookmark.title,
-              url: bookmark.url!,
-              image: await ImageService.getImage([DataSourceType.Folder, folderId]),
-            };
-            return page;
-          }),
+        folder.map(async (bookmark) => {
+          const page: Page = {
+            glimpseId: [DataSourceType.Folder, folderId],
+            title: bookmark.title,
+            url: bookmark.url!,
+            image: await ImageService.getImage([DataSourceType.Folder, folderId]),
+          };
+          return page;
+        }),
       );
     });
   }
@@ -106,14 +112,52 @@ export class DataService {
     }
   }
 
-  // Returns false if page should not be indexed or shown by glimpse
-  public static isValidPage(url: string) {
-    return !(
-      url.startsWith('moz-extension://') ||
-      url.startsWith('chrome-extension://') ||
-      url.startsWith('about:') ||
-      url.startsWith('chrome://')
-    );
+  async addPage(page: Page, dataSource: DataSource) {
+    if (dataSource.glimpseId[0] === DataSourceType.Window) {
+      browser.tabs.create({ url: page.url, active: false, windowId: dataSource.glimpseId[1] });
+    } else {
+      browser.bookmarks.create({
+        parentId: dataSource.glimpseId[1],
+        title: page.title,
+        url: page.url,
+      });
+    }
+  }
+
+  public async movePages(sources: Page[], destination: DataSource) {
+    sources.forEach((source) => {
+      this.movePage(source, destination);
+    });
+  }
+
+  public async copyPages(sources: Page[], destination: DataSource) {
+    sources.forEach((source) => {
+      this.copyPage(source, destination);
+    });
+  }
+
+  async movePage(source: Page, destination: DataSource) {
+    this.moveOrCopyPage(source, destination, Operation.Move);
+  }
+
+  async copyPage(source: Page, destination: DataSource) {
+    this.moveOrCopyPage(source, destination, Operation.Copy);
+  }
+
+  async moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
+    // Avoid deleting tab in window -> window move
+    if (
+      source.glimpseId[0] === DataSourceType.Window &&
+      destination.glimpseId[0] === DataSourceType.Window &&
+      operation === Operation.Move
+    ) {
+      browser.tabs.move(source.glimpseId[1], { index: -1, windowId: destination.glimpseId[1] });
+    } else {
+      if (operation === Operation.Move) {
+        this.removePage(source);
+      }
+      this.addPage(source, destination);
+    }
   }
 
   async getRootGlimpseFolder() {
