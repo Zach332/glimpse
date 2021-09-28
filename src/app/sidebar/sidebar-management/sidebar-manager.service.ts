@@ -100,8 +100,13 @@ export class SidebarManagerService {
     this.updateDataSource(button.glimpseId[0]);
   }
 
-  public addWindow(): void {
-    this.dataService.addWindow();
+  public addWindow(name: string): void {
+    this.dataService.addWindow(name);
+  }
+
+  public addFolder(name: string): void {
+    this.dataService.addFolder(name);
+    // this.updateDataSource(DataSourceType.Folder, (dataSource) => dataSource.push())
   }
 
   public selectToId(type: DataSourceType, id: number): void {

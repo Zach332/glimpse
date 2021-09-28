@@ -8,7 +8,7 @@ import { SimpleDialogData } from './simple-dialog-data';
   selector: 'app-simple-dialog',
   templateUrl: 'simple-dialog.component.html',
 })
-export class RenameDialogComponent implements OnDestroy {
+export class SimpleDialogComponent implements OnDestroy {
   @Input()
   dialogTitle?: string;
 
@@ -18,7 +18,7 @@ export class RenameDialogComponent implements OnDestroy {
   private enterHotkey?: Subscription;
 
   constructor(
-    public dialogRef: MatDialogRef<RenameDialogComponent>,
+    public dialogRef: MatDialogRef<SimpleDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: SimpleDialogData,
     private hotkeyManagerService: HotkeyManagerService,
   ) {}
