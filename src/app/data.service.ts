@@ -152,6 +152,12 @@ export class DataService {
     });
   }
 
+  public async removePages(pages: Page[]) {
+    pages.forEach((page) => {
+      this.removePage(page);
+    });
+  }
+
   async movePage(source: Page, destination: DataSource) {
     this.moveOrCopyPage(source, destination, Operation.Move);
   }
