@@ -45,7 +45,7 @@ export class DataSourceButtonComponent {
       data: { inputValue: '' },
     });
     dialogRef.componentInstance.dialogTitle = 'Rename';
-    dialogRef.componentInstance.dialogTitle = 'Name';
+    dialogRef.componentInstance.inputLabel = 'Name';
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.sidebarManagerService.rename(this.buttonData, result);

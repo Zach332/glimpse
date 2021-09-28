@@ -47,7 +47,7 @@ export class NewButtonComponent {
       data: { inputValue: '' },
     });
     dialogRef.componentInstance.dialogTitle = 'Name';
-    dialogRef.componentInstance.dialogTitle = 'Name';
+    dialogRef.componentInstance.inputLabel = 'Name';
     return dialogRef.afterClosed();
   }
 }
