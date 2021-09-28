@@ -16,6 +16,7 @@ export class DataService {
   // Data sources
 
   public async addWindow(name?: string) {
+    const currentTabId = (await browser.tabs.getCurrent()).id!;
     const currentWindow = browser.windows.getCurrent();
     const windowId = (
       await browser.windows.create({ focused: true, state: (await currentWindow).state })
@@ -23,6 +24,7 @@ export class DataService {
     if (name) {
       IDBService.putName(windowId, name);
     }
+    this.closeGlimpseTab(currentTabId);
   }
 
   public async addFolder(name: string) {
