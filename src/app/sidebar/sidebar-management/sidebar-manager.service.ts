@@ -105,8 +105,15 @@ export class SidebarManagerService {
   }
 
   public addFolder(name: string): void {
-    this.dataService.addFolder(name);
-    // this.updateDataSource(DataSourceType.Folder, (dataSource) => dataSource.push())
+    this.dataService.addFolder(name).then((newDataSource) => {
+      this.updateDataSource(DataSourceType.Folder, (dataSource) =>
+        dataSource.push({
+          ...newDataSource,
+          id: IdGeneratorService.getIdFromGlimpseId(newDataSource.glimpseId),
+          isSelected: true,
+        }),
+      );
+    });
   }
 
   public selectToId(type: DataSourceType, id: number): void {
