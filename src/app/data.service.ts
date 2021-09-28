@@ -18,7 +18,7 @@ export class DataService {
   public async addWindow(name?: string) {
     const currentWindow = browser.windows.getCurrent();
     const windowId = (
-      await browser.windows.create({ focused: false, state: (await currentWindow).state })
+      await browser.windows.create({ focused: true, state: (await currentWindow).state })
     ).id!;
     if (name) {
       IDBService.putName(windowId, name);
