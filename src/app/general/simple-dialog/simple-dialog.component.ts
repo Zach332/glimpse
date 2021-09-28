@@ -1,19 +1,25 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, Inject, Input, OnDestroy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { HotkeyManagerService } from 'src/app/hotkey-manager.service';
 import { Subscription } from 'rxjs';
-import { RenameDialogData } from './rename-dialog-data';
+import { SimpleDialogData } from './simple-dialog-data';
 
 @Component({
-  selector: 'app-dialog-overview-example-dialog',
-  templateUrl: 'rename-dialog.component.html',
+  selector: 'app-simple-dialog',
+  templateUrl: 'simple-dialog.component.html',
 })
 export class RenameDialogComponent implements OnDestroy {
+  @Input()
+  dialogTitle?: string;
+
+  @Input()
+  inputLabel?: string;
+
   private enterHotkey?: Subscription;
 
   constructor(
     public dialogRef: MatDialogRef<RenameDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: RenameDialogData,
+    @Inject(MAT_DIALOG_DATA) public data: SimpleDialogData,
     private hotkeyManagerService: HotkeyManagerService,
   ) {}
 
@@ -24,7 +30,7 @@ export class RenameDialogComponent implements OnDestroy {
   ngAfterViewInit(): void {
     this.enterHotkey = this.hotkeyManagerService
       .addShortcut('enter', false)
-      .subscribe(() => this.dialogRef.close(this.data.newName));
+      .subscribe(() => this.dialogRef.close(this.data.inputValue));
   }
 
   onNoClick(): void {

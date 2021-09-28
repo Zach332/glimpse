@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { DataSourceType } from 'src/app/interfaces/data-source-type';
 import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.service';
@@ -26,6 +27,10 @@ export class NewButtonComponent {
   }
 
   onClick(): void {
-    // this.sidebarManagerService.insertSavedFolder();
+    if (this.buttonData.glimpseId[0] === DataSourceType.Window) {
+      this.sidebarManagerService.addWindow();
+    } else {
+      // this.dataService.addFolder("new folder")
+    }
   }
 }

@@ -100,6 +100,10 @@ export class SidebarManagerService {
     this.updateDataSource(button.glimpseId[0]);
   }
 
+  public addWindow(): void {
+    this.dataService.addWindow();
+  }
+
   public selectToId(type: DataSourceType, id: number): void {
     this.updateDataSource(type, (dataSource) => dataSource.selectToId(id));
   }

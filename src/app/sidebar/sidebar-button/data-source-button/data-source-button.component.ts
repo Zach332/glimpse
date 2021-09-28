@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.service';
-import { RenameDialogComponent } from './rename-dialog.component';
+import { RenameDialogComponent } from '../../../general/simple-dialog/simple-dialog.component';
 
 @Component({
   selector: 'app-data-source-button',
@@ -44,9 +44,12 @@ export class DataSourceButtonComponent {
     const dialogRef = this.renameDialog.open(RenameDialogComponent, {
       data: { newName: '' },
     });
-
+    dialogRef.componentInstance.dialogTitle = 'Rename';
+    dialogRef.componentInstance.dialogTitle = 'Name';
     dialogRef.afterClosed().subscribe((result) => {
-      this.sidebarManagerService.rename(this.buttonData, result);
+      if (result) {
+        this.sidebarManagerService.rename(this.buttonData, result);
+      }
     });
   }
 }
