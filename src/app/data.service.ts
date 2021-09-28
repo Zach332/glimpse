@@ -15,19 +15,33 @@ export class DataService {
 
   // Data sources
 
-  public async addWindow(name?: string) {
+  public async addWindow(name?: string, initialPages?: Page[]) {
     const currentTabId = (await browser.tabs.getCurrent()).id!;
+
+    // Create new window
     const currentWindow = browser.windows.getCurrent();
-    const windowId = (
-      await browser.windows.create({ focused: true, state: (await currentWindow).state })
-    ).id!;
+    const newWindow = browser.windows.create({ focused: true, state: (await currentWindow).state });
+
+    // Add name to new window (if specified)
     if (name) {
-      IDBService.putName(windowId, name);
+      IDBService.putName((await newWindow).id!, name);
     }
+
+    const dataSource: DataSource = {
+      glimpseId: [DataSourceType.Window, (await newWindow).id!],
+      name: name || `Window ${(await newWindow).id!}`,
+    };
+
+    // Add initial pages to new window
+    if (initialPages) {
+      this.movePages(initialPages, dataSource);
+    }
+
     this.closeGlimpseTab(currentTabId);
   }
 
-  public async addFolder(name: string) {
+  public async addFolder(name: string, initialPages?: Page[]) {
+    // Create new folder
     const folder = browser.bookmarks.create({
       parentId: (await this.getRootGlimpseFolder()).id,
       title: name,
@@ -36,6 +50,12 @@ export class DataService {
       glimpseId: [DataSourceType.Folder, (await folder).id],
       name,
     };
+
+    // Add initial pages to new folder
+    if (initialPages) {
+      this.movePages(initialPages, dataSource);
+    }
+
     return dataSource;
   }
 
