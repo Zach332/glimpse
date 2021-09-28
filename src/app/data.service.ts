@@ -28,7 +28,15 @@ export class DataService {
   }
 
   public async addFolder(name: string) {
-    browser.bookmarks.create({ parentId: (await this.getRootGlimpseFolder()).id, title: name });
+    const folder = browser.bookmarks.create({
+      parentId: (await this.getRootGlimpseFolder()).id,
+      title: name,
+    });
+    const dataSource: DataSource = {
+      glimpseId: [DataSourceType.Folder, (await folder).id],
+      name,
+    };
+    return dataSource;
   }
 
   public async getWindowDataSources() {
