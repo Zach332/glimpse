@@ -176,6 +176,14 @@ export class DataService {
     }
   }
 
+  public async removePage(page: Page) {
+    if (page.glimpseId[0] === DataSourceType.Window) {
+      browser.tabs.remove(page.glimpseId[1]);
+    } else {
+      browser.bookmarks.remove(page.glimpseId[1]);
+    }
+  }
+
   // Tab management
 
   public async switchToTab(tabId: number) {
@@ -184,14 +192,6 @@ export class DataService {
     browser.windows.update(windowId, { focused: true });
     browser.tabs.update(tabId, { active: true });
     this.closeGlimpseTab(currentTabId);
-  }
-
-  public async removePage(page: Page) {
-    if (page.glimpseId[0] === DataSourceType.Window) {
-      browser.tabs.remove(page.glimpseId[1]);
-    } else {
-      browser.bookmarks.remove(page.glimpseId[1]);
-    }
   }
 
   async closeGlimpseTab(tabId: number) {
