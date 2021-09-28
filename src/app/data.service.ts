@@ -16,10 +16,15 @@ export class DataService {
   // Data sources
 
   public async addWindow(name?: string) {
-    const windowId = (await browser.windows.create({ focused: false })).id!;
+    const currentTabId = (await browser.tabs.getCurrent()).id!;
+    const currentWindow = browser.windows.getCurrent();
+    const windowId = (
+      await browser.windows.create({ focused: true, state: (await currentWindow).state })
+    ).id!;
     if (name) {
       IDBService.putName(windowId, name);
     }
+    this.closeGlimpseTab(currentTabId);
   }
 
   public async addFolder(name: string) {
@@ -152,6 +157,12 @@ export class DataService {
     });
   }
 
+  public async removePages(pages: Page[]) {
+    pages.forEach((page) => {
+      this.removePage(page);
+    });
+  }
+
   async movePage(source: Page, destination: DataSource) {
     this.moveOrCopyPage(source, destination, Operation.Move);
   }
@@ -176,20 +187,22 @@ export class DataService {
     }
   }
 
-  // Tab management
-
-  public async switchToTab(tabId: number) {
-    const currentTabId = (await browser.tabs.getCurrent()).id!;
-    browser.tabs.update(tabId, { active: true });
-    this.closeGlimpseTab(currentTabId);
-  }
-
   public async removePage(page: Page) {
     if (page.glimpseId[0] === DataSourceType.Window) {
       browser.tabs.remove(page.glimpseId[1]);
     } else {
       browser.bookmarks.remove(page.glimpseId[1]);
     }
+  }
+
+  // Tab management
+
+  public async switchToTab(tabId: number) {
+    const currentTabId = (await browser.tabs.getCurrent()).id!;
+    const windowId = (await browser.tabs.get(tabId)).windowId!;
+    browser.windows.update(windowId, { focused: true });
+    browser.tabs.update(tabId, { active: true });
+    this.closeGlimpseTab(currentTabId);
   }
 
   async closeGlimpseTab(tabId: number) {
