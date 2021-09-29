@@ -1,11 +1,13 @@
+import { DataSourceId } from './interfaces/data-source-id';
 import { DataSourceType } from './interfaces/data-source-type';
-import { GlimpseId } from './interfaces/glimpse-id';
+import { PageId } from './interfaces/page-id';
 
 export class IdGeneratorService {
-  public static getIdFromGlimpseId(glimpseId: GlimpseId) {
-    if (glimpseId[0] === DataSourceType.Window) {
-      return glimpseId[1] * -1;
+  // TODO: Will all of these even be unique?
+  public static getIdFromDataSourceIdOrPageId(id: DataSourceId | PageId) {
+    if (id[0] === DataSourceType.Window) {
+      return id[1] * -1;
     }
-    return parseInt(glimpseId[1], 10);
+    return parseInt(id[1], 10);
   }
 }

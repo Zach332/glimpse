@@ -28,25 +28,25 @@ export class SidebarManagerService {
     // TODO: These should use a new interface or something
     // And maybe rename SelectableSidebarButton to SelectableDataSource
     this.windowRootButton = {
-      glimpseId: [DataSourceType.Window, 1],
+      dataSourceId: [DataSourceType.Window, 1],
       id: 1,
       name: 'Windows',
       isSelected: false,
     };
     this.savedRootButton = {
-      glimpseId: [DataSourceType.Folder, '1'],
+      dataSourceId: [DataSourceType.Folder, '1'],
       id: 1,
       name: 'Saved',
       isSelected: false,
     };
     this.newWindowButton = {
-      glimpseId: [DataSourceType.Window, 1],
+      dataSourceId: [DataSourceType.Window, 1],
       id: 1,
       name: 'New Window',
       isSelected: false,
     };
     this.newSavedButton = {
-      glimpseId: [DataSourceType.Folder, '1'],
+      dataSourceId: [DataSourceType.Folder, '1'],
       id: 1,
       name: 'New Folder',
       isSelected: false,
@@ -59,7 +59,7 @@ export class SidebarManagerService {
       windows.forEach((window) => {
         const sidebarButton: SelectableSidebarButton = {
           ...window,
-          id: IdGeneratorService.getIdFromGlimpseId(window.glimpseId),
+          id: IdGeneratorService.getIdFromDataSourceIdOrPageId(window.dataSourceId),
           isSelected: true,
         };
         this.pushData(DataSourceType.Window, sidebarButton);
@@ -70,7 +70,7 @@ export class SidebarManagerService {
       folders.forEach((folder) => {
         const sidebarButton: SelectableSidebarButton = {
           ...folder,
-          id: IdGeneratorService.getIdFromGlimpseId(folder.glimpseId),
+          id: IdGeneratorService.getIdFromDataSourceIdOrPageId(folder.dataSourceId),
           isSelected: true,
         };
         this.pushData(DataSourceType.Folder, sidebarButton);
@@ -91,13 +91,13 @@ export class SidebarManagerService {
 
   public delete(button: SelectableSidebarButton): void {
     this.dataService.removeDataSource(button);
-    this.updateDataSource(button.glimpseId[0], (dataSource) => dataSource.remove(button.id));
+    this.updateDataSource(button.dataSourceId[0], (dataSource) => dataSource.remove(button.id));
   }
 
   public rename(button: SelectableSidebarButton, name: string): void {
     this.dataService.renameDataSource(button, name);
     button.name = name;
-    this.updateDataSource(button.glimpseId[0]);
+    this.updateDataSource(button.dataSourceId[0]);
   }
 
   public addWindow(name: string): void {
@@ -109,7 +109,7 @@ export class SidebarManagerService {
       this.updateDataSource(DataSourceType.Folder, (dataSource) =>
         dataSource.push({
           ...newDataSource,
-          id: IdGeneratorService.getIdFromGlimpseId(newDataSource.glimpseId),
+          id: IdGeneratorService.getIdFromDataSourceIdOrPageId(newDataSource.dataSourceId),
           isSelected: true,
         }),
       );

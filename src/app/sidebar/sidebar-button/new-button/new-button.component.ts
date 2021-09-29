@@ -27,13 +27,13 @@ export class NewButtonComponent {
   }
 
   isHidden(): boolean {
-    return this.sidebarManagerService.isCollapsed(this.buttonData.glimpseId[0]);
+    return this.sidebarManagerService.isCollapsed(this.buttonData.dataSourceId[0]);
   }
 
   onClick(): void {
     this.getNameDialog().subscribe((result) => {
       if (result) {
-        if (this.buttonData.glimpseId[0] === DataSourceType.Window) {
+        if (this.buttonData.dataSourceId[0] === DataSourceType.Window) {
           this.sidebarManagerService.addWindow(result);
         } else {
           this.sidebarManagerService.addFolder(result);

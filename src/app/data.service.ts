@@ -30,7 +30,7 @@ export class DataService {
       }
 
       const dataSource: DataSource = {
-        glimpseId: [DataSourceType.Window, (await newWindow).id!],
+        dataSourceId: [DataSourceType.Window, (await newWindow).id!],
         name: name || `Window ${(await newWindow).id!}`,
       };
 
@@ -48,7 +48,7 @@ export class DataService {
       title: name,
     });
     const dataSource: DataSource = {
-      glimpseId: [DataSourceType.Folder, (await folder).id],
+      dataSourceId: [DataSourceType.Folder, (await folder).id],
       name,
     };
 
@@ -64,7 +64,7 @@ export class DataService {
     return Promise.all(
       (await browser.windows.getAll()).map(async (window) => {
         const dataSource: DataSource = {
-          glimpseId: [DataSourceType.Window, window.id!],
+          dataSourceId: [DataSourceType.Window, window.id!],
           name: (await IDBService.getName(window.id!)) || `Window ${window.id!}`,
         };
         return dataSource;
@@ -77,7 +77,7 @@ export class DataService {
     return browser.bookmarks.getChildren((await this.getRootGlimpseFolder()).id).then((folders) => {
       return folders.map((folder) => {
         const dataSource: DataSource = {
-          glimpseId: [DataSourceType.Folder, folder.id],
+          dataSourceId: [DataSourceType.Folder, folder.id],
           name: folder.title,
         };
         return dataSource;
@@ -94,29 +94,29 @@ export class DataService {
   }
 
   public async renameDataSource(dataSource: DataSource, name: string) {
-    if (dataSource.glimpseId[0] === DataSourceType.Window) {
-      this.renameWindow(dataSource.glimpseId[1], name);
+    if (dataSource.dataSourceId[0] === DataSourceType.Window) {
+      this.renameWindow(dataSource.dataSourceId[1], name);
     } else {
-      this.renameFolder(dataSource.glimpseId[1], name);
+      this.renameFolder(dataSource.dataSourceId[1], name);
     }
   }
 
   public async removeDataSource(dataSource: DataSource) {
-    if (dataSource.glimpseId[0] === DataSourceType.Window) {
-      browser.windows.remove(dataSource.glimpseId[1]);
+    if (dataSource.dataSourceId[0] === DataSourceType.Window) {
+      browser.windows.remove(dataSource.dataSourceId[1]);
     } else {
-      browser.bookmarks.remove(dataSource.glimpseId[1]);
+      browser.bookmarks.remove(dataSource.dataSourceId[1]);
     }
   }
 
   // Pages
 
   async addPage(page: Page, dataSource: DataSource) {
-    if (dataSource.glimpseId[0] === DataSourceType.Window) {
-      browser.tabs.create({ url: page.url, active: false, windowId: dataSource.glimpseId[1] });
+    if (dataSource.dataSourceId[0] === DataSourceType.Window) {
+      browser.tabs.create({ url: page.url, active: false, windowId: dataSource.dataSourceId[1] });
     } else {
       browser.bookmarks.create({
-        parentId: dataSource.glimpseId[1],
+        parentId: dataSource.dataSourceId[1],
         title: page.title,
         url: page.url,
       });
@@ -126,10 +126,10 @@ export class DataService {
   public async getPagesByDataSources(dataSources: DataSource[]) {
     return Promise.all(
       dataSources.map((dataSource) => {
-        if (dataSource.glimpseId[0] === DataSourceType.Window) {
-          return this.getPagesByWindowId(dataSource.glimpseId[1]);
+        if (dataSource.dataSourceId[0] === DataSourceType.Window) {
+          return this.getPagesByWindowId(dataSource.dataSourceId[1]);
         }
-        return this.getPagesByFolderId(dataSource.glimpseId[1]);
+        return this.getPagesByFolderId(dataSource.dataSourceId[1]);
       }),
     ).then((pagesList) => {
       const pages: Page[] = [];
@@ -148,7 +148,7 @@ export class DataService {
     return Promise.all(
       (await browser.tabs.query({ windowId })).map(async (tab) => {
         const page: Page = {
-          glimpseId: [DataSourceType.Window, tab.id!],
+          pageId: [DataSourceType.Window, windowId, tab.id!],
           title: tab.title!,
           url: tab.url!,
           image: await IDBService.getImage([DataSourceType.Window, tab.id!]),
@@ -163,7 +163,7 @@ export class DataService {
       return Promise.all(
         folder.map(async (bookmark) => {
           const page: Page = {
-            glimpseId: [DataSourceType.Folder, bookmark.id],
+            pageId: [DataSourceType.Folder, folderId, bookmark.id],
             title: bookmark.title,
             url: bookmark.url!,
             image: await IDBService.getImage([DataSourceType.Folder, folderId]),
@@ -203,11 +203,11 @@ export class DataService {
   async moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
     // Avoid deleting tab in window -> window move
     if (
-      source.glimpseId[0] === DataSourceType.Window &&
-      destination.glimpseId[0] === DataSourceType.Window &&
+      source.pageId[0] === DataSourceType.Window &&
+      destination.dataSourceId[0] === DataSourceType.Window &&
       operation === Operation.Move
     ) {
-      browser.tabs.move(source.glimpseId[1], { index: -1, windowId: destination.glimpseId[1] });
+      browser.tabs.move(source.pageId[2], { index: -1, windowId: destination.dataSourceId[1] });
     } else {
       if (operation === Operation.Move) {
         this.removePage(source);
@@ -217,10 +217,10 @@ export class DataService {
   }
 
   public async removePage(page: Page) {
-    if (page.glimpseId[0] === DataSourceType.Window) {
-      browser.tabs.remove(page.glimpseId[1]);
+    if (page.pageId[0] === DataSourceType.Window) {
+      browser.tabs.remove(page.pageId[2]);
     } else {
-      browser.bookmarks.remove(page.glimpseId[1]);
+      browser.bookmarks.remove(page.pageId[2]);
     }
   }
 

@@ -94,7 +94,7 @@ export class PageManagerService {
       pages.forEach((page) => {
         const selectablePage: SelectablePage = {
           ...page,
-          id: IdGeneratorService.getIdFromGlimpseId(page.glimpseId),
+          id: IdGeneratorService.getIdFromDataSourceIdOrPageId(page.pageId),
           isSelected: false,
         };
         this.getPageElementsOfType(dataSourceType).push(selectablePage);

@@ -25,8 +25,8 @@ export class PagePrevComponent {
       this.pageManagerService.displayPageElements.selectToId(this.tabData.id);
     } else {
       // TODO: Handle null later
-      if (this.tabData.glimpseId[0] === DataSourceType.Window) {
-        this.dataService.switchToTab(this.tabData.glimpseId[1]);
+      if (this.tabData.pageId[0] === DataSourceType.Window) {
+        this.dataService.switchToTab(this.tabData.pageId[2]);
       } else {
         window.location.href = this.tabData.url;
       }

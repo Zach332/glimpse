@@ -25,7 +25,7 @@ export class DataSourceButtonComponent {
   }
 
   isHidden(): boolean {
-    return this.sidebarManagerService.isCollapsed(this.buttonData.glimpseId[0]);
+    return this.sidebarManagerService.isCollapsed(this.buttonData.dataSourceId[0]);
   }
 
   delete(): void {
@@ -34,9 +34,9 @@ export class DataSourceButtonComponent {
 
   onClick($event: MouseEvent): void {
     if ($event.shiftKey) {
-      this.sidebarManagerService.selectToId(this.buttonData.glimpseId[0], this.buttonData.id);
+      this.sidebarManagerService.selectToId(this.buttonData.dataSourceId[0], this.buttonData.id);
     } else {
-      this.sidebarManagerService.toggleId(this.buttonData.glimpseId[0], this.buttonData.id);
+      this.sidebarManagerService.toggleId(this.buttonData.dataSourceId[0], this.buttonData.id);
     }
   }
 
