@@ -1,9 +1,9 @@
 import { DBSchema } from 'idb';
-import { GlimpseId } from './glimpse-id';
+import { DataSourceId } from './data-source-id';
 
 export interface Schema extends DBSchema {
   images: {
-    key: GlimpseId;
+    key: DataSourceId;
     value: string;
   };
   names: {

@@ -1,6 +1,6 @@
-import { GlimpseId } from './glimpse-id';
+import { DataSourceId } from './data-source-id';
 
 export interface DataSource {
-  readonly glimpseId: GlimpseId;
+  readonly dataSourceId: DataSourceId;
   name: string;
 }

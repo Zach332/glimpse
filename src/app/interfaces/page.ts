@@ -1,7 +1,7 @@
-import { GlimpseId } from './glimpse-id';
+import { PageId } from './page-id';
 
 export interface Page {
-  readonly glimpseId: GlimpseId;
+  readonly pageId: PageId;
   title: string;
   url: string;
   // TODO: Add favicon

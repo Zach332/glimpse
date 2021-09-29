@@ -1,6 +1,6 @@
 import { openDB } from 'idb';
 import { Schema } from './interfaces/schema';
-import { GlimpseId } from './interfaces/glimpse-id';
+import { DataSourceId } from './interfaces/data-source-id';
 
 export class IDBService {
   static getDB() {
@@ -12,12 +12,12 @@ export class IDBService {
     });
   }
 
-  static async putImage(glimpseId: GlimpseId, image: string) {
-    return (await this.getDB()).put('images', image, glimpseId);
+  static async putImage(dataSourceId: DataSourceId, image: string) {
+    return (await this.getDB()).put('images', image, dataSourceId);
   }
 
-  static async getImage(glimpseId: GlimpseId) {
-    return (await this.getDB()).get('images', glimpseId);
+  static async getImage(dataSourceId: DataSourceId) {
+    return (await this.getDB()).get('images', dataSourceId);
   }
 
   static async putName(windowId: number, name: string) {
