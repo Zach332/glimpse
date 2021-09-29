@@ -21,7 +21,7 @@ export class DataSourceButtonComponent {
   ) {}
 
   public drop() {
-    this.pageManagerService.dragging = false;
+    this.pageManagerService.dropPages(this.buttonData);
   }
 
   isHidden(): boolean {

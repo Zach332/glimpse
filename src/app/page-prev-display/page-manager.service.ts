@@ -11,6 +11,7 @@ import { SelectableSidebarButton } from '../interfaces/selectable-sidebar-button
 import { PageFilterService } from '../page-filter.service';
 import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-manager.service';
 import { HotkeyManagerService } from '../hotkey-manager.service';
+import { DataSource } from '../interfaces/data-source';
 
 @Injectable({
   providedIn: 'root',
@@ -78,6 +79,27 @@ export class PageManagerService {
         this.removePage(element);
       }
     });
+  }
+
+  public getDraggedPages(): SelectablePage[] {
+    const draggedPages: SelectablePage[] = this.displayPageElements.getSelectedItems();
+    const draggedPage: SelectablePage | undefined = this.displayPageElements.getById(
+      parseInt(this.draggedElement, 10),
+    );
+    if (draggedPage && !draggedPage?.isSelected) {
+      draggedPages.push(draggedPage);
+    }
+    return draggedPages;
+  }
+
+  public async dropPages(destination: DataSource): Promise<void> {
+    this.dragging = false;
+    if (this.dragMode === 'copy') {
+      await this.dataService.copyPages(this.getDraggedPages(), destination);
+    } else {
+      await this.dataService.movePages(this.getDraggedPages(), destination);
+    }
+    this.sidebarManagerService.init();
   }
 
   private async updatePages(

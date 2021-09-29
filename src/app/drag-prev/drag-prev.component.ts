@@ -10,14 +10,7 @@ export class DragPrevComponent {
   constructor(private pageManagerService: PageManagerService) {}
 
   getPreviewText(): string {
-    let numSelected = this.pageManagerService.displayPageElements.getNumSelected();
-    if (
-      !this.pageManagerService.displayPageElements.getById(
-        parseInt(this.pageManagerService.draggedElement, 10),
-      )?.isSelected
-    ) {
-      numSelected += 1;
-    }
+    const numSelected = this.pageManagerService.getDraggedPages().length;
     return `Move ${numSelected.toString()} page${numSelected > 2 ? 's' : ''}`;
   }
 }

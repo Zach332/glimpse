@@ -54,7 +54,14 @@ export class SidebarManagerService {
     this.init();
   }
 
-  async init() {
+  public async init() {
+    this.windowSidebarButtons = new BehaviorSubject(
+      new SelectableCollection<SelectableSidebarButton>(),
+    );
+    this.savedSidebarButtons = new BehaviorSubject(
+      new SelectableCollection<SelectableSidebarButton>(),
+    );
+
     this.dataService.getWindowDataSources().then((windows) => {
       windows.forEach((window) => {
         const sidebarButton: SelectableSidebarButton = {
@@ -77,17 +84,6 @@ export class SidebarManagerService {
       });
     });
   }
-
-  // async insertSavedFolder(): Promise<void> {
-  //   const newFolderLabel = 'New Folder';
-  //   const newFolderId = await DataService.insertSavedFolderDataSource(newFolderLabel);
-  //   this.savedSidebarButtons.push({
-  //     glimpseId: newFolderId,
-  //     label: newFolderLabel,
-  //     type: DataSourceType.Folder,
-  //     isSelected: false,
-  //   });
-  // }
 
   public delete(button: SelectableSidebarButton): void {
     this.dataService.removeDataSource(button);
