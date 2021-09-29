@@ -99,7 +99,8 @@ export class PageManagerService {
     } else {
       await this.dataService.movePages(this.getDraggedPages(), destination);
     }
-    this.sidebarManagerService.init();
+    this.updatePages(DataSourceType.Folder, this.sidebarManagerService.savedSidebarButtons.value);
+    this.updatePages(DataSourceType.Window, this.sidebarManagerService.windowSidebarButtons.value);
   }
 
   private async updatePages(

@@ -54,14 +54,7 @@ export class SidebarManagerService {
     this.init();
   }
 
-  public async init() {
-    this.windowSidebarButtons = new BehaviorSubject(
-      new SelectableCollection<SelectableSidebarButton>(),
-    );
-    this.savedSidebarButtons = new BehaviorSubject(
-      new SelectableCollection<SelectableSidebarButton>(),
-    );
-
+  async init() {
     this.dataService.getWindowDataSources().then((windows) => {
       windows.forEach((window) => {
         const sidebarButton: SelectableSidebarButton = {
