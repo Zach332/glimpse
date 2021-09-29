@@ -163,7 +163,7 @@ export class DataService {
       return Promise.all(
         folder.map(async (bookmark) => {
           const page: Page = {
-            glimpseId: [DataSourceType.Folder, folderId],
+            glimpseId: [DataSourceType.Folder, bookmark.id],
             title: bookmark.title,
             url: bookmark.url!,
             image: await IDBService.getImage([DataSourceType.Folder, folderId]),
