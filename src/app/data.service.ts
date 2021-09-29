@@ -16,28 +16,29 @@ export class DataService {
   // Data sources
 
   public async addWindow(name?: string, initialPages?: Page[]) {
-    const currentTabId = (await browser.tabs.getCurrent()).id!;
+    this.closeGlimpseTabAfterCallback(async () => {
+      // Create new window
+      const currentWindow = browser.windows.getCurrent();
+      const newWindow = browser.windows.create({
+        focused: true,
+        state: (await currentWindow).state,
+      });
 
-    // Create new window
-    const currentWindow = browser.windows.getCurrent();
-    const newWindow = browser.windows.create({ focused: true, state: (await currentWindow).state });
+      // Add name to new window (if specified)
+      if (name) {
+        await IDBService.putName((await newWindow).id!, name);
+      }
 
-    // Add name to new window (if specified)
-    if (name) {
-      IDBService.putName((await newWindow).id!, name);
-    }
+      const dataSource: DataSource = {
+        glimpseId: [DataSourceType.Window, (await newWindow).id!],
+        name: name || `Window ${(await newWindow).id!}`,
+      };
 
-    const dataSource: DataSource = {
-      glimpseId: [DataSourceType.Window, (await newWindow).id!],
-      name: name || `Window ${(await newWindow).id!}`,
-    };
-
-    // Add initial pages to new window
-    if (initialPages) {
-      this.movePages(initialPages, dataSource);
-    }
-
-    this.closeGlimpseTab(currentTabId);
+      // Add initial pages to new window
+      if (initialPages) {
+        this.movePages(initialPages, dataSource);
+      }
+    });
   }
 
   public async addFolder(name: string, initialPages?: Page[]) {
@@ -162,7 +163,7 @@ export class DataService {
       return Promise.all(
         folder.map(async (bookmark) => {
           const page: Page = {
-            glimpseId: [DataSourceType.Folder, folderId],
+            glimpseId: [DataSourceType.Folder, bookmark.id],
             title: bookmark.title,
             url: bookmark.url!,
             image: await IDBService.getImage([DataSourceType.Folder, folderId]),
@@ -226,15 +227,21 @@ export class DataService {
   // Tab management
 
   public async switchToTab(tabId: number) {
-    const currentTabId = (await browser.tabs.getCurrent()).id!;
-    const windowId = (await browser.tabs.get(tabId)).windowId!;
-    browser.windows.update(windowId, { focused: true });
-    browser.tabs.update(tabId, { active: true });
-    this.closeGlimpseTab(currentTabId);
+    this.closeGlimpseTabAfterCallback(async () => {
+      const windowId = (await browser.tabs.get(tabId)).windowId!;
+      browser.windows.update(windowId, { focused: true });
+      browser.tabs.update(tabId, { active: true });
+    });
   }
 
   async closeGlimpseTab(tabId: number) {
     browser.tabs.remove(tabId);
+  }
+
+  async closeGlimpseTabAfterCallback(callback: Function) {
+    const currentTabId = (await browser.tabs.getCurrent()).id!;
+    await callback();
+    this.closeGlimpseTab(currentTabId);
   }
 
   // Helper methods
