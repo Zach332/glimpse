@@ -29,9 +29,9 @@ export class PageManagerService {
 
   public draggedElement: string = '';
 
-  public pagePrevWidth: number = 300;
+  public pagePrevWidth: number = 400;
 
-  public pagePrevMax = 500;
+  public pagePrevMax = 600;
 
   public pagePrevMin = 200;
 
