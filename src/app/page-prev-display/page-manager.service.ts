@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { Mutex } from 'async-mutex';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import * as browser from 'webextension-polyfill';
 import { DataService } from '../data.service';
 import { IdGeneratorService } from '../id-generator-serivce';
 import { DataSourceType } from '../interfaces/data-source-type';
@@ -43,6 +44,12 @@ export class PageManagerService {
 
   public searchQuery = new BehaviorSubject<string>('');
 
+  private browserObservable = new Observable((observer) => {
+    browser.tabs.onCreated.addListener(() => observer.next());
+    browser.tabs.onRemoved.addListener(() => observer.next());
+    browser.tabs.onDetached.addListener(() => observer.next());
+  });
+
   private lock = new Mutex();
 
   constructor(
@@ -50,12 +57,18 @@ export class PageManagerService {
     private dataService: DataService,
     private pageFilterService: PageFilterService,
     private hotkeyManagerService: HotkeyManagerService,
+    private ngZone: NgZone,
   ) {
     this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
       this.lock.runExclusive(() => this.updatePages(DataSourceType.Folder, selectedButtons)),
     );
     this.sidebarManagerService.windowSidebarButtons.subscribe((selectedButtons) =>
       this.lock.runExclusive(() => this.updatePages(DataSourceType.Window, selectedButtons)),
+    );
+    this.browserObservable.subscribe(() =>
+      this.lock.runExclusive(() =>
+        this.updatePages(DataSourceType.Window, sidebarManagerService.windowSidebarButtons.value),
+      ),
     );
     this.searchQuery.subscribe(
       (newQuery) =>
@@ -138,9 +151,11 @@ export class PageManagerService {
 
   public updatePageElements(update: (original: SelectableCollection<SelectablePage>) => void) {
     update(this.pageElements);
-    this.displayPageElements = this.pageFilterService.filterByQuery(
-      this.searchQuery.value,
-      this.pageElements,
-    );
+    this.ngZone.run(() => {
+      this.displayPageElements = this.pageFilterService.filterByQuery(
+        this.searchQuery.value,
+        this.pageElements,
+      );
+    });
   }
 }
