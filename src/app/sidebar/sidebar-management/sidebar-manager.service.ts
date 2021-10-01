@@ -54,28 +54,37 @@ export class SidebarManagerService {
     this.init();
   }
 
-  async init() {
-    this.dataService.getWindowDataSources().then((windows) => {
+  public async init() {
+    const windowButtons: SelectableSidebarButton[] = [];
+    await this.dataService.getWindowDataSources().then((windows) => {
       windows.forEach((window) => {
         const sidebarButton: SelectableSidebarButton = {
           ...window,
           id: IdGeneratorService.getIdFromDataSourceIdOrPageId(window.dataSourceId),
           isSelected: true,
         };
-        this.pushData(DataSourceType.Window, sidebarButton);
+        windowButtons.push(sidebarButton);
       });
     });
 
-    this.dataService.getFolderDataSources().then((folders) => {
+    const savedButtons: SelectableSidebarButton[] = [];
+    await this.dataService.getFolderDataSources().then((folders) => {
       folders.forEach((folder) => {
         const sidebarButton: SelectableSidebarButton = {
           ...folder,
           id: IdGeneratorService.getIdFromDataSourceIdOrPageId(folder.dataSourceId),
           isSelected: true,
         };
-        this.pushData(DataSourceType.Folder, sidebarButton);
+        savedButtons.push(sidebarButton);
       });
     });
+
+    this.updateDataSource(DataSourceType.Window, (dataSource) =>
+      dataSource.adjustCollection(windowButtons),
+    );
+    this.updateDataSource(DataSourceType.Folder, (dataSource) =>
+      dataSource.adjustCollection(savedButtons),
+    );
   }
 
   public delete(button: SelectableSidebarButton): void {
@@ -148,10 +157,6 @@ export class SidebarManagerService {
       update(dataSource);
     }
     this.getDataSourceObservable(type).next(dataSource);
-  }
-
-  private pushData(type: DataSourceType, data: SelectableSidebarButton) {
-    this.updateDataSource(type, (dataSource) => dataSource.push(data));
   }
 
   private getDataSourceObservable(
