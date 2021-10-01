@@ -35,3 +35,7 @@ browser.tabs.onActivated.addListener((activeInfo) => {
     }
   }, 500);
 });
+
+browser.tabs.onCreated.addListener(async (tab) => {
+  console.log(tab);
+});
