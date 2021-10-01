@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DataSourceType } from 'src/app/interfaces/data-source-type';
 import { IdGeneratorService } from 'src/app/id-generator-serivce';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import * as browser from 'webextension-polyfill';
 import { DataService } from '../../data.service';
 import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
@@ -23,6 +24,11 @@ export class SidebarManagerService {
   public newWindowButton: SelectableSidebarButton;
 
   public newSavedButton: SelectableSidebarButton;
+
+  private browserObservable = new Observable((observer) => {
+    browser.windows.onCreated.addListener(() => observer.next());
+    browser.windows.onRemoved.addListener(() => observer.next());
+  });
 
   constructor(private dataService: DataService) {
     // TODO: These should use a new interface or something
@@ -51,6 +57,7 @@ export class SidebarManagerService {
       name: 'New Folder',
       isSelected: false,
     };
+    this.browserObservable.subscribe(() => this.init());
     this.init();
   }
 
