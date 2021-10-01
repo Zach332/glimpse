@@ -29,14 +29,11 @@ export class DataService {
         await IDBService.putName((await newWindow).id!, name);
       }
 
-      const dataSource: DataSource = {
-        dataSourceId: [DataSourceType.Window, (await newWindow).id!],
-        name: name || `Window ${(await newWindow).id!}`,
-      };
+      const dataSource = this.convertWindowToDataSource(await newWindow);
 
       // Add initial pages to new window
       if (initialPages) {
-        this.movePages(initialPages, dataSource);
+        this.movePages(initialPages, await dataSource);
       }
     });
   }
@@ -47,10 +44,7 @@ export class DataService {
       parentId: (await this.getRootGlimpseFolder()).id,
       title: name,
     });
-    const dataSource: DataSource = {
-      dataSourceId: [DataSourceType.Folder, (await folder).id],
-      name,
-    };
+    const dataSource = this.convertFolderToDataSource(await folder);
 
     // Add initial pages to new folder
     if (initialPages) {
@@ -62,27 +56,33 @@ export class DataService {
 
   public async getWindowDataSources() {
     return Promise.all(
-      (await browser.windows.getAll()).map(async (window) => {
-        const dataSource: DataSource = {
-          dataSourceId: [DataSourceType.Window, window.id!],
-          name: (await IDBService.getName(window.id!)) || `Window ${window.id!}`,
-        };
-        return dataSource;
-      }),
+      (await browser.windows.getAll()).map(async (window) =>
+        this.convertWindowToDataSource(window),
+      ),
     );
+  }
+
+  async convertWindowToDataSource(window: browser.Windows.Window) {
+    const dataSource: DataSource = {
+      dataSourceId: [DataSourceType.Window, window.id!],
+      name: (await IDBService.getName(window.id!)) || `Window ${window.id!}`,
+    };
+    return dataSource;
   }
 
   public async getFolderDataSources() {
     // TODO: Handle errors
     return browser.bookmarks.getChildren((await this.getRootGlimpseFolder()).id).then((folders) => {
-      return folders.map((folder) => {
-        const dataSource: DataSource = {
-          dataSourceId: [DataSourceType.Folder, folder.id],
-          name: folder.title,
-        };
-        return dataSource;
-      });
+      return folders.map((folder) => this.convertFolderToDataSource(folder));
     });
+  }
+
+  convertFolderToDataSource(folder: browser.Bookmarks.BookmarkTreeNode) {
+    const dataSource: DataSource = {
+      dataSourceId: [DataSourceType.Folder, folder.id],
+      name: folder.title,
+    };
+    return dataSource;
   }
 
   public async renameWindow(windowId: number, name: string) {
@@ -146,32 +146,38 @@ export class DataService {
     // TODO: Switch this to use .then?
     // Also for other methods in DataService
     return Promise.all(
-      (await browser.tabs.query({ windowId })).map(async (tab) => {
-        const page: Page = {
-          pageId: [DataSourceType.Window, windowId, tab.id!],
-          title: tab.title!,
-          url: tab.url!,
-          image: await IDBService.getImage([DataSourceType.Window, tab.id!]),
-        };
-        return page;
-      }),
+      (await browser.tabs.query({ windowId })).map(async (tab) =>
+        this.convertTabToPage(tab, windowId),
+      ),
     );
+  }
+
+  async convertTabToPage(tab: browser.Tabs.Tab, windowId: number) {
+    const page: Page = {
+      pageId: [DataSourceType.Window, windowId, tab.id!],
+      title: tab.title!,
+      url: tab.url!,
+      image: await IDBService.getImage([DataSourceType.Window, tab.id!]),
+    };
+    return page;
   }
 
   public async getPagesByFolderId(folderId: string) {
     return browser.bookmarks.getChildren(folderId).then((folder) => {
       return Promise.all(
-        folder.map(async (bookmark) => {
-          const page: Page = {
-            pageId: [DataSourceType.Folder, folderId, bookmark.id],
-            title: bookmark.title,
-            url: bookmark.url!,
-            image: await IDBService.getImage([DataSourceType.Folder, folderId]),
-          };
-          return page;
-        }),
+        folder.map(async (bookmark) => this.convertBookmarkToPage(bookmark, folderId)),
       );
     });
+  }
+
+  async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode, folderId: string) {
+    const page: Page = {
+      pageId: [DataSourceType.Folder, folderId, bookmark.id],
+      title: bookmark.title,
+      url: bookmark.url!,
+      image: await IDBService.getImage([DataSourceType.Folder, folderId]),
+    };
+    return page;
   }
 
   public async movePages(sources: Page[], destination: DataSource) {
