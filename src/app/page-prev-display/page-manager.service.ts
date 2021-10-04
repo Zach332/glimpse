@@ -48,6 +48,7 @@ export class PageManagerService {
     browser.tabs.onCreated.addListener(() => observer.next());
     browser.tabs.onRemoved.addListener(() => observer.next());
     browser.tabs.onDetached.addListener(() => observer.next());
+    browser.webNavigation.onCommitted.addListener(() => observer.next());
   });
 
   private lock = new Mutex();

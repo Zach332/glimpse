@@ -29,6 +29,9 @@ export class SidebarManagerService {
   private browserObservable = new Observable((observer) => {
     browser.windows.onCreated.addListener(() => observer.next());
     browser.windows.onRemoved.addListener(() => observer.next());
+    browser.bookmarks.onCreated.addListener(() => observer.next());
+    browser.bookmarks.onChanged.addListener(() => observer.next());
+    browser.bookmarks.onRemoved.addListener(() => observer.next());
   });
 
   constructor(private dataService: DataService) {

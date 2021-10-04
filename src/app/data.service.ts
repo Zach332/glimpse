@@ -165,7 +165,7 @@ export class DataService {
       pageId: [DataSourceType.Window, windowId, tab.id!],
       title: tab.title!,
       url: tab.url!,
-      image: await IDBService.getImage([DataSourceType.Window, tab.id!]),
+      image: await IDBService.getImage([DataSourceType.Window, windowId, tab.id!]),
     };
     return page;
   }
@@ -183,7 +183,7 @@ export class DataService {
       pageId: [DataSourceType.Folder, folderId, bookmark.id],
       title: bookmark.title,
       url: bookmark.url!,
-      image: await IDBService.getImage([DataSourceType.Folder, folderId]),
+      image: await IDBService.getImage([DataSourceType.Folder, folderId, bookmark.id]),
     };
     return page;
   }
