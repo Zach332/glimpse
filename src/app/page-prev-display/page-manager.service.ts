@@ -129,7 +129,7 @@ export class PageManagerService {
       pages.forEach((page) => {
         const selectablePage: SelectablePage = {
           ...page,
-          id: IdGeneratorService.getIdFromDataSourceIdOrPageId(page.pageId),
+          id: IdGeneratorService.getIdFromPageId(page.pageId),
           isSelected: false,
         };
         this.getPageElementsOfType(dataSourceType).push(selectablePage);
