@@ -71,7 +71,7 @@ export class SidebarManagerService {
       windows.forEach((window) => {
         const sidebarButton: SelectableSidebarButton = {
           ...window,
-          id: IdGeneratorService.getIdFromDataSourceIdOrPageId(window.dataSourceId),
+          id: IdGeneratorService.getIdFromDataSourceId(window.dataSourceId),
           isSelected: true,
         };
         windowButtons.push(sidebarButton);
@@ -83,7 +83,7 @@ export class SidebarManagerService {
       folders.forEach((folder) => {
         const sidebarButton: SelectableSidebarButton = {
           ...folder,
-          id: IdGeneratorService.getIdFromDataSourceIdOrPageId(folder.dataSourceId),
+          id: IdGeneratorService.getIdFromDataSourceId(folder.dataSourceId),
           isSelected: true,
         };
         savedButtons.push(sidebarButton);
@@ -118,7 +118,7 @@ export class SidebarManagerService {
       this.updateDataSource(DataSourceType.Folder, (dataSource) =>
         dataSource.push({
           ...newDataSource,
-          id: IdGeneratorService.getIdFromDataSourceIdOrPageId(newDataSource.dataSourceId),
+          id: IdGeneratorService.getIdFromDataSourceId(newDataSource.dataSourceId),
           isSelected: true,
         }),
       );
