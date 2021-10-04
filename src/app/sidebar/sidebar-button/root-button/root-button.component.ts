@@ -1,4 +1,7 @@
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+import { SimpleDialogComponent } from 'src/app/general/simple-dialog/simple-dialog.component';
 import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.service';
@@ -15,10 +18,13 @@ export class RootButtonComponent {
   constructor(
     private pageManagerService: PageManagerService,
     private sidebarManagerService: SidebarManagerService,
+    private nameDialog: MatDialog,
   ) {}
 
   drop() {
-    this.pageManagerService.dragging = false;
+    this.getNameDialog().subscribe((result) => {
+      this.pageManagerService.dropInNew(result, this.buttonData.dataSourceId[0]);
+    });
   }
 
   onClick(): void {
@@ -35,5 +41,14 @@ export class RootButtonComponent {
       this.sidebarManagerService.areAllSelected(this.buttonData.dataSourceId[0]) &&
       this.sidebarManagerService.hasChildren(this.buttonData.dataSourceId[0])
     );
+  }
+
+  getNameDialog(): Observable<string> {
+    const dialogRef = this.nameDialog.open(SimpleDialogComponent, {
+      data: { inputValue: '' },
+    });
+    dialogRef.componentInstance.dialogTitle = 'Name';
+    dialogRef.componentInstance.inputLabel = 'Name';
+    return dialogRef.afterClosed();
   }
 }

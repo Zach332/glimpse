@@ -15,7 +15,7 @@ export class DataService {
 
   // Data sources
 
-  public async addWindow(name?: string, initialPages?: Page[]) {
+  public async addWindow(name?: string, initialPages?: Page[], copy?: boolean) {
     this.closeGlimpseTabAfterCallback(async () => {
       // Create new window
       const currentWindow = browser.windows.getCurrent();
@@ -33,12 +33,16 @@ export class DataService {
 
       // Add initial pages to new window
       if (initialPages) {
-        this.movePages(initialPages, await dataSource);
+        if (copy) {
+          this.copyPages(initialPages, await dataSource);
+        } else {
+          this.movePages(initialPages, await dataSource);
+        }
       }
     });
   }
 
-  public async addFolder(name: string, initialPages?: Page[]) {
+  public async addFolder(name: string, initialPages?: Page[], copy?: boolean) {
     // Create new folder
     const folder = browser.bookmarks.create({
       parentId: (await this.getRootGlimpseFolder()).id,
@@ -48,7 +52,11 @@ export class DataService {
 
     // Add initial pages to new folder
     if (initialPages) {
-      this.movePages(initialPages, dataSource);
+      if (copy) {
+        this.copyPages(initialPages, dataSource);
+      } else {
+        this.movePages(initialPages, dataSource);
+      }
     }
 
     return dataSource;

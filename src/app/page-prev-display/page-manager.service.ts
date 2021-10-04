@@ -114,6 +114,25 @@ export class PageManagerService {
     }
   }
 
+  public dropInNew(name: string, type: DataSourceType) {
+    this.dragging = false;
+    if (name) {
+      if (this.dragMode === 'copy') {
+        if (type === DataSourceType.Window) {
+          this.sidebarManagerService.addWindow(name, this.getDraggedPages(), true);
+        } else {
+          this.sidebarManagerService.addFolder(name, this.getDraggedPages(), true);
+        }
+      } else {
+        if (type === DataSourceType.Window) {
+          this.sidebarManagerService.addWindow(name, this.getDraggedPages(), false);
+        } else {
+          this.sidebarManagerService.addFolder(name, this.getDraggedPages(), false);
+        }
+      }
+    }
+  }
+
   private async updatePages(
     dataSourceType: DataSourceType,
     dataSources: SelectableCollection<SelectableSidebarButton>,

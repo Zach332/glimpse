@@ -23,7 +23,9 @@ export class NewButtonComponent {
   ) {}
 
   public drop() {
-    this.pageManagerService.dragging = false;
+    this.getNameDialog().subscribe((result) => {
+      this.pageManagerService.dropInNew(result, this.buttonData.dataSourceId[0]);
+    });
   }
 
   isHidden(): boolean {

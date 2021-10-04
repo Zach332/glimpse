@@ -3,6 +3,7 @@ import { DataSourceType } from 'src/app/interfaces/data-source-type';
 import { IdGeneratorService } from 'src/app/id-generator-serivce';
 import { BehaviorSubject, Observable } from 'rxjs';
 import * as browser from 'webextension-polyfill';
+import { Page } from 'src/app/interfaces/page';
 import { DataService } from '../../data.service';
 import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
@@ -105,12 +106,12 @@ export class SidebarManagerService {
     this.updateDataSource(button.dataSourceId[0]);
   }
 
-  public addWindow(name: string): void {
-    this.dataService.addWindow(name);
+  public addWindow(name: string, initialPages?: Page[], copy?: boolean): void {
+    this.dataService.addWindow(name, initialPages, copy);
   }
 
-  public addFolder(name: string): void {
-    this.dataService.addFolder(name).then((newDataSource) => {
+  public addFolder(name: string, initialPages?: Page[], copy?: boolean): void {
+    this.dataService.addFolder(name, initialPages, copy).then((newDataSource) => {
       this.updateDataSource(DataSourceType.Folder, (dataSource) =>
         dataSource.push({
           ...newDataSource,
