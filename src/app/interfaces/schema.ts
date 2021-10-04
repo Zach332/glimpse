@@ -1,9 +1,9 @@
 import { DBSchema } from 'idb';
-import { DataSourceId } from './data-source-id';
+import { PageId } from './page-id';
 
 export interface Schema extends DBSchema {
   images: {
-    key: DataSourceId;
+    key: PageId;
     value: string;
   };
   names: {

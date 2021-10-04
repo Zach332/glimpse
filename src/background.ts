@@ -18,7 +18,10 @@ browser.webNavigation.onCompleted.addListener(async (details) => {
       .then((tabs) => tabs[0]);
     const image = browser.tabs.captureVisibleTab();
     if (details.tabId === (await currentTab).id! && isValidPage(details.url)) {
-      IDBService.putImage([DataSourceType.Window, (await currentTab).id!], await image);
+      IDBService.putImage(
+        [DataSourceType.Window, (await currentTab).windowId!, (await currentTab).id!],
+        await image,
+      );
     }
   }
 });
@@ -31,7 +34,10 @@ browser.tabs.onActivated.addListener((activeInfo) => {
       isValidPage((await browser.tabs.get(activeInfo.tabId)).url!)
     ) {
       const image = browser.tabs.captureVisibleTab();
-      IDBService.putImage([DataSourceType.Window, activeInfo.tabId], await image);
+      IDBService.putImage(
+        [DataSourceType.Window, activeInfo.windowId, activeInfo.tabId],
+        await image,
+      );
     }
   }, 500);
 });
