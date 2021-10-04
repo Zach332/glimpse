@@ -1,28 +1,4 @@
 <div class="flex-col header-space">
-  <app-root-button
-    [buttonData]="sidebarManagerService.windowRootButton"
-    class="flex"
-  ></app-root-button>
-  <app-data-source-button
-    *ngFor="let button of sidebarManagerService.windowSidebarButtons.value"
-    [buttonData]="button"
-    class="flex"
-  ></app-data-source-button>
-  <app-new-button
-    [buttonData]="sidebarManagerService.newWindowButton"
-    class="flex"
-  ></app-new-button>
-  <app-root-button
-    [buttonData]="sidebarManagerService.savedRootButton"
-    class="flex"
-  ></app-root-button>
-  <app-data-source-button
-    *ngFor="let button of sidebarManagerService.savedSidebarButtons.value"
-    [buttonData]="button"
-    class="flex"
-  ></app-data-source-button>
-  <app-new-button [buttonData]="sidebarManagerService.newSavedButton" class="flex"></app-new-button>
-  <mat-divider class="divider-margin"></mat-divider>
   <div class="flex space-around">
     <div>
       <button mat-raised-button (click)="selectAll()">Select all</button>
@@ -59,4 +35,28 @@
       <button mat-raised-button (click)="openAll()">Open all</button>
     </div>
   </div>
+  <mat-divider class="divider-margin"></mat-divider>
+  <app-root-button
+    [buttonData]="sidebarManagerService.windowRootButton"
+    class="flex"
+  ></app-root-button>
+  <app-data-source-button
+    *ngFor="let button of sidebarManagerService.windowSidebarButtons.value"
+    [buttonData]="button"
+    class="flex"
+  ></app-data-source-button>
+  <app-new-button
+    [buttonData]="sidebarManagerService.newWindowButton"
+    class="flex"
+  ></app-new-button>
+  <app-root-button
+    [buttonData]="sidebarManagerService.savedRootButton"
+    class="flex"
+  ></app-root-button>
+  <app-data-source-button
+    *ngFor="let button of sidebarManagerService.savedSidebarButtons.value"
+    [buttonData]="button"
+    class="flex"
+  ></app-data-source-button>
+  <app-new-button [buttonData]="sidebarManagerService.newSavedButton" class="flex"></app-new-button>
 </div>
