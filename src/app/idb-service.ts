@@ -6,8 +6,6 @@ export class IDBService {
   static getDB() {
     return openDB<Schema>('glimpse', 9, {
       upgrade(db) {
-        db.deleteObjectStore('images');
-        db.deleteObjectStore('names');
         db.createObjectStore('images');
         db.createObjectStore('names');
       },
