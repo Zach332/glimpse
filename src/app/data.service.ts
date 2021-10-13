@@ -10,8 +10,7 @@ import { Operation } from './interfaces/operation';
   providedIn: 'root',
 })
 export class DataService {
-  // TODO: Potentially switch this to using a fixed id to improve performance
-  readonly GLIMPSE_BOOKMARK_FOLDER_NAME = 'glimpse-dev';
+  readonly GLIMPSE_BOOKMARK_FOLDER_NAME = 'glimpse-saved';
 
   // Data sources
 
@@ -267,12 +266,19 @@ export class DataService {
   // Helper methods
 
   async getRootGlimpseFolder() {
-    // TODO: Handle errors
     const otherBookmarksNode = (await browser.bookmarks.getTree())[0].children!.filter(
       (treeNode) => treeNode.title === 'Other bookmarks' || treeNode.title === 'Other Bookmarks',
     )[0];
-    return otherBookmarksNode.children!.filter(
+    const filteredBookmarks = otherBookmarksNode.children!.filter(
       (treeNode) => treeNode.title === this.GLIMPSE_BOOKMARK_FOLDER_NAME,
-    )[0];
+    );
+    // Create root glimpse folder
+    if (filteredBookmarks.length === 0) {
+      return await browser.bookmarks.create({
+        parentId: otherBookmarksNode.id,
+        title: this.GLIMPSE_BOOKMARK_FOLDER_NAME,
+      });
+    }
+    return filteredBookmarks[0];
   }
 }
