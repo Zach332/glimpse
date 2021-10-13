@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
+import { DataService } from 'src/app/data.service';
 import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.service';
 import { SimpleDialogComponent } from '../../../general/simple-dialog/simple-dialog.component';
 
@@ -14,11 +15,18 @@ export class DataSourceButtonComponent {
   @Input()
   buttonData!: SelectableSidebarButton;
 
+  isActive: boolean = false;
+
   constructor(
     private pageManagerService: PageManagerService,
     private sidebarManagerService: SidebarManagerService,
     private renameDialog: MatDialog,
-  ) {}
+    private dataService: DataService,
+    private ngZone: NgZone,
+  ) {
+    this.getIsActive().then((res) => (this.isActive = res));
+    sidebarManagerService.activeObservable.subscribe(() => this.updateIsActive());
+  }
 
   public drop() {
     this.pageManagerService.dropPages(this.buttonData);
@@ -26,6 +34,18 @@ export class DataSourceButtonComponent {
 
   isHidden(): boolean {
     return this.sidebarManagerService.isCollapsed(this.buttonData.dataSourceId[0]);
+  }
+
+  private async updateIsActive() {
+    this.ngZone.run(() => {
+      this.getIsActive().then((res) => (this.isActive = res));
+    });
+  }
+
+  private async getIsActive() {
+    return this.dataService
+      .getActiveWindow()
+      .then((resultId) => resultId === this.buttonData.dataSourceId[1]);
   }
 
   delete(): void {

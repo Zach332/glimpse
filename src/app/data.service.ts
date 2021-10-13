@@ -258,6 +258,12 @@ export class DataService {
     this.closeGlimpseTab(currentTabId);
   }
 
+  // Information
+
+  public async getActiveWindow(): Promise<number | undefined> {
+    return browser.windows.getCurrent().then((window) => window.id);
+  }
+
   // Helper methods
 
   async getRootGlimpseFolder() {

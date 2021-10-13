@@ -34,6 +34,10 @@ export class SidebarManagerService {
     browser.bookmarks.onRemoved.addListener(() => observer.next());
   });
 
+  public activeObservable = new Observable((observer) => {
+    browser.windows.onFocusChanged.addListener(() => observer.next());
+  });
+
   constructor(private dataService: DataService) {
     // TODO: These should use a new interface or something
     // And maybe rename SelectableSidebarButton to SelectableDataSource
