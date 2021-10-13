@@ -4,6 +4,6 @@ export interface Page {
   readonly pageId: PageId;
   title: string;
   url: string;
-  // TODO: Add favicon
+  faviconUrl: string | undefined;
   image: string | undefined;
 }

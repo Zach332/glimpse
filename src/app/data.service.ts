@@ -164,6 +164,7 @@ export class DataService {
       pageId: [DataSourceType.Window, windowId, tab.id!],
       title: tab.title!,
       url: tab.url!,
+      faviconUrl: tab.favIconUrl,
       image: await IDBService.getImage([DataSourceType.Window, windowId, tab.id!]),
     };
     return page;
@@ -182,6 +183,7 @@ export class DataService {
       pageId: [DataSourceType.Folder, folderId, bookmark.id],
       title: bookmark.title,
       url: bookmark.url!,
+      faviconUrl: `https://www.google.com/s2/favicons?domain=${bookmark.url!}`,
       image: await IDBService.getImage([DataSourceType.Folder, folderId, bookmark.id]),
     };
     return page;
