@@ -112,7 +112,7 @@ export class DataService {
     if (dataSource.dataSourceId[0] === DataSourceType.Window) {
       browser.windows.remove(dataSource.dataSourceId[1]);
     } else {
-      browser.bookmarks.remove(dataSource.dataSourceId[1]);
+      browser.bookmarks.removeTree(dataSource.dataSourceId[1]);
     }
   }
 
