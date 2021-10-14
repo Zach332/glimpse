@@ -30,17 +30,11 @@ export class PageManagerService {
 
   public draggedElement: string = '';
 
-  public pagePrevWidth: number = 400;
-
   public pagePrevMax = 600;
 
   public pagePrevMin = 200;
 
   public pagePrevStep = 1;
-
-  public pagePrevCollapse = false;
-
-  public dragMode: 'copy' | 'move' = 'move';
 
   public searchQuery = new BehaviorSubject<string>('');
 
@@ -76,6 +70,34 @@ export class PageManagerService {
         (this.displayPageElements = pageFilterService.filterByQuery(newQuery, this.pageElements)),
     );
     this.hotkeyManagerService.addShortcut('backspace').subscribe(() => this.removeAll());
+  }
+
+  public get pagePrevWidth() {
+    return this.sidebarManagerService.savedSettings.pagePrevWidth;
+  }
+
+  public set pagePrevWidth(newWidth: number) {
+    this.sidebarManagerService.updateSettings(
+      (oldSettings) => (oldSettings.pagePrevWidth = newWidth),
+    );
+  }
+
+  public get dragMode() {
+    return this.sidebarManagerService.savedSettings.dragMode;
+  }
+
+  public set dragMode(newMode: 'copy' | 'move') {
+    this.sidebarManagerService.updateSettings((oldSettings) => (oldSettings.dragMode = newMode));
+  }
+
+  public get pagePrevCollapse() {
+    return this.sidebarManagerService.savedSettings.pagePrevCollapse;
+  }
+
+  public set pagePrevCollapse(newCollapse: boolean) {
+    this.sidebarManagerService.updateSettings(
+      (oldSettings) => (oldSettings.pagePrevCollapse = newCollapse),
+    );
   }
 
   public updatePageWidth($event: MatSliderChange): void {

@@ -33,7 +33,7 @@ export class RootButtonComponent {
 
   toggleExpand($event: MouseEvent): void {
     $event.stopPropagation();
-    this.buttonData.expanded = !this.buttonData.expanded;
+    this.sidebarManagerService.toggleExpanded(this.buttonData.dataSourceId[0]);
   }
 
   isSelected(): boolean {

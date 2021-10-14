@@ -4,9 +4,11 @@ import { IdGeneratorService } from 'src/app/id-generator-serivce';
 import { BehaviorSubject, Observable } from 'rxjs';
 import * as browser from 'webextension-polyfill';
 import { Page } from 'src/app/interfaces/page';
+import { IDBService } from 'src/app/idb-service';
 import { DataService } from '../../data.service';
 import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
+import { Settings } from '../../interfaces/settings';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +28,17 @@ export class SidebarManagerService {
 
   public newSavedButton: SelectableSidebarButton;
 
+  public savedSettings: Settings;
+
+  private static DEFAULT_SETTINGS: Settings = {
+    pagePrevWidth: 400,
+    pagePrevCollapse: false,
+    dragMode: 'move',
+    selectedSidebarItems: new Map<string, boolean>(),
+    windowExpanded: true,
+    savedExpanded: true,
+  };
+
   private browserObservable = new Observable((observer) => {
     browser.windows.onCreated.addListener(() => observer.next());
     browser.windows.onRemoved.addListener(() => observer.next());
@@ -39,6 +52,8 @@ export class SidebarManagerService {
   });
 
   constructor(private dataService: DataService) {
+    this.savedSettings = SidebarManagerService.DEFAULT_SETTINGS;
+
     // TODO: These should use a new interface or something
     // And maybe rename SelectableSidebarButton to SelectableDataSource
     this.windowRootButton = {
@@ -70,13 +85,21 @@ export class SidebarManagerService {
   }
 
   public async init() {
+    await IDBService.getSettings().then((settings) => {
+      if (settings) {
+        this.savedSettings = settings;
+      }
+    });
+    this.windowRootButton.expanded = this.savedSettings.windowExpanded;
+    this.savedRootButton.expanded = this.savedSettings.savedExpanded;
     const windowButtons: SelectableSidebarButton[] = [];
     await this.dataService.getWindowDataSources().then((windows) => {
       windows.forEach((window) => {
         const sidebarButton: SelectableSidebarButton = {
           ...window,
           id: IdGeneratorService.getIdFromDataSourceId(window.dataSourceId),
-          isSelected: true,
+          isSelected:
+            this.savedSettings.selectedSidebarItems.get(window.dataSourceId.toString()) || false,
         };
         windowButtons.push(sidebarButton);
       });
@@ -88,7 +111,8 @@ export class SidebarManagerService {
         const sidebarButton: SelectableSidebarButton = {
           ...folder,
           id: IdGeneratorService.getIdFromDataSourceId(folder.dataSourceId),
-          isSelected: true,
+          isSelected:
+            this.savedSettings.selectedSidebarItems.get(folder.dataSourceId.toString()) || false,
         };
         savedButtons.push(sidebarButton);
       });
@@ -100,6 +124,20 @@ export class SidebarManagerService {
     this.updateDataSource(DataSourceType.Folder, (dataSource) =>
       dataSource.adjustCollection(savedButtons),
     );
+  }
+
+  public toggleExpanded(type: DataSourceType) {
+    if (type === DataSourceType.Window) {
+      this.windowRootButton.expanded = !this.windowRootButton.expanded;
+      this.updateSettings(
+        (settings) => (settings.windowExpanded = this.windowRootButton.expanded || false),
+      );
+    } else {
+      this.savedRootButton.expanded = !this.savedRootButton.expanded;
+      this.updateSettings(
+        (settings) => (settings.savedExpanded = this.savedRootButton.expanded || false),
+      );
+    }
   }
 
   public delete(button: SelectableSidebarButton): void {
@@ -172,6 +210,25 @@ export class SidebarManagerService {
       update(dataSource);
     }
     this.getDataSourceObservable(type).next(dataSource);
+    this.updateSettings((settings) => this.updateSettingsMap(settings));
+  }
+
+  public updateSettings(update?: (original: Settings) => void) {
+    if (update) {
+      update(this.savedSettings);
+    }
+    IDBService.putSettings(this.savedSettings);
+  }
+
+  private updateSettingsMap(settings: Settings) {
+    const updatedMap = new Map<string, boolean>();
+    this.windowSidebarButtons.value.collection.forEach((element) =>
+      updatedMap.set(element.dataSourceId.toString(), element.isSelected),
+    );
+    this.savedSidebarButtons.value.collection.forEach((element) =>
+      updatedMap.set(element.dataSourceId.toString(), element.isSelected),
+    );
+    settings.selectedSidebarItems = updatedMap;
   }
 
   private getDataSourceObservable(

@@ -1,5 +1,6 @@
 import { DBSchema } from 'idb';
 import { PageId } from './page-id';
+import { Settings } from './settings';
 
 export interface Schema extends DBSchema {
   images: {
@@ -9,5 +10,9 @@ export interface Schema extends DBSchema {
   names: {
     key: number;
     value: string;
+  };
+  settings: {
+    key: string;
+    value: Settings;
   };
 }
