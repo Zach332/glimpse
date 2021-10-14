@@ -10,4 +10,8 @@ export interface Schema extends DBSchema {
     key: number;
     value: string;
   };
+  accessTimes: {
+    key: PageId;
+    value: number;
+  };
 }

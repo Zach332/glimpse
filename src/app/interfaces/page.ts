@@ -6,4 +6,5 @@ export interface Page {
   url: string;
   faviconUrl: string | undefined;
   image: string | undefined;
+  timeLastAccessed: number;
 }

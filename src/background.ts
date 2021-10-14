@@ -41,3 +41,14 @@ browser.tabs.onActivated.addListener((activeInfo) => {
     }
   }, 500);
 });
+
+browser.tabs.onCreated.addListener((tab) => {
+  IDBService.putTimeLastAccessed([DataSourceType.Window, tab.windowId!, tab.id!], Date.now());
+});
+
+browser.tabs.onActivated.addListener((activeInfo) => {
+  IDBService.putTimeLastAccessed(
+    [DataSourceType.Window, activeInfo.windowId, activeInfo.tabId],
+    Date.now(),
+  );
+});

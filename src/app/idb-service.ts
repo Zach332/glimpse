@@ -4,10 +4,11 @@ import { PageId } from './interfaces/page-id';
 
 export class IDBService {
   static getDB() {
-    return openDB<Schema>('glimpse', 9, {
+    return openDB<Schema>('glimpse', 11, {
       upgrade(db) {
         db.createObjectStore('images');
         db.createObjectStore('names');
+        db.createObjectStore('accessTimes');
       },
     });
   }
@@ -26,5 +27,13 @@ export class IDBService {
 
   static async getName(windowId: number) {
     return (await this.getDB()).get('names', windowId);
+  }
+
+  static async putTimeLastAccessed(pageId: PageId, timeLastAccessed: number) {
+    return (await this.getDB()).put('accessTimes', timeLastAccessed, pageId);
+  }
+
+  static async getTimeLastAccessed(pageId: PageId) {
+    return (await this.getDB()).get('accessTimes', pageId);
   }
 }
