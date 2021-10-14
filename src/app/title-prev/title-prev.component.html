@@ -1,5 +1,9 @@
 <mat-card-header class="prev-header">
-  <div mat-card-avatar class="example-header-image"></div>
+  <div
+    mat-card-avatar
+    [style.background-image]="'url(' + tabData.faviconUrl + ')'"
+    class="favicon"
+  ></div>
   <mat-card-title class="prev-title">{{ tabData.title }}</mat-card-title>
   <mat-card-subtitle class="prev-site">{{ tabData.url | siteTrim }}</mat-card-subtitle>
   <button mat-icon-button (click)="close($event)" class="prev-close">
