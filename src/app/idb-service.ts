@@ -7,11 +7,12 @@ export class IDBService {
   static SETTINGS_ID = 'settings';
 
   static getDB() {
-    return openDB<Schema>('glimpse', 9, {
+    return openDB<Schema>('glimpse', 11, {
       upgrade(db) {
         db.createObjectStore('images');
         db.createObjectStore('names');
         db.createObjectStore('settings');
+        db.createObjectStore('accessTimes');
       },
     });
   }
@@ -38,5 +39,13 @@ export class IDBService {
 
   static async getSettings() {
     return (await this.getDB()).get('settings', this.SETTINGS_ID);
+  }
+
+  static async putTimeLastAccessed(pageId: PageId, timeLastAccessed: number) {
+    return (await this.getDB()).put('accessTimes', timeLastAccessed, pageId);
+  }
+
+  static async getTimeLastAccessed(pageId: PageId) {
+    return (await this.getDB()).get('accessTimes', pageId);
   }
 }

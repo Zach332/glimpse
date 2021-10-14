@@ -5,6 +5,7 @@ import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
 import { IDBService } from './idb-service';
 import { Operation } from './interfaces/operation';
+import { PageId } from './interfaces/page-id';
 
 @Injectable({
   providedIn: 'root',
@@ -112,7 +113,7 @@ export class DataService {
     if (dataSource.dataSourceId[0] === DataSourceType.Window) {
       browser.windows.remove(dataSource.dataSourceId[1]);
     } else {
-      browser.bookmarks.remove(dataSource.dataSourceId[1]);
+      browser.bookmarks.removeTree(dataSource.dataSourceId[1]);
     }
   }
 
@@ -160,11 +161,14 @@ export class DataService {
   }
 
   async convertTabToPage(tab: browser.Tabs.Tab, windowId: number) {
+    const pageId: PageId = [DataSourceType.Window, windowId, tab.id!];
     const page: Page = {
-      pageId: [DataSourceType.Window, windowId, tab.id!],
+      pageId,
       title: tab.title!,
       url: tab.url!,
+      faviconUrl: tab.favIconUrl,
       image: await IDBService.getImage([DataSourceType.Window, windowId, tab.id!]),
+      timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? Date.now(),
     };
     return page;
   }
@@ -178,11 +182,14 @@ export class DataService {
   }
 
   async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode, folderId: string) {
+    const pageId: PageId = [DataSourceType.Folder, folderId, bookmark.id];
     const page: Page = {
-      pageId: [DataSourceType.Folder, folderId, bookmark.id],
+      pageId,
       title: bookmark.title,
       url: bookmark.url!,
+      faviconUrl: `https://www.google.com/s2/favicons?domain=${bookmark.url!}`,
       image: await IDBService.getImage([DataSourceType.Folder, folderId, bookmark.id]),
+      timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? bookmark.dateAdded!,
     };
     return page;
   }

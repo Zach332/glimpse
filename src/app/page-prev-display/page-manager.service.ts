@@ -177,7 +177,11 @@ export class PageManagerService {
       });
     });
     this.updatePageElements((currentPageElements) =>
-      currentPageElements.adjustCollection(this.savedPageElements.concat(this.windowPageElements)),
+      currentPageElements.adjustCollection(
+        this.savedPageElements
+          .concat(this.windowPageElements)
+          .sort((a, b) => b.timeLastAccessed - a.timeLastAccessed),
+      ),
     );
   }
 
