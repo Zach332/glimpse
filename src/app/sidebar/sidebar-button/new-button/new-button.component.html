@@ -1,7 +1,7 @@
 <button
   cdkDropList
   *ngIf="!isHidden()"
-  (cdkDropListDropped)="drop()"
+  (cdkDropListDropped)="drop($event)"
   id="{{ buttonData.id }}"
   mat-stroked-button
   class="page-category child"

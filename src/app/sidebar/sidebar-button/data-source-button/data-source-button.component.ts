@@ -3,6 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { DataService } from 'src/app/data.service';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { SelectablePage } from 'src/app/interfaces/selectable-page';
 import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.service';
 import { SimpleDialogComponent } from '../../../general/simple-dialog/simple-dialog.component';
 
@@ -28,8 +30,10 @@ export class DataSourceButtonComponent {
     sidebarManagerService.activeObservable.subscribe(() => this.updateIsActive());
   }
 
-  public drop() {
-    this.pageManagerService.dropPages(this.buttonData);
+  drop(dropped: CdkDragDrop<SelectablePage>) {
+    if (dropped.isPointerOverContainer) {
+      this.pageManagerService.dropPages(this.buttonData);
+    }
   }
 
   isHidden(): boolean {

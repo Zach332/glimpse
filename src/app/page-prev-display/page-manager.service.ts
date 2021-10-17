@@ -129,7 +129,6 @@ export class PageManagerService {
   }
 
   public async dropPages(destination: DataSource): Promise<void> {
-    this.dragging = false;
     if (this.dragMode === 'copy') {
       await this.dataService.copyPages(this.getDraggedPages(), destination);
     } else {
@@ -138,7 +137,6 @@ export class PageManagerService {
   }
 
   public dropInNew(name: string, type: DataSourceType) {
-    this.dragging = false;
     if (name) {
       if (this.dragMode === 'copy') {
         if (type === DataSourceType.Window) {

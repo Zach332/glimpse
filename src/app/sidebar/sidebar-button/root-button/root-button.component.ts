@@ -1,7 +1,9 @@
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { SimpleDialogComponent } from 'src/app/general/simple-dialog/simple-dialog.component';
+import { SelectablePage } from 'src/app/interfaces/selectable-page';
 import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.service';
@@ -21,10 +23,12 @@ export class RootButtonComponent {
     private nameDialog: MatDialog,
   ) {}
 
-  drop() {
-    this.getNameDialog().subscribe((result) => {
-      this.pageManagerService.dropInNew(result, this.buttonData.dataSourceId[0]);
-    });
+  drop(dropped: CdkDragDrop<SelectablePage>) {
+    if (dropped.isPointerOverContainer) {
+      this.getNameDialog().subscribe((result) => {
+        this.pageManagerService.dropInNew(result, this.buttonData.dataSourceId[0]);
+      });
+    }
   }
 
   onClick(): void {
