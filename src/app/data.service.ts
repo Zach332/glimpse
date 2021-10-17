@@ -168,7 +168,7 @@ export class DataService {
       url: tab.url!,
       faviconUrl: tab.favIconUrl,
       image: await IDBService.getImage([DataSourceType.Window, windowId, tab.id!]),
-      timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? Date.now(),
+      timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? tab.id!,
     };
     return page;
   }
