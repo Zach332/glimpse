@@ -41,6 +41,7 @@ export class PageManagerService {
   private browserObservable = new Observable((observer) => {
     browser.tabs.onCreated.addListener(() => observer.next());
     browser.tabs.onRemoved.addListener(() => observer.next());
+    browser.tabs.onActivated.addListener(() => observer.next());
     browser.tabs.onDetached.addListener(() => observer.next());
     browser.webNavigation.onCommitted.addListener(() => observer.next());
   });
