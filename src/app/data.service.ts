@@ -121,14 +121,19 @@ export class DataService {
 
   async addPage(page: Page, dataSource: DataSource) {
     if (dataSource.dataSourceId[0] === DataSourceType.Window) {
-      browser.tabs.create({ url: page.url, active: false, windowId: dataSource.dataSourceId[1] });
-    } else {
-      browser.bookmarks.create({
-        parentId: dataSource.dataSourceId[1],
-        title: page.title,
+      const tab = await browser.tabs.create({
         url: page.url,
+        active: false,
+        windowId: dataSource.dataSourceId[1],
       });
+      return DataService.getPageIdFromTab(tab);
     }
+    const bookmark = await browser.bookmarks.create({
+      parentId: dataSource.dataSourceId[1],
+      title: page.title,
+      url: page.url,
+    });
+    return DataService.getPageIdFromBookmark(bookmark);
   }
 
   public async getPagesByDataSources(dataSources: DataSource[]) {
@@ -154,20 +159,18 @@ export class DataService {
     // TODO: Switch this to use .then?
     // Also for other methods in DataService
     return Promise.all(
-      (await browser.tabs.query({ windowId })).map(async (tab) =>
-        this.convertTabToPage(tab, windowId),
-      ),
+      (await browser.tabs.query({ windowId })).map(async (tab) => this.convertTabToPage(tab)),
     );
   }
 
-  async convertTabToPage(tab: browser.Tabs.Tab, windowId: number) {
-    const pageId: PageId = [DataSourceType.Window, windowId, tab.id!];
+  async convertTabToPage(tab: browser.Tabs.Tab) {
+    const pageId: PageId = DataService.getPageIdFromTab(tab);
     const page: Page = {
       pageId,
       title: tab.title!,
       url: tab.url!,
       faviconUrl: tab.favIconUrl,
-      image: await IDBService.getImage([DataSourceType.Window, windowId, tab.id!]),
+      image: await IDBService.getImage(pageId),
       timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? tab.id!,
     };
     return page;
@@ -175,20 +178,18 @@ export class DataService {
 
   public async getPagesByFolderId(folderId: string) {
     return browser.bookmarks.getChildren(folderId).then((folder) => {
-      return Promise.all(
-        folder.map(async (bookmark) => this.convertBookmarkToPage(bookmark, folderId)),
-      );
+      return Promise.all(folder.map(async (bookmark) => this.convertBookmarkToPage(bookmark)));
     });
   }
 
-  async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode, folderId: string) {
-    const pageId: PageId = [DataSourceType.Folder, folderId, bookmark.id];
+  async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode) {
+    const pageId: PageId = DataService.getPageIdFromBookmark(bookmark);
     const page: Page = {
       pageId,
       title: bookmark.title,
       url: bookmark.url!,
       faviconUrl: `https://www.google.com/s2/favicons?domain=${bookmark.url!}`,
-      image: await IDBService.getImage([DataSourceType.Folder, folderId, bookmark.id]),
+      image: await IDBService.getImage(pageId),
       timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? bookmark.dateAdded!,
     };
     return page;
@@ -221,19 +222,27 @@ export class DataService {
   }
 
   async moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
+    let destinationPageId;
     // Avoid deleting tab in window -> window move
     if (
       source.pageId[0] === DataSourceType.Window &&
       destination.dataSourceId[0] === DataSourceType.Window &&
       operation === Operation.Move
     ) {
-      browser.tabs.move(source.pageId[2], { index: -1, windowId: destination.dataSourceId[1] });
+      const tab = (await browser.tabs.move(source.pageId[2], {
+        index: -1,
+        windowId: destination.dataSourceId[1],
+      })) as browser.Tabs.Tab;
+      destinationPageId = DataService.getPageIdFromTab(tab);
     } else {
       if (operation === Operation.Move) {
         this.removePage(source);
       }
-      this.addPage(source, destination);
+      destinationPageId = await this.addPage(source, destination);
     }
+
+    // Copy data stored in IDB
+    await IDBService.copyPageData(source.pageId, destinationPageId);
   }
 
   public async removePage(page: Page) {
@@ -271,6 +280,14 @@ export class DataService {
   }
 
   // Helper methods
+
+  public static getPageIdFromTab(tab: browser.Tabs.Tab): PageId {
+    return [DataSourceType.Window, tab.windowId!, tab.id!];
+  }
+
+  public static getPageIdFromBookmark(bookmark: browser.Bookmarks.BookmarkTreeNode): PageId {
+    return [DataSourceType.Folder, bookmark.parentId!, bookmark.id];
+  }
 
   async getRootGlimpseFolder() {
     const otherBookmarksNode = (await browser.bookmarks.getTree())[0].children!.filter(
