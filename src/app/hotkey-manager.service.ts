@@ -7,10 +7,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class HotkeyManagerService {
+  public hotkeyRegistry: Map<string, string> = new Map();
+
   constructor(private eventManager: EventManager, @Inject(DOCUMENT) private document: Document) {}
 
-  public addShortcut(keys: string, ignoreInput: boolean = true) {
+  public addShortcut(keys: string, label: string, ignoreInput: boolean = true) {
     const keyEvent = `keydown.${keys}`;
+    this.hotkeyRegistry.set(keys, label);
     return new Observable<KeyboardEvent>((observer) => {
       const handler = (event: KeyboardEvent) => {
         const eventTarget: any = event?.target;
@@ -27,6 +30,7 @@ export class HotkeyManagerService {
       );
 
       return () => {
+        this.hotkeyRegistry.delete(keys);
         removeListener();
       };
     });

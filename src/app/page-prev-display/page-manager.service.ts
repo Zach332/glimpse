@@ -70,7 +70,7 @@ export class PageManagerService {
       (newQuery) =>
         (this.displayPageElements = pageFilterService.filterByQuery(newQuery, this.pageElements)),
     );
-    this.hotkeyManagerService.addShortcut('backspace').subscribe(() => this.removeAll());
+    this.hotkeyManagerService.addShortcut('backspace', 'delete').subscribe(() => this.removeAll());
   }
 
   public get pagePrevWidth() {

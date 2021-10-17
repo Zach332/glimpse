@@ -29,7 +29,7 @@ export class SimpleDialogComponent implements OnDestroy {
 
   ngAfterViewInit(): void {
     this.enterHotkey = this.hotkeyManagerService
-      .addShortcut('enter', false)
+      .addShortcut('enter', 'submit', false)
       .subscribe(() => this.dialogRef.close(this.data.inputValue));
   }
 

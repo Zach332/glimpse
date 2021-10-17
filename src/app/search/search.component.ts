@@ -17,7 +17,7 @@ export class SearchComponent {
 
   ngAfterViewInit(): void {
     this.hotkeyManagerService
-      .addShortcut('f')
+      .addShortcut('f', 'find')
       .subscribe(() => this.searchInput.nativeElement.focus());
   }
 }
