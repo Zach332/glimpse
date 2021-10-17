@@ -159,20 +159,18 @@ export class DataService {
     // TODO: Switch this to use .then?
     // Also for other methods in DataService
     return Promise.all(
-      (await browser.tabs.query({ windowId })).map(async (tab) =>
-        this.convertTabToPage(tab, windowId),
-      ),
+      (await browser.tabs.query({ windowId })).map(async (tab) => this.convertTabToPage(tab)),
     );
   }
 
-  async convertTabToPage(tab: browser.Tabs.Tab, windowId: number) {
-    const pageId: PageId = [DataSourceType.Window, windowId, tab.id!];
+  async convertTabToPage(tab: browser.Tabs.Tab) {
+    const pageId: PageId = DataService.getPageIdFromTab(tab);
     const page: Page = {
       pageId,
       title: tab.title!,
       url: tab.url!,
       faviconUrl: tab.favIconUrl,
-      image: await IDBService.getImage([DataSourceType.Window, windowId, tab.id!]),
+      image: await IDBService.getImage(pageId),
       timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? tab.id!,
     };
     return page;
@@ -180,20 +178,18 @@ export class DataService {
 
   public async getPagesByFolderId(folderId: string) {
     return browser.bookmarks.getChildren(folderId).then((folder) => {
-      return Promise.all(
-        folder.map(async (bookmark) => this.convertBookmarkToPage(bookmark, folderId)),
-      );
+      return Promise.all(folder.map(async (bookmark) => this.convertBookmarkToPage(bookmark)));
     });
   }
 
-  async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode, folderId: string) {
-    const pageId: PageId = [DataSourceType.Folder, folderId, bookmark.id];
+  async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode) {
+    const pageId: PageId = DataService.getPageIdFromBookmark(bookmark);
     const page: Page = {
       pageId,
       title: bookmark.title,
       url: bookmark.url!,
       faviconUrl: `https://www.google.com/s2/favicons?domain=${bookmark.url!}`,
-      image: await IDBService.getImage([DataSourceType.Folder, folderId, bookmark.id]),
+      image: await IDBService.getImage(pageId),
       timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? bookmark.dateAdded!,
     };
     return page;
@@ -285,7 +281,6 @@ export class DataService {
 
   // Helper methods
 
-  // TODO: Replace manual calls with these two helper methods
   public static getPageIdFromTab(tab: browser.Tabs.Tab): PageId {
     return [DataSourceType.Window, tab.windowId!, tab.id!];
   }
