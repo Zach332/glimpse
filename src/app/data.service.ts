@@ -121,14 +121,19 @@ export class DataService {
 
   async addPage(page: Page, dataSource: DataSource) {
     if (dataSource.dataSourceId[0] === DataSourceType.Window) {
-      browser.tabs.create({ url: page.url, active: false, windowId: dataSource.dataSourceId[1] });
-    } else {
-      browser.bookmarks.create({
-        parentId: dataSource.dataSourceId[1],
-        title: page.title,
+      const tab = await browser.tabs.create({
         url: page.url,
+        active: false,
+        windowId: dataSource.dataSourceId[1],
       });
+      return DataService.getPageIdFromTab(tab);
     }
+    const bookmark = await browser.bookmarks.create({
+      parentId: dataSource.dataSourceId[1],
+      title: page.title,
+      url: page.url,
+    });
+    return DataService.getPageIdFromBookmark(bookmark);
   }
 
   public async getPagesByDataSources(dataSources: DataSource[]) {
@@ -221,19 +226,27 @@ export class DataService {
   }
 
   async moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
+    let destinationPageId;
     // Avoid deleting tab in window -> window move
     if (
       source.pageId[0] === DataSourceType.Window &&
       destination.dataSourceId[0] === DataSourceType.Window &&
       operation === Operation.Move
     ) {
-      browser.tabs.move(source.pageId[2], { index: -1, windowId: destination.dataSourceId[1] });
+      const tab = (await browser.tabs.move(source.pageId[2], {
+        index: -1,
+        windowId: destination.dataSourceId[1],
+      })) as browser.Tabs.Tab;
+      destinationPageId = DataService.getPageIdFromTab(tab);
     } else {
       if (operation === Operation.Move) {
         this.removePage(source);
       }
-      this.addPage(source, destination);
+      destinationPageId = await this.addPage(source, destination);
     }
+
+    // Copy data stored in IDB
+    await IDBService.copyPageData(source.pageId, destinationPageId);
   }
 
   public async removePage(page: Page) {
@@ -271,6 +284,15 @@ export class DataService {
   }
 
   // Helper methods
+
+  // TODO: Replace manual calls with these two helper methods
+  public static getPageIdFromTab(tab: browser.Tabs.Tab): PageId {
+    return [DataSourceType.Window, tab.windowId!, tab.id!];
+  }
+
+  public static getPageIdFromBookmark(bookmark: browser.Bookmarks.BookmarkTreeNode): PageId {
+    return [DataSourceType.Folder, bookmark.parentId!, bookmark.id];
+  }
 
   async getRootGlimpseFolder() {
     const otherBookmarksNode = (await browser.bookmarks.getTree())[0].children!.filter(

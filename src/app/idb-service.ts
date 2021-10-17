@@ -48,4 +48,11 @@ export class IDBService {
   static async getTimeLastAccessed(pageId: PageId) {
     return (await this.getDB()).get('accessTimes', pageId);
   }
+
+  static async copyPageData(source: PageId, destination: PageId) {
+    const image = await (await this.getDB()).get('images', source);
+    if (image) {
+      await (await this.getDB()).put('images', image, destination);
+    }
+  }
 }
