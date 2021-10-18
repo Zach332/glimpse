@@ -15,6 +15,7 @@ import { RootButtonComponent } from './sidebar/sidebar-button/root-button/root-b
 import { DataSourceButtonComponent } from './sidebar/sidebar-button/data-source-button/data-source-button.component';
 import { SearchComponent } from './search/search.component';
 import { SimpleDialogComponent } from './general/simple-dialog/simple-dialog.component';
+import { InfoDialogComponent } from './general/info-dialog/info-dialog.component';
 import { SiteTrimPipe } from './pipes/site-trim.pipe';
 
 @NgModule({
@@ -30,6 +31,7 @@ import { SiteTrimPipe } from './pipes/site-trim.pipe';
     DataSourceButtonComponent,
     SearchComponent,
     SimpleDialogComponent,
+    InfoDialogComponent,
     SiteTrimPipe,
   ],
   imports: [BrowserModule, BrowserAnimationsModule, MaterialModule, FormsModule],
