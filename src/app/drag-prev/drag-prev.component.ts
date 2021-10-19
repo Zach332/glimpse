@@ -11,6 +11,12 @@ export class DragPrevComponent {
 
   getPreviewText(): string {
     const numSelected = this.pageManagerService.getDraggedPages().length;
-    return `Move ${numSelected.toString()} page${numSelected > 2 ? 's' : ''}`;
+    return `${this.capitalizeFirst(
+      this.pageManagerService.dragMode,
+    )} ${numSelected.toString()} page${numSelected > 1 ? 's' : ''}`;
+  }
+
+  private capitalizeFirst(input: string) {
+    return input.charAt(0).toUpperCase() + input.slice(1);
   }
 }
