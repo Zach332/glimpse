@@ -10,11 +10,17 @@ export class PageFilterService {
     query: string,
     pages: SelectableCollection<SelectablePage>,
   ): SelectableCollection<SelectablePage> {
+    const cleanQuery = this.escapeRegex(query);
     return new SelectableCollection(
       pages.collection.filter(
         (page: SelectablePage) =>
-          page.title.match(new RegExp(query, 'i')) || page.url.match(new RegExp(query, 'i')),
+          page.title.match(new RegExp(cleanQuery, 'i')) ||
+          page.url.match(new RegExp(cleanQuery, 'i')),
       ),
     );
+  }
+
+  escapeRegex(query: string) {
+    return query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }
