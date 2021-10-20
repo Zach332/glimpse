@@ -21,6 +21,17 @@ export class SidebarComponent {
     this.hotkeyManagerService
       .addShortcut('shift.?', 'hotkey help')
       .subscribe(() => this.showHotkeyHelp());
+    this.hotkeyManagerService.addShortcut('a', 'select all').subscribe(() => this.selectAll());
+    this.hotkeyManagerService.addShortcut('d', 'deselect all').subscribe(() => this.deselectAll());
+    this.hotkeyManagerService
+      .addShortcut('o', 'open all (copy or move based on setting)')
+      .subscribe(() => this.openAll());
+    this.hotkeyManagerService
+      .addShortcut('w', 'toggle window selection')
+      .subscribe(() => this.sidebarManagerService.toggleRoot(DataSourceType.Window));
+    this.hotkeyManagerService
+      .addShortcut('s', 'toggle saved selection')
+      .subscribe(() => this.sidebarManagerService.toggleRoot(DataSourceType.Folder));
   }
 
   public get DataSourceType() {
