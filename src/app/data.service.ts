@@ -222,27 +222,23 @@ export class DataService {
   }
 
   async moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
-    let destinationPageId;
-    // Avoid deleting tab in window -> window move
-    if (
-      source.pageId[0] === DataSourceType.Window &&
-      destination.dataSourceId[0] === DataSourceType.Window &&
-      operation === Operation.Move
-    ) {
-      const tab = (await browser.tabs.move(source.pageId[2], {
-        index: -1,
-        windowId: destination.dataSourceId[1],
-      })) as browser.Tabs.Tab;
-      destinationPageId = DataService.getPageIdFromTab(tab);
-    } else {
+    this.copyPageDataAfterCallback(source.pageId, async () => {
+      if (
+        source.pageId[0] === DataSourceType.Window &&
+        destination.dataSourceId[0] === DataSourceType.Window &&
+        operation === Operation.Move
+      ) {
+        const tab = (await browser.tabs.move(source.pageId[2], {
+          index: -1,
+          windowId: destination.dataSourceId[1],
+        })) as browser.Tabs.Tab;
+        return DataService.getPageIdFromTab(tab);
+      }
       if (operation === Operation.Move) {
         this.removePage(source);
       }
-      destinationPageId = await this.addPage(source, destination);
-    }
-
-    // Copy data stored in IDB
-    await IDBService.copyPageData(source.pageId, destinationPageId);
+      return this.addPage(source, destination);
+    });
   }
 
   public async removePage(page: Page) {
@@ -304,5 +300,22 @@ export class DataService {
       });
     }
     return filteredBookmarks[0];
+  }
+
+  async copyPageDataAfterCallback(source: PageId, callback: () => Promise<PageId>) {
+    const image = IDBService.getImage(source);
+    const accessTime = IDBService.getTimeLastAccessed(source);
+
+    const data = await Promise.all([image, accessTime]);
+
+    const destination = callback();
+
+    if (data[0]) {
+      IDBService.putImage(await destination, data[0]);
+    }
+
+    if (data[1]) {
+      IDBService.putTimeLastAccessed(await destination, data[1]);
+    }
   }
 }
