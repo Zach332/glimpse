@@ -43,7 +43,7 @@ export class SidebarComponent {
     // TODO this.pageManagerService.displayPageElements.openAll();
   }
 
-  private showHotkeyHelp(): void {
+  showHotkeyHelp(): void {
     const dialogRef = this.hotkeyDialog.open(InfoDialogComponent);
     dialogRef.componentInstance.dialogTitle = 'Hotkeys';
     dialogRef.componentInstance.dialogContent = this.generateHotkeyHelp(

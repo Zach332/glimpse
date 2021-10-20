@@ -59,4 +59,10 @@
     class="flex"
   ></app-data-source-button>
   <app-new-button [buttonData]="sidebarManagerService.newSavedButton" class="flex"></app-new-button>
+  <mat-divider class="divider-margin"></mat-divider>
+  <div class="flex space-around">
+    <div>
+      <button mat-raised-button (click)="showHotkeyHelp()">Hotkeys</button>
+    </div>
+  </div>
 </div>
