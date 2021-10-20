@@ -53,7 +53,7 @@ export class SidebarComponent {
 
   private generateHotkeyHelp(hotkeys: Map<string, string>): string {
     let hotkeyHelp = '';
-    hotkeys.forEach((key, value) => (hotkeyHelp += `${value}: ${key}\n`));
+    hotkeys.forEach((key, value) => (hotkeyHelp += `${value.replace(/\./g, ' + ')} :  ${key}\n`));
     return hotkeyHelp;
   }
 }
