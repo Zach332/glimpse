@@ -201,6 +201,15 @@ export class SidebarManagerService {
     return false;
   }
 
+  public getNthDataSource(n: number) {
+    let index = n - 1;
+    if (index < this.windowSidebarButtons.value.length) {
+      return this.windowSidebarButtons.value.get(index);
+    }
+    index -= this.windowSidebarButtons.value.length;
+    return this.savedSidebarButtons.value.get(index);
+  }
+
   public updateDataSource(
     type: DataSourceType,
     update?: (original: SelectableCollection<SelectableSidebarButton>) => void,

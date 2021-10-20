@@ -17,6 +17,10 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     return this._collection;
   }
 
+  public get length() {
+    return this.collection.length;
+  }
+
   public set collection(newCollection: Type[]) {
     this._collection = newCollection;
   }
@@ -27,6 +31,10 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
 
   public getById(id: number): Type | undefined {
     return this.collection.find((element) => element.id === id);
+  }
+
+  public get(index: number) {
+    return this.collection[index];
   }
 
   public getIndexById(id: number): number {

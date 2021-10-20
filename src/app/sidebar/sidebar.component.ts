@@ -32,6 +32,16 @@ export class SidebarComponent {
     this.hotkeyManagerService
       .addShortcut('s', 'toggle saved selection')
       .subscribe(() => this.sidebarManagerService.toggleRoot(DataSourceType.Folder));
+    for (let i = 1; i <= 9; i += 1) {
+      this.hotkeyManagerService
+        .addShortcut(`${i}`, 'toggle sidebar item')
+        .subscribe(() =>
+          this.sidebarManagerService.toggleId(
+            this.sidebarManagerService.getNthDataSource(i).dataSourceId[0],
+            this.sidebarManagerService.getNthDataSource(i).id,
+          ),
+        );
+    }
   }
 
   public get DataSourceType() {
