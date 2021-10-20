@@ -137,6 +137,20 @@ export class PageManagerService {
     }
   }
 
+  public async openAll(): Promise<void> {
+    if (this.dragMode === 'copy') {
+      await this.dataService.copyPages(
+        this.getDraggedPages(),
+        await this.dataService.getActiveDataSource(),
+      );
+    } else {
+      await this.dataService.movePages(
+        this.getDraggedPages(),
+        await this.dataService.getActiveDataSource(),
+      );
+    }
+  }
+
   public dropInNew(name: string, type: DataSourceType) {
     if (name) {
       if (this.dragMode === 'copy') {

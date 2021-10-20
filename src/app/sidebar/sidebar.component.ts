@@ -51,7 +51,7 @@ export class SidebarComponent {
   }
 
   openAll(): void {
-    // TODO this.pageManagerService.displayPageElements.openAll();
+    this.pageManagerService.openAll();
   }
 
   showHotkeyHelp(): void {

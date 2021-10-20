@@ -275,8 +275,8 @@ export class DataService {
 
   // Information
 
-  public async getActiveWindow(): Promise<number | undefined> {
-    return browser.windows.getCurrent().then((window) => window.id);
+  public async getActiveDataSource(): Promise<DataSource> {
+    return browser.windows.getCurrent().then((window) => this.convertWindowToDataSource(window));
   }
 
   // Helper methods

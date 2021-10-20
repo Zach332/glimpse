@@ -49,8 +49,8 @@ export class DataSourceButtonComponent {
 
   private async getIsActive() {
     return this.dataService
-      .getActiveWindow()
-      .then((resultId) => resultId === this.buttonData.dataSourceId[1]);
+      .getActiveDataSource()
+      .then((result) => result?.dataSourceId[1] === this.buttonData.dataSourceId[1]);
   }
 
   delete(): void {
