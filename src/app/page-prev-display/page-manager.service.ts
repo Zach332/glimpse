@@ -247,11 +247,19 @@ export class PageManagerService {
     });
     this.updatePageElements((currentPageElements) =>
       currentPageElements.adjustCollection(
-        this.savedPageElements
-          .concat(this.windowPageElements)
-          .sort((a, b) => b.timeLastAccessed - a.timeLastAccessed),
+        this.savedPageElements.concat(this.windowPageElements).sort((a, b) => this.sortPages(a, b)),
       ),
     );
+  }
+
+  private sortPages(a: SelectablePage, b: SelectablePage) {
+    if (a.url === 'chrome://newtab/') {
+      return 1;
+    }
+    if (b.url === 'chrome://newtab/') {
+      return -1;
+    }
+    return b.timeLastAccessed - a.timeLastAccessed;
   }
 
   private getPageElementsOfType(type: DataSourceType): SelectablePage[] {
