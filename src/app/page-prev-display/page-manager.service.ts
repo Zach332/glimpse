@@ -3,6 +3,7 @@ import { MatSliderChange } from '@angular/material/slider';
 import { Mutex } from 'async-mutex';
 import { BehaviorSubject, Observable } from 'rxjs';
 import * as browser from 'webextension-polyfill';
+import { MatDialog } from '@angular/material/dialog';
 import { DataService } from '../data.service';
 import { IdGeneratorService } from '../id-generator-serivce';
 import { DataSourceType } from '../interfaces/data-source-type';
@@ -13,6 +14,7 @@ import { PageFilterService } from '../page-filter.service';
 import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-manager.service';
 import { HotkeyManagerService } from '../hotkey-manager.service';
 import { DataSource } from '../interfaces/data-source';
+import { SimpleDialogComponent } from '../general/simple-dialog/simple-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -54,6 +56,8 @@ export class PageManagerService {
     private pageFilterService: PageFilterService,
     private hotkeyManagerService: HotkeyManagerService,
     private ngZone: NgZone,
+    private moveCopyDialog: MatDialog,
+    private nameDialog: MatDialog,
   ) {
     this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
       this.lock.runExclusive(() => this.updatePages(DataSourceType.Folder, selectedButtons)),
@@ -71,6 +75,8 @@ export class PageManagerService {
         (this.displayPageElements = pageFilterService.filterByQuery(newQuery, this.pageElements)),
     );
     this.hotkeyManagerService.addShortcut('backspace', 'delete').subscribe(() => this.removeAll());
+    this.hotkeyManagerService.addShortcut('m', 'move').subscribe(() => this.moveDialog());
+    this.hotkeyManagerService.addShortcut('c', 'copy').subscribe(() => this.copyDialog());
   }
 
   public get pagePrevWidth() {
@@ -167,6 +173,55 @@ export class PageManagerService {
         }
       }
     }
+  }
+
+  private copyDialog(): void {
+    this.dragMode = 'copy';
+    const dialogRef = this.moveCopyDialog.open(SimpleDialogComponent, {
+      data: { inputValue: '' },
+    });
+    dialogRef.componentInstance.dialogTitle =
+      'Copy to destination [0-9], new window [w], or new saved folder [s]';
+    dialogRef.componentInstance.inputLabel = 'Destination';
+    dialogRef.afterClosed().subscribe((result) => {
+      this.handleCopyMoveResult(result);
+    });
+  }
+
+  private moveDialog(): void {
+    this.dragMode = 'move';
+    const dialogRef = this.moveCopyDialog.open(SimpleDialogComponent, {
+      data: { inputValue: '' },
+    });
+    dialogRef.componentInstance.dialogTitle =
+      'Move to destination [0-9], new window [w], or new saved folder [s]';
+    dialogRef.componentInstance.inputLabel = 'Destination';
+    dialogRef.afterClosed().subscribe((result) => {
+      this.handleCopyMoveResult(result);
+    });
+  }
+
+  private handleCopyMoveResult(result: string) {
+    if (result === 'w') {
+      this.getNameDialog().subscribe((nameResult) => {
+        this.dropInNew(nameResult, DataSourceType.Window);
+      });
+    } else if (result === 's') {
+      this.getNameDialog().subscribe((nameResult) => {
+        this.dropInNew(nameResult, DataSourceType.Folder);
+      });
+    } else {
+      this.dropPages(this.sidebarManagerService.getNthDataSource(parseInt(result, 10)));
+    }
+  }
+
+  private getNameDialog(): Observable<string> {
+    const dialogRef = this.nameDialog.open(SimpleDialogComponent, {
+      data: { inputValue: '' },
+    });
+    dialogRef.componentInstance.dialogTitle = 'Name';
+    dialogRef.componentInstance.inputLabel = 'Name';
+    return dialogRef.afterClosed();
   }
 
   private async updatePages(
