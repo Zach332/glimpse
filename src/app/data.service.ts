@@ -6,13 +6,12 @@ import { Page } from './interfaces/page';
 import { IDBService } from './idb-service';
 import { Operation } from './interfaces/operation';
 import { PageId } from './interfaces/page-id';
+import { BookmarkService } from './bookmark-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
-  readonly GLIMPSE_BOOKMARK_FOLDER_NAME = 'glimpse-saved';
-
   // Data sources
 
   public async addWindow(name?: string, initialPages?: Page[], copy?: boolean) {
@@ -45,7 +44,7 @@ export class DataService {
   public async addFolder(name: string, initialPages?: Page[], copy?: boolean) {
     // Create new folder
     const folder = browser.bookmarks.create({
-      parentId: (await this.getRootGlimpseFolder()).id,
+      parentId: (await BookmarkService.getRootGlimpseFolder()).id,
       title: name,
     });
     const dataSource = this.convertFolderToDataSource(await folder);
@@ -80,9 +79,11 @@ export class DataService {
 
   public async getFolderDataSources() {
     // TODO: Handle errors
-    return browser.bookmarks.getChildren((await this.getRootGlimpseFolder()).id).then((folders) => {
-      return folders.map((folder) => this.convertFolderToDataSource(folder));
-    });
+    return browser.bookmarks
+      .getChildren((await BookmarkService.getRootGlimpseFolder()).id)
+      .then((folders) => {
+        return folders.map((folder) => this.convertFolderToDataSource(folder));
+      });
   }
 
   convertFolderToDataSource(folder: browser.Bookmarks.BookmarkTreeNode) {
@@ -283,23 +284,6 @@ export class DataService {
 
   public static getPageIdFromBookmark(bookmark: browser.Bookmarks.BookmarkTreeNode): PageId {
     return [DataSourceType.Folder, bookmark.parentId!, bookmark.id];
-  }
-
-  async getRootGlimpseFolder() {
-    const otherBookmarksNode = (await browser.bookmarks.getTree())[0].children!.filter(
-      (treeNode) => treeNode.title === 'Other bookmarks' || treeNode.title === 'Other Bookmarks',
-    )[0];
-    const filteredBookmarks = otherBookmarksNode.children!.filter(
-      (treeNode) => treeNode.title === this.GLIMPSE_BOOKMARK_FOLDER_NAME,
-    );
-    // Create root glimpse folder
-    if (filteredBookmarks.length === 0) {
-      return await browser.bookmarks.create({
-        parentId: otherBookmarksNode.id,
-        title: this.GLIMPSE_BOOKMARK_FOLDER_NAME,
-      });
-    }
-    return filteredBookmarks[0];
   }
 
   async copyPageDataAfterCallback(source: PageId, callback: () => Promise<PageId>) {
