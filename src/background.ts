@@ -12,34 +12,28 @@ function isValidPage(url: string) {
 }
 
 browser.webNavigation.onCompleted.addListener(async (details) => {
-  if (details.frameId === 0) {
-    const currentTab = browser.tabs
+  if (details.frameId === 0 && isValidPage(details.url)) {
+    const image = await browser.tabs.captureVisibleTab();
+    const currentTab = await browser.tabs
       .query({ active: true, currentWindow: true })
       .then((tabs) => tabs[0]);
-    const image = browser.tabs.captureVisibleTab();
-    if (details.tabId === (await currentTab).id! && isValidPage(details.url)) {
-      IDBService.putImage(
-        [DataSourceType.Window, (await currentTab).windowId!, (await currentTab).id!],
-        await image,
-      );
+    if (details.tabId === currentTab.id!) {
+      IDBService.putImage([DataSourceType.Window, currentTab.windowId!, currentTab.id!], image);
     }
   }
 });
 
-browser.tabs.onActivated.addListener((activeInfo) => {
-  // TODO: Remove timeout at some point (https://bugs.chromium.org/p/chromium/issues/detail?id=1213925)
-  setTimeout(async () => {
-    if (
-      !browser.runtime.lastError &&
-      isValidPage((await browser.tabs.get(activeInfo.tabId)).url!)
-    ) {
-      const image = browser.tabs.captureVisibleTab();
-      IDBService.putImage(
-        [DataSourceType.Window, activeInfo.windowId, activeInfo.tabId],
-        await image,
-      );
+browser.tabs.onActivated.addListener(async (activeInfo) => {
+  const initialCurrentPage = await browser.tabs.get(activeInfo.tabId);
+  if (!browser.runtime.lastError && isValidPage(initialCurrentPage.url!)) {
+    const image = await browser.tabs.captureVisibleTab();
+    const currentTab = await browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then((tabs) => tabs[0]);
+    if (initialCurrentPage.id! === currentTab.id!) {
+      IDBService.putImage([DataSourceType.Window, currentTab.windowId!, currentTab.id!], image);
     }
-  }, 500);
+  }
 });
 
 browser.tabs.onCreated.addListener((tab) => {
