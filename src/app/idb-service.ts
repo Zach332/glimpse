@@ -2,9 +2,15 @@ import { openDB } from 'idb';
 import { Schema } from './interfaces/schema';
 import { PageId } from './interfaces/page-id';
 import { Settings } from './interfaces/settings';
+import { DataSourceType } from './interfaces/data-source-type';
+import { BookmarkService } from './bookmark-service';
 
 export class IDBService {
-  static SETTINGS_ID = 'settings';
+  static readonly SETTINGS_ID = 'settings';
+
+  static readonly pageObjectStores: ['images', 'accessTimes'] = ['images', 'accessTimes'];
+
+  static readonly dataSourceObjectStores: ['names'] = ['names'];
 
   static getDB() {
     return openDB<Schema>('glimpse', 11, {
@@ -49,10 +55,45 @@ export class IDBService {
     return (await this.getDB()).get('accessTimes', pageId);
   }
 
-  static async copyPageData(source: PageId, destination: PageId) {
-    const image = await (await this.getDB()).get('images', source);
-    if (image) {
-      await (await this.getDB()).put('images', image, destination);
-    }
+  static async deleteSessionData() {
+    const keys = Promise.all(
+      this.pageObjectStores.map(async (objectStore) => {
+        return (await this.getDB()).getAllKeys(objectStore);
+      }),
+    ).then((keyLists) => {
+      return keyLists.reduce((a, b) => {
+        return a.concat(b);
+      });
+    });
+
+    const bookmarkIds = new Set(
+      (await BookmarkService.getRootGlimpseFolder()).children!.map((bookmark) => {
+        return bookmark.id;
+      }),
+    );
+
+    const keysToDelete = [...new Set(await keys)].filter((pageId) => {
+      // Delete all page data
+      if (pageId[0] === DataSourceType.Window) {
+        return true;
+      }
+      // Delete data for bookmarks that no longer exist
+
+      return !bookmarkIds.has(pageId[1]);
+    });
+
+    keysToDelete.forEach((pageId) => {
+      this.deletePageData(pageId);
+    });
+
+    this.dataSourceObjectStores.forEach(async (objectStore) => {
+      (await this.getDB()).clear(objectStore);
+    });
+  }
+
+  static async deletePageData(pageId: PageId) {
+    this.pageObjectStores.forEach(async (objectStore) => {
+      (await this.getDB()).delete(objectStore, pageId);
+    });
   }
 }

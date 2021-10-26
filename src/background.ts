@@ -46,3 +46,11 @@ browser.tabs.onActivated.addListener((activeInfo) => {
     Date.now(),
   );
 });
+
+browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  IDBService.deletePageData([DataSourceType.Window, removeInfo.windowId, tabId]);
+});
+
+browser.runtime.onStartup.addListener(() => {
+  IDBService.deleteSessionData();
+});
