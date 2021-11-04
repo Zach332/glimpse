@@ -36,6 +36,25 @@ browser.tabs.onActivated.addListener(async (activeInfo) => {
   }
 });
 
+browser.bookmarks.onCreated.addListener(async (id, bookmark) => {
+  const initialCurrentTab = await browser.tabs
+    .query({ active: true, currentWindow: true })
+    .then((tabs) => tabs[0]);
+  if (isValidPage(initialCurrentTab.url!)) {
+    const image = await browser.tabs.captureVisibleTab();
+    const currentTab = await browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then((tabs) => tabs[0]);
+    if (bookmark.url! === currentTab.url!) {
+      IDBService.putImage([DataSourceType.Folder, bookmark.parentId!, bookmark.id!], image);
+      IDBService.putTimeLastAccessed(
+        [DataSourceType.Folder, bookmark.parentId!, bookmark.id!],
+        Date.now(),
+      );
+    }
+  }
+});
+
 browser.tabs.onCreated.addListener((tab) => {
   IDBService.putTimeLastAccessed([DataSourceType.Window, tab.windowId!, tab.id!], Date.now());
 });
