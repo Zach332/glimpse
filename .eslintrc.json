@@ -27,6 +27,7 @@
         "no-param-reassign": "off",
         "no-return-assign": "off",
         "no-lonely-if": "off",
+        "prefer-destructuring": "off",
         "@angular-eslint/directive-selector": [
           "error",
           {
