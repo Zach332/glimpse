@@ -51,7 +51,7 @@ export class SidebarManagerService {
     browser.windows.onFocusChanged.addListener(() => observer.next());
   });
 
-  constructor(private dataService: DataService) {
+  constructor() {
     this.savedSettings = SidebarManagerService.DEFAULT_SETTINGS;
 
     // TODO: These should use a new interface or something
@@ -93,7 +93,7 @@ export class SidebarManagerService {
     this.windowRootButton.expanded = this.savedSettings.windowExpanded;
     this.savedRootButton.expanded = this.savedSettings.savedExpanded;
     const windowButtons: SelectableSidebarButton[] = [];
-    await this.dataService.getWindowDataSources().then((windows) => {
+    await DataService.getWindowDataSources().then((windows) => {
       windows.forEach((window) => {
         const sidebarButton: SelectableSidebarButton = {
           ...window,
@@ -106,7 +106,7 @@ export class SidebarManagerService {
     });
 
     const savedButtons: SelectableSidebarButton[] = [];
-    await this.dataService.getFolderDataSources().then((folders) => {
+    await DataService.getFolderDataSources().then((folders) => {
       folders.forEach((folder) => {
         const sidebarButton: SelectableSidebarButton = {
           ...folder,
@@ -141,22 +141,22 @@ export class SidebarManagerService {
   }
 
   public delete(button: SelectableSidebarButton): void {
-    this.dataService.removeDataSource(button);
+    DataService.removeDataSource(button);
     this.updateDataSource(button.dataSourceId[0], (dataSource) => dataSource.remove(button.id));
   }
 
   public rename(button: SelectableSidebarButton, name: string): void {
-    this.dataService.renameDataSource(button, name);
+    DataService.renameDataSource(button, name);
     button.name = name;
     this.updateDataSource(button.dataSourceId[0]);
   }
 
   public addWindow(name: string, initialPages?: Page[], copy?: boolean): void {
-    this.dataService.addWindow(name, initialPages, copy);
+    DataService.addWindow(name, initialPages, copy);
   }
 
   public addFolder(name: string, initialPages?: Page[], copy?: boolean): void {
-    this.dataService.addFolder(name, initialPages, copy).then((newDataSource) => {
+    DataService.addFolder(name, initialPages, copy).then((newDataSource) => {
       this.updateDataSource(DataSourceType.Folder, (dataSource) =>
         dataSource.push({
           ...newDataSource,
