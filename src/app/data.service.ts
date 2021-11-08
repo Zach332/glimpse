@@ -302,11 +302,11 @@ export class DataService {
     }
 
     if (data[0]) {
-      IDBService.putImage(destination, data[0]);
+      await IDBService.putImage(destination, data[0]);
     }
 
     if (data[1]) {
-      IDBService.putTimeLastAccessed(destination, data[1]);
+      await IDBService.putTimeLastAccessed(destination, data[1]);
     }
   }
 }
