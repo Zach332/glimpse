@@ -151,7 +151,39 @@ export class PageManagerService {
     }
   }
 
-  public dropInNew(name: string, type: DataSourceType) {
+  public dropInNew(type: DataSourceType) {
+    const matchingName = this.getMatchingNameForSelected();
+    if (matchingName) {
+      this.dropInNewWithName(matchingName, type);
+    } else {
+      this.getNameDialog().subscribe((nameResult) => {
+        if (nameResult !== null && nameResult !== undefined) {
+          this.dropInNewWithName(nameResult, type);
+        }
+      });
+    }
+  }
+
+  private getMatchingNameForSelected() {
+    const selectedWindows =
+      this.sidebarManagerService.windowSidebarButtons.value.getSelectedItems();
+    const selectedFolders = this.sidebarManagerService.savedSidebarButtons.value.getSelectedItems();
+    if (selectedFolders.length + selectedWindows.length !== 1) {
+      return null;
+    }
+    let selectedSidebarItem;
+    if (selectedWindows.length === 1) {
+      selectedSidebarItem = selectedWindows[0];
+    } else {
+      selectedSidebarItem = selectedFolders[0];
+    }
+    if (this.pageElements.collection.every((page) => page.isSelected)) {
+      return selectedSidebarItem.name;
+    }
+    return null;
+  }
+
+  private dropInNewWithName(name: string, type: DataSourceType) {
     if (name) {
       if (this.dragMode === 'copy') {
         if (type === DataSourceType.Window) {
@@ -197,13 +229,9 @@ export class PageManagerService {
 
   private handleCopyMoveResult(result: string) {
     if (result === 'w') {
-      this.getNameDialog().subscribe((nameResult) => {
-        this.dropInNew(nameResult, DataSourceType.Window);
-      });
+      this.dropInNew(DataSourceType.Window);
     } else if (result === 's') {
-      this.getNameDialog().subscribe((nameResult) => {
-        this.dropInNew(nameResult, DataSourceType.Folder);
-      });
+      this.dropInNew(DataSourceType.Folder);
     } else {
       this.dropPages(this.sidebarManagerService.getNthDataSource(parseInt(result, 10)));
     }

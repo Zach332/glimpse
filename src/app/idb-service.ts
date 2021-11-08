@@ -8,14 +8,19 @@ import { BookmarkService } from './bookmark-service';
 export class IDBService {
   static readonly SETTINGS_ID = 'settings';
 
-  static readonly pageObjectStores: ['images', 'accessTimes'] = ['images', 'accessTimes'];
+  static readonly pageObjectStores: ['images', 'favicons', 'accessTimes'] = [
+    'images',
+    'favicons',
+    'accessTimes',
+  ];
 
   static readonly dataSourceObjectStores: ['names'] = ['names'];
 
   static getDB() {
-    return openDB<Schema>('glimpse', 11, {
+    return openDB<Schema>('glimpse', 12, {
       upgrade(db) {
         db.createObjectStore('images');
+        db.createObjectStore('favicons');
         db.createObjectStore('names');
         db.createObjectStore('settings');
         db.createObjectStore('accessTimes');
@@ -29,6 +34,14 @@ export class IDBService {
 
   static async getImage(pageId: PageId) {
     return (await this.getDB()).get('images', pageId);
+  }
+
+  static async putFavicon(pageId: PageId, favicon: string) {
+    return (await this.getDB()).put('favicons', favicon, pageId);
+  }
+
+  static async getFavicon(pageId: PageId) {
+    return (await this.getDB()).get('favicons', pageId);
   }
 
   static async putName(windowId: number, name: string) {
