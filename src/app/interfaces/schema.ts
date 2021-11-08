@@ -7,7 +7,12 @@ export interface Schema extends DBSchema {
     key: PageId;
     value: string;
   };
+  favicons: {
+    key: PageId;
+    value: string;
+  };
   names: {
+    // TODO: Change to DataSourceId
     key: number;
     value: string;
   };

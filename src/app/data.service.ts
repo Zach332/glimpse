@@ -189,7 +189,7 @@ export class DataService {
       pageId,
       title: bookmark.title,
       url: bookmark.url!,
-      faviconUrl: `https://www.google.com/s2/favicons?domain=${bookmark.url!}`,
+      faviconUrl: await IDBService.getFavicon(pageId),
       image: await IDBService.getImage(pageId),
       timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? bookmark.dateAdded!,
     };
@@ -292,14 +292,21 @@ export class DataService {
 
     const data = await Promise.all([image, accessTime]);
 
-    const destination = callback();
+    const destination = await callback();
+
+    if (source[0] === DataSourceType.Window && destination[0] === DataSourceType.Folder) {
+      const tabFavicon = (await browser.tabs.get(source[2])).favIconUrl!;
+      if (tabFavicon) {
+        IDBService.putFavicon(destination, tabFavicon);
+      }
+    }
 
     if (data[0]) {
-      IDBService.putImage(await destination, data[0]);
+      IDBService.putImage(destination, data[0]);
     }
 
     if (data[1]) {
-      IDBService.putTimeLastAccessed(await destination, data[1]);
+      IDBService.putTimeLastAccessed(destination, data[1]);
     }
   }
 }

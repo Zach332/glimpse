@@ -1,6 +1,7 @@
 import * as browser from 'webextension-polyfill';
 import { IDBService } from './app/idb-service';
 import { DataSourceType } from './app/interfaces/data-source-type';
+import { PageId } from './app/interfaces/page-id';
 
 function isValidPage(url: string) {
   return !(
@@ -46,11 +47,10 @@ browser.bookmarks.onCreated.addListener(async (id, bookmark) => {
       .query({ active: true, currentWindow: true })
       .then((tabs) => tabs[0]);
     if (bookmark.url! === currentTab.url!) {
-      IDBService.putImage([DataSourceType.Folder, bookmark.parentId!, bookmark.id!], image);
-      IDBService.putTimeLastAccessed(
-        [DataSourceType.Folder, bookmark.parentId!, bookmark.id!],
-        Date.now(),
-      );
+      const pageId: PageId = [DataSourceType.Folder, bookmark.parentId!, bookmark.id!];
+      IDBService.putImage(pageId, image);
+      IDBService.putTimeLastAccessed(pageId, Date.now());
+      IDBService.putFavicon(pageId, currentTab.favIconUrl!);
     }
   }
 });
