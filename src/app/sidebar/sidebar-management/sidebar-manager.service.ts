@@ -161,7 +161,7 @@ export class SidebarManagerService {
         dataSource.push({
           ...newDataSource,
           id: IdGeneratorService.getIdFromDataSourceId(newDataSource.dataSourceId),
-          isSelected: true,
+          isSelected: false,
         }),
       );
     });
