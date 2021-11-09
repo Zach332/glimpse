@@ -37,7 +37,7 @@ export class NewButtonComponent {
 
   onClick(): void {
     this.getNameDialog().subscribe((result) => {
-      if (result) {
+      if (result !== undefined && result !== null) {
         if (this.buttonData.dataSourceId[0] === DataSourceType.Window) {
           this.sidebarManagerService.addWindow(result);
         } else {

@@ -4,6 +4,8 @@ import { IDBService } from './app/idb-service';
 import { DataSourceType } from './app/interfaces/data-source-type';
 import { PageId } from './app/interfaces/page-id';
 
+let captureTabOIntervalId: NodeJS.Timeout;
+
 function isValidPage(url: string) {
   return !(
     url.startsWith('moz-extension://') ||
@@ -57,6 +59,21 @@ browser.runtime.onMessage.addListener(async (message) => {
   }
 });
 
+async function captureTab() {
+  const initialCurrentPage = await browser.tabs
+    .query({ active: true, currentWindow: true })
+    .then((tabs) => tabs[0]);
+  if (initialCurrentPage && isValidPage(initialCurrentPage.url!)) {
+    const image = await browser.tabs.captureVisibleTab();
+    const currentTab = await browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then((tabs) => tabs[0]);
+    if (initialCurrentPage.id! === currentTab.id!) {
+      IDBService.putImage([DataSourceType.Window, currentTab.windowId!, currentTab.id!], image);
+    }
+  }
+}
+
 browser.webNavigation.onCompleted.addListener(async (details) => {
   if (details.frameId === 0 && isValidPage(details.url)) {
     const image = await browser.tabs.captureVisibleTab();
@@ -70,6 +87,10 @@ browser.webNavigation.onCompleted.addListener(async (details) => {
 });
 
 browser.tabs.onActivated.addListener(async (activeInfo) => {
+  if (captureTabOIntervalId) {
+    clearInterval(captureTabOIntervalId);
+  }
+  captureTabOIntervalId = setInterval(captureTab, 1000);
   const initialCurrentPage = await browser.tabs.get(activeInfo.tabId);
   if (!browser.runtime.lastError && isValidPage(initialCurrentPage.url!)) {
     const image = await browser.tabs.captureVisibleTab();
