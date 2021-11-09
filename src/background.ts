@@ -1,4 +1,5 @@
 import * as browser from 'webextension-polyfill';
+import { DataService } from './app/data.service';
 import { IDBService } from './app/idb-service';
 import { DataSourceType } from './app/interfaces/data-source-type';
 import { PageId } from './app/interfaces/page-id';
@@ -11,6 +12,50 @@ function isValidPage(url: string) {
     url.startsWith('chrome://')
   );
 }
+
+browser.runtime.onMessage.addListener(async (message) => {
+  if (message.type === 'addWindow') {
+    // Create new window
+    const newWindow = await browser.windows.create({
+      focused: true,
+      state: message.currentWindow.state,
+    });
+
+    const glimpseTabId = (await browser.tabs.query({ windowId: newWindow.id }))[0].id!;
+
+    // Add name to new window (if specified)
+    if (message.name) {
+      await IDBService.putName(newWindow.id!, message.name);
+    }
+
+    const dataSource = DataService.convertWindowToDataSource(newWindow);
+
+    // Add initial pages to new window
+    if (message.initialPages) {
+      if (message.copy) {
+        DataService.copyPages(message.initialPages, await dataSource);
+      } else {
+        DataService.movePages(message.initialPages, await dataSource);
+      }
+
+      // Once a tab in the new window is created, remove the glimpse tab
+      browser.tabs.onCreated.addListener(function closeGlimpseTabAfterNewTabOpened(tab) {
+        if (tab.windowId === newWindow.id) {
+          browser.tabs.remove(glimpseTabId);
+        }
+        browser.tabs.onCreated.removeListener(closeGlimpseTabAfterNewTabOpened);
+      });
+
+      // For the window -> window move case, listen for attachment
+      browser.tabs.onAttached.addListener(function closeGlimpseTabAfterTabMoved(tabId, attachInfo) {
+        if (attachInfo.newWindowId === newWindow.id) {
+          browser.tabs.remove(glimpseTabId);
+        }
+        browser.tabs.onAttached.removeListener(closeGlimpseTabAfterTabMoved);
+      });
+    }
+  }
+});
 
 browser.webNavigation.onCompleted.addListener(async (details) => {
   if (details.frameId === 0 && isValidPage(details.url)) {

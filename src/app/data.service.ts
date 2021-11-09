@@ -15,29 +15,12 @@ export class DataService {
   // Data sources
 
   static async addWindow(name?: string, initialPages?: Page[], copy?: boolean) {
-    this.closeGlimpseTabAfterCallback(async () => {
-      // Create new window
-      const currentWindow = browser.windows.getCurrent();
-      const newWindow = browser.windows.create({
-        focused: true,
-        state: (await currentWindow).state,
-      });
-
-      // Add name to new window (if specified)
-      if (name) {
-        await IDBService.putName((await newWindow).id!, name);
-      }
-
-      const dataSource = this.convertWindowToDataSource(await newWindow);
-
-      // Add initial pages to new window
-      if (initialPages) {
-        if (copy) {
-          this.copyPages(initialPages, await dataSource);
-        } else {
-          this.movePages(initialPages, await dataSource);
-        }
-      }
+    browser.runtime.sendMessage({
+      type: 'addWindow',
+      currentWindow: await browser.windows.getCurrent(),
+      name,
+      initialPages,
+      copy,
     });
   }
 
