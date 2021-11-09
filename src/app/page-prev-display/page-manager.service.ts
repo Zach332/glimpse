@@ -52,7 +52,6 @@ export class PageManagerService {
 
   constructor(
     private sidebarManagerService: SidebarManagerService,
-    private dataService: DataService,
     private pageFilterService: PageFilterService,
     private hotkeyManagerService: HotkeyManagerService,
     private ngZone: NgZone,
@@ -114,7 +113,7 @@ export class PageManagerService {
 
   public removePage(page: SelectablePage) {
     this.updatePageElements((currentPageElements) => currentPageElements.remove(page.id));
-    this.dataService.removePage(page);
+    DataService.removePage(page);
   }
 
   public removeAll() {
@@ -138,23 +137,17 @@ export class PageManagerService {
 
   public async dropPages(destination: DataSource): Promise<void> {
     if (this.dragMode === 'copy') {
-      await this.dataService.copyPages(this.getDraggedPages(), destination);
+      await DataService.copyPages(this.getDraggedPages(), destination);
     } else {
-      await this.dataService.movePages(this.getDraggedPages(), destination);
+      await DataService.movePages(this.getDraggedPages(), destination);
     }
   }
 
   public async openAll(): Promise<void> {
     if (this.dragMode === 'copy') {
-      await this.dataService.copyPages(
-        this.getDraggedPages(),
-        await this.dataService.getActiveDataSource(),
-      );
+      await DataService.copyPages(this.getDraggedPages(), await DataService.getActiveDataSource());
     } else {
-      await this.dataService.movePages(
-        this.getDraggedPages(),
-        await this.dataService.getActiveDataSource(),
-      );
+      await DataService.movePages(this.getDraggedPages(), await DataService.getActiveDataSource());
     }
   }
 
@@ -261,7 +254,7 @@ export class PageManagerService {
       this.windowPageElements = [];
     }
     const selectedDataSources = dataSources.getSelectedItems();
-    await this.dataService.getPagesByDataSources(selectedDataSources).then((pages) => {
+    await DataService.getPagesByDataSources(selectedDataSources).then((pages) => {
       pages.forEach((page) => {
         const selectablePage: SelectablePage = {
           ...page,

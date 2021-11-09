@@ -23,7 +23,6 @@ export class DataSourceButtonComponent {
     private pageManagerService: PageManagerService,
     private sidebarManagerService: SidebarManagerService,
     private renameDialog: MatDialog,
-    private dataService: DataService,
     private ngZone: NgZone,
   ) {
     this.getIsActive().then((res) => (this.isActive = res));
@@ -48,9 +47,9 @@ export class DataSourceButtonComponent {
   }
 
   private async getIsActive() {
-    return this.dataService
-      .getActiveDataSource()
-      .then((result) => result?.dataSourceId[1] === this.buttonData.dataSourceId[1]);
+    return DataService.getActiveDataSource().then(
+      (result) => result?.dataSourceId[1] === this.buttonData.dataSourceId[1],
+    );
   }
 
   delete(): void {
