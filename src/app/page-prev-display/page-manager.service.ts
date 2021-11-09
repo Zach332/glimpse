@@ -191,19 +191,17 @@ export class PageManagerService {
   }
 
   private dropInNewWithName(name: string, type: DataSourceType) {
-    if (name) {
-      if (this.dragMode === 'copy') {
-        if (type === DataSourceType.Window) {
-          this.sidebarManagerService.addWindow(name, this.getDraggedPages(), true);
-        } else {
-          this.sidebarManagerService.addFolder(name, this.getDraggedPages(), true);
-        }
+    if (this.dragMode === 'copy') {
+      if (type === DataSourceType.Window) {
+        this.sidebarManagerService.addWindow(name, this.getDraggedPages(), true);
       } else {
-        if (type === DataSourceType.Window) {
-          this.sidebarManagerService.addWindow(name, this.getDraggedPages(), false);
-        } else {
-          this.sidebarManagerService.addFolder(name, this.getDraggedPages(), false);
-        }
+        this.sidebarManagerService.addFolder(name, this.getDraggedPages(), true);
+      }
+    } else {
+      if (type === DataSourceType.Window) {
+        this.sidebarManagerService.addWindow(name, this.getDraggedPages(), false);
+      } else {
+        this.sidebarManagerService.addFolder(name, this.getDraggedPages(), false);
       }
     }
   }
