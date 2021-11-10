@@ -192,8 +192,9 @@ export class DataService {
   }
 
   static async removePages(pages: Page[]) {
-    pages.forEach((page) => {
-      this.removePage(page);
+    browser.runtime.sendMessage({
+      type: 'removePages',
+      pages,
     });
   }
 
@@ -270,7 +271,7 @@ export class DataService {
   }
 
   /**
-   * Gets IDB-stored data for source, then runs callback (which should may delete source),
+   * Gets IDB-stored data for source, then runs callback (which may delete source),
    * then copies the data to the destination
    */
   static async copyPageDataAfterCallback(source: PageId, callback: () => Promise<PageId>) {

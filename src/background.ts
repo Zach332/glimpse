@@ -2,6 +2,7 @@ import * as browser from 'webextension-polyfill';
 import { DataService } from './app/data.service';
 import { IDBService } from './app/idb-service';
 import { DataSourceType } from './app/interfaces/data-source-type';
+import { Page } from './app/interfaces/page';
 import { PageId } from './app/interfaces/page-id';
 
 let captureTabOIntervalId: NodeJS.Timeout;
@@ -62,6 +63,10 @@ browser.runtime.onMessage.addListener(async (message) => {
     }
     IDBService.putImage(message.destination, message.image);
     IDBService.putTimeLastAccessed(message.destination, message.timeLastAccessed);
+  } else if (message.type === 'removePages') {
+    message.pages.forEach((page: Page) => {
+      DataService.removePage(page);
+    });
   }
 });
 

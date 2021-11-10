@@ -127,10 +127,12 @@ export class PageManagerService {
   }
 
   public removeAll() {
-    this.displayPageElements.collection.forEach((element) => {
-      if (element.isSelected) {
-        this.removePage(element);
-      }
+    const pagesToRemove = this.displayPageElements.collection.filter(
+      (element) => element.isSelected,
+    );
+    DataService.removePages(pagesToRemove);
+    pagesToRemove.forEach((page) => {
+      this.updatePageElements((currentPageElements) => currentPageElements.remove(page.id));
     });
   }
 
