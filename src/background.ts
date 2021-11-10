@@ -56,6 +56,12 @@ browser.runtime.onMessage.addListener(async (message) => {
         browser.tabs.onAttached.removeListener(closeGlimpseTabAfterTabMoved);
       });
     }
+  } else if (message.type === 'copyPageData') {
+    if (message.favicon) {
+      IDBService.putFavicon(message.destination, message.favicon);
+    }
+    IDBService.putImage(message.destination, message.image);
+    IDBService.putTimeLastAccessed(message.destination, message.timeLastAccessed);
   }
 });
 

@@ -269,27 +269,28 @@ export class DataService {
     return [DataSourceType.Folder, bookmark.parentId!, bookmark.id];
   }
 
+  /**
+   * Gets IDB-stored data for source, then runs callback (which should may delete source),
+   * then copies the data to the destination
+   */
   static async copyPageDataAfterCallback(source: PageId, callback: () => Promise<PageId>) {
     const image = IDBService.getImage(source);
-    const accessTime = IDBService.getTimeLastAccessed(source);
+    const timeLastAccessed = IDBService.getTimeLastAccessed(source);
+    let favicon: Promise<string> | undefined;
+    if (source[0] === DataSourceType.Window) {
+      favicon = browser.tabs.get(source[2]).then((tab) => tab.favIconUrl!);
+    }
 
-    const data = await Promise.all([image, accessTime]);
+    const data = await Promise.all([image, timeLastAccessed, favicon]);
 
     const destination = await callback();
 
-    if (source[0] === DataSourceType.Window && destination[0] === DataSourceType.Folder) {
-      const tabFavicon = (await browser.tabs.get(source[2])).favIconUrl!;
-      if (tabFavicon) {
-        IDBService.putFavicon(destination, tabFavicon);
-      }
-    }
-
-    if (data[0]) {
-      await IDBService.putImage(destination, data[0]);
-    }
-
-    if (data[1]) {
-      await IDBService.putTimeLastAccessed(destination, data[1]);
-    }
+    browser.runtime.sendMessage({
+      type: 'copyPageData',
+      destination,
+      favicon: destination[0] === DataSourceType.Folder ? data[2] : undefined,
+      image: data[0],
+      timeLastAccessed: data[1],
+    });
   }
 }
