@@ -107,6 +107,16 @@ export class PageManagerService {
     );
   }
 
+  public get updateSettings() {
+    return this.sidebarManagerService.savedSettings.updateSettings;
+  }
+
+  public set updateSettings(newUpdateSettings: boolean) {
+    this.sidebarManagerService.updateSettings(
+      (oldSettings) => (oldSettings.updateSettings = newUpdateSettings),
+    );
+  }
+
   public updatePageWidth($event: MatSliderChange): void {
     this.pagePrevWidth = $event.value ? $event.value : this.pagePrevWidth;
   }

@@ -37,6 +37,7 @@ export class SidebarManagerService {
     selectedSidebarItems: new Map<string, boolean>(),
     windowExpanded: true,
     savedExpanded: true,
+    updateSettings: true,
   };
 
   private browserObservable = new Observable((observer) => {
@@ -233,10 +234,13 @@ export class SidebarManagerService {
   }
 
   public updateSettings(update?: (original: Settings) => void) {
+    const originalUpdateSettings = this.savedSettings.updateSettings;
     if (update) {
       update(this.savedSettings);
     }
-    IDBService.putSettings(this.savedSettings);
+    if (this.savedSettings.updateSettings || originalUpdateSettings) {
+      IDBService.putSettings(this.savedSettings);
+    }
   }
 
   private updateSettingsMap(settings: Settings) {
