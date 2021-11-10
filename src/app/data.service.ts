@@ -276,9 +276,11 @@ export class DataService {
   static async copyPageDataAfterCallback(source: PageId, callback: () => Promise<PageId>) {
     const image = IDBService.getImage(source);
     const timeLastAccessed = IDBService.getTimeLastAccessed(source);
-    let favicon: Promise<string> | undefined;
+    let favicon: Promise<string | undefined>;
     if (source[0] === DataSourceType.Window) {
       favicon = browser.tabs.get(source[2]).then((tab) => tab.favIconUrl!);
+    } else {
+      favicon = IDBService.getFavicon(source);
     }
 
     const data = await Promise.all([image, timeLastAccessed, favicon]);
