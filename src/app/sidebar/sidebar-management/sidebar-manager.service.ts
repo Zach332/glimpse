@@ -191,6 +191,16 @@ export class SidebarManagerService {
     }
   }
 
+  public selectAll() {
+    this.updateDataSource(DataSourceType.Folder, (dataSource) => dataSource.selectAll());
+    this.updateDataSource(DataSourceType.Window, (dataSource) => dataSource.selectAll());
+  }
+
+  public deselectAll() {
+    this.updateDataSource(DataSourceType.Folder, (dataSource) => dataSource.deselectAll());
+    this.updateDataSource(DataSourceType.Window, (dataSource) => dataSource.deselectAll());
+  }
+
   public isCollapsed(type: DataSourceType): boolean {
     if (type === DataSourceType.Window) {
       return !this.windowRootButton.expanded || false;

@@ -32,6 +32,12 @@ export class SidebarComponent {
     this.hotkeyManagerService
       .addShortcut('s', 'toggle saved selection')
       .subscribe(() => this.sidebarManagerService.toggleRoot(DataSourceType.Folder));
+    this.hotkeyManagerService
+      .addShortcut('y', 'select all sidebar items')
+      .subscribe(() => this.sidebarManagerService.selectAll());
+    this.hotkeyManagerService
+      .addShortcut('n', 'deselect all sidebar items')
+      .subscribe(() => this.sidebarManagerService.deselectAll());
     for (let i = 1; i <= 9; i += 1) {
       this.hotkeyManagerService
         .addShortcut(`${i}`, 'toggle sidebar item')
