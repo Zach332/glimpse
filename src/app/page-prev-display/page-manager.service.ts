@@ -165,7 +165,7 @@ export class PageManagerService {
 
   public dropInNew(type: DataSourceType) {
     const matchingName = this.getMatchingNameForSelected();
-    if (matchingName) {
+    if (matchingName && this.notDefaultName(matchingName)) {
       this.dropInNewWithName(matchingName, type);
     } else {
       this.getNameDialog().subscribe((nameResult) => {
@@ -174,6 +174,11 @@ export class PageManagerService {
         }
       });
     }
+  }
+
+  private notDefaultName(name: string) {
+    const regex = new RegExp('^Window [0-9]*$');
+    return !regex.test(name);
   }
 
   private getMatchingNameForSelected() {
