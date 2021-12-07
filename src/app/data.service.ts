@@ -199,30 +199,20 @@ export class DataService {
   }
 
   static async movePage(source: Page, destination: DataSource) {
-    this.moveOrCopyPage(source, destination, Operation.Move);
+    browser.runtime.sendMessage({
+      type: 'moveOrCopyPage',
+      source,
+      destination,
+      operation: Operation.Move,
+    });
   }
 
   static async copyPage(source: Page, destination: DataSource) {
-    this.moveOrCopyPage(source, destination, Operation.Copy);
-  }
-
-  static async moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
-    this.copyPageDataAfterCallback(source.pageId, async () => {
-      if (
-        source.pageId[0] === DataSourceType.Window &&
-        destination.dataSourceId[0] === DataSourceType.Window &&
-        operation === Operation.Move
-      ) {
-        const tab = (await browser.tabs.move(source.pageId[2], {
-          index: -1,
-          windowId: destination.dataSourceId[1],
-        })) as browser.Tabs.Tab;
-        return DataService.getPageIdFromTab(tab);
-      }
-      if (operation === Operation.Move) {
-        this.removePage(source);
-      }
-      return this.addPage(source, destination);
+    browser.runtime.sendMessage({
+      type: 'moveOrCopyPage',
+      source,
+      destination,
+      operation: Operation.Copy,
     });
   }
 
@@ -268,32 +258,5 @@ export class DataService {
 
   static getPageIdFromBookmark(bookmark: browser.Bookmarks.BookmarkTreeNode): PageId {
     return [DataSourceType.Folder, bookmark.parentId!, bookmark.id];
-  }
-
-  /**
-   * Gets IDB-stored data for source, then runs callback (which may delete source),
-   * then copies the data to the destination
-   */
-  static async copyPageDataAfterCallback(source: PageId, callback: () => Promise<PageId>) {
-    const image = IDBService.getImage(source);
-    const timeLastAccessed = IDBService.getTimeLastAccessed(source);
-    let favicon: Promise<string | undefined>;
-    if (source[0] === DataSourceType.Window) {
-      favicon = browser.tabs.get(source[2]).then((tab) => tab.favIconUrl!);
-    } else {
-      favicon = IDBService.getFavicon(source);
-    }
-
-    const data = await Promise.all([image, timeLastAccessed, favicon]);
-
-    const destination = await callback();
-
-    browser.runtime.sendMessage({
-      type: 'copyPageData',
-      destination,
-      favicon: destination[0] === DataSourceType.Folder ? data[2] : undefined,
-      image: data[0],
-      timeLastAccessed: data[1],
-    });
   }
 }

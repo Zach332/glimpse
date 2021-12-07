@@ -1,7 +1,9 @@
 import * as browser from 'webextension-polyfill';
 import { DataService } from './app/data.service';
 import { IDBService } from './app/idb-service';
+import { DataSource } from './app/interfaces/data-source';
 import { DataSourceType } from './app/interfaces/data-source-type';
+import { Operation } from './app/interfaces/operation';
 import { Page } from './app/interfaces/page';
 import { PageId } from './app/interfaces/page-id';
 
@@ -57,12 +59,51 @@ browser.runtime.onMessage.addListener(async (message) => {
         browser.tabs.onAttached.removeListener(closeGlimpseTabAfterTabMoved);
       });
     }
-  } else if (message.type === 'copyPageData') {
-    if (message.favicon) {
-      IDBService.putFavicon(message.destination, message.favicon);
+  } else if (message.type === 'moveOrCopyPage') {
+    const source: Page = message.source;
+    const destination: DataSource = message.destination;
+    const operation: Operation = message.operation;
+
+    // Collect IDB-stored page data for page
+    const image = IDBService.getImage(source.pageId);
+    const timeLastAccessed = IDBService.getTimeLastAccessed(source.pageId);
+    let favicon: Promise<string | undefined>;
+    if (source.pageId[0] === DataSourceType.Window) {
+      favicon = browser.tabs.get(source.pageId[2]).then((tab) => tab.favIconUrl!);
+    } else {
+      favicon = IDBService.getFavicon(source.pageId);
     }
-    IDBService.putImage(message.destination, message.image);
-    IDBService.putTimeLastAccessed(message.destination, message.timeLastAccessed);
+    const data = await Promise.all([image, timeLastAccessed, favicon]);
+
+    // Move or copy page
+    let newPageId: PageId | undefined;
+    if (
+      source.pageId[0] === DataSourceType.Window &&
+      destination.dataSourceId[0] === DataSourceType.Window &&
+      operation === Operation.Move
+    ) {
+      const tab = (await browser.tabs.move(source.pageId[2], {
+        index: -1,
+        windowId: destination.dataSourceId[1],
+      })) as browser.Tabs.Tab;
+      newPageId = DataService.getPageIdFromTab(tab);
+    } else {
+      if (operation === Operation.Move) {
+        DataService.removePage(source);
+      }
+      newPageId = await DataService.addPage(source, destination);
+    }
+
+    // Put page data in IDB
+    if (data[0]) {
+      IDBService.putImage(newPageId, data[0]);
+    }
+    if (data[1]) {
+      IDBService.putTimeLastAccessed(newPageId, data[1]);
+    }
+    if (data[2] && newPageId[0] === DataSourceType.Folder) {
+      IDBService.putFavicon(newPageId, data[2]);
+    }
   } else if (message.type === 'removePages') {
     message.pages.forEach((page: Page) => {
       DataService.removePage(page);
