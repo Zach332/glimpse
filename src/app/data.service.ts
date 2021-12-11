@@ -158,9 +158,14 @@ export class DataService {
       pageId,
       title: tab.title!,
       url: tab.url!,
-      faviconUrl: tab.favIconUrl,
-      image: await IDBService.getImage(pageId),
-      timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? tab.id!,
+      faviconUrl: Promise.resolve(tab.favIconUrl),
+      image: IDBService.getImage(pageId),
+      timeLastAccessed: IDBService.getTimeLastAccessed(pageId).then((timeLastAccessed) => {
+        if (timeLastAccessed) {
+          return timeLastAccessed;
+        }
+        return tab.id!;
+      }),
     };
     return page;
   }
@@ -177,9 +182,14 @@ export class DataService {
       pageId,
       title: bookmark.title,
       url: bookmark.url!,
-      faviconUrl: await IDBService.getFavicon(pageId),
-      image: await IDBService.getImage(pageId),
-      timeLastAccessed: (await IDBService.getTimeLastAccessed(pageId)) ?? bookmark.dateAdded!,
+      faviconUrl: IDBService.getFavicon(pageId),
+      image: IDBService.getImage(pageId),
+      timeLastAccessed: IDBService.getTimeLastAccessed(pageId).then((timeLastAccessed) => {
+        if (timeLastAccessed) {
+          return timeLastAccessed;
+        }
+        return bookmark.dateAdded!;
+      }),
     };
     return page;
   }
