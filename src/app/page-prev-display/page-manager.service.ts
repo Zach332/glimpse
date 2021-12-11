@@ -163,10 +163,10 @@ export class PageManagerService {
     }
   }
 
-  public dropInNew(type: DataSourceType) {
+  public async dropInNew(type: DataSourceType) {
     const matchingName = this.getMatchingNameForSelected();
-    if (matchingName && this.notDefaultName(matchingName)) {
-      this.dropInNewWithName(matchingName, type);
+    if (matchingName && this.notDefaultName(await matchingName)) {
+      this.dropInNewWithName(await matchingName, type);
     } else {
       this.getNameDialog().subscribe((nameResult) => {
         if (nameResult !== null && nameResult !== undefined) {

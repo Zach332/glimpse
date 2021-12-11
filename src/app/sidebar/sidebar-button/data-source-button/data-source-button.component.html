@@ -10,7 +10,7 @@
 >
   <div class="flex align-items-center">
     <div [ngClass]="{ active: isActive }">
-      {{ buttonData.name }}
+      {{ buttonData.name | async }}
     </div>
     <button
       mat-icon-button
