@@ -58,6 +58,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   justify-content: space-around;
 }
 
+.mat-button-toggle-label-content {
+  line-height: 36px !important;
+}
+
 .selected {
   background-color: rgb(197, 196, 196) !important;
 }
