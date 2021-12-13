@@ -81,11 +81,16 @@ export class SidebarManagerService {
       name: 'New Folder',
       isSelected: false,
     };
-    this.browserObservable.subscribe(() => this.init());
+    this.browserObservable.subscribe(() => this.createSidebarItems());
     this.init();
   }
 
-  public async init() {
+  private async init() {
+    await this.restoreSavedSettings();
+    this.createSidebarItems();
+  }
+
+  private async restoreSavedSettings() {
     await IDBService.getSettings().then((settings) => {
       if (settings) {
         this.savedSettings = settings;
@@ -93,6 +98,9 @@ export class SidebarManagerService {
     });
     this.windowRootButton.expanded = this.savedSettings.windowExpanded;
     this.savedRootButton.expanded = this.savedSettings.savedExpanded;
+  }
+
+  private async createSidebarItems() {
     const windowButtons: SelectableSidebarButton[] = [];
     await DataService.getWindowDataSources().then((windows) => {
       windows.forEach((window) => {
