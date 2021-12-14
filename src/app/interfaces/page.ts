@@ -4,7 +4,7 @@ export interface Page {
   readonly pageId: PageId;
   title: string;
   url: string;
-  faviconUrl: string | undefined;
-  image: string | undefined;
-  timeLastAccessed: number;
+  faviconUrl: Promise<string | undefined>;
+  image: Promise<string | undefined>;
+  timeLastAccessed: Promise<number>;
 }

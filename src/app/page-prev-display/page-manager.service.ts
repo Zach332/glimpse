@@ -163,10 +163,10 @@ export class PageManagerService {
     }
   }
 
-  public dropInNew(type: DataSourceType) {
+  public async dropInNew(type: DataSourceType) {
     const matchingName = this.getMatchingNameForSelected();
-    if (matchingName && this.notDefaultName(matchingName)) {
-      this.dropInNewWithName(matchingName, type);
+    if (matchingName && this.notDefaultName(await matchingName)) {
+      this.dropInNewWithName(await matchingName, type);
     } else {
       this.getNameDialog().subscribe((nameResult) => {
         if (nameResult !== null && nameResult !== undefined) {
@@ -281,21 +281,24 @@ export class PageManagerService {
         this.getPageElementsOfType(dataSourceType).push(selectablePage);
       });
     });
+    // TODO: Reimplement sorting
     this.updatePageElements((currentPageElements) =>
       currentPageElements.adjustCollection(
-        this.savedPageElements.concat(this.windowPageElements).sort((a, b) => this.sortPages(a, b)),
+        this.savedPageElements.concat(
+          this.windowPageElements,
+        ) /** .sort((a, b) => this.sortPages(a, b)) */,
       ),
     );
   }
 
-  private sortPages(a: SelectablePage, b: SelectablePage) {
+  private async sortPages(a: SelectablePage, b: SelectablePage) {
     if (a.url === 'chrome://newtab/') {
       return 1;
     }
     if (b.url === 'chrome://newtab/') {
       return -1;
     }
-    return b.timeLastAccessed - a.timeLastAccessed;
+    return (await b.timeLastAccessed) - (await a.timeLastAccessed);
   }
 
   private getPageElementsOfType(type: DataSourceType): SelectablePage[] {

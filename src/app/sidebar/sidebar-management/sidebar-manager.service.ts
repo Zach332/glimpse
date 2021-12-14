@@ -60,25 +60,25 @@ export class SidebarManagerService {
     this.windowRootButton = {
       dataSourceId: [DataSourceType.Window, 1],
       id: 1,
-      name: 'Windows',
+      name: Promise.resolve('Windows'),
       isSelected: false,
     };
     this.savedRootButton = {
       dataSourceId: [DataSourceType.Folder, '1'],
       id: 1,
-      name: 'Saved',
+      name: Promise.resolve('Saved'),
       isSelected: false,
     };
     this.newWindowButton = {
       dataSourceId: [DataSourceType.Window, 1],
       id: 1,
-      name: 'New Window',
+      name: Promise.resolve('New Window'),
       isSelected: false,
     };
     this.newSavedButton = {
       dataSourceId: [DataSourceType.Folder, '1'],
       id: 1,
-      name: 'New Folder',
+      name: Promise.resolve('New Folder'),
       isSelected: false,
     };
     this.browserObservable.subscribe(() => this.createSidebarItems());
@@ -156,7 +156,7 @@ export class SidebarManagerService {
 
   public rename(button: SelectableSidebarButton, name: string): void {
     DataService.renameDataSource(button, name);
-    button.name = name;
+    button.name = Promise.resolve(name);
     this.updateDataSource(button.dataSourceId[0]);
   }
 
