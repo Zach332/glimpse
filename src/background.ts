@@ -20,27 +20,32 @@ function isValidPage(url: string) {
 
 browser.runtime.onMessage.addListener(async (message) => {
   if (message.type === 'addWindow') {
+    const currentWindow = message.currentWindow;
+    const name = message.name;
+    const initialPages = message.initialPages;
+    const copy = message.copy;
+
     // Create new window
     const newWindow = await browser.windows.create({
       focused: true,
-      state: message.currentWindow.state,
+      state: currentWindow.state,
     });
 
     const glimpseTabId = (await browser.tabs.query({ windowId: newWindow.id }))[0].id!;
 
     // Add name to new window (if specified)
-    if (message.name) {
-      await IDBService.putName(newWindow.id!, message.name);
+    if (name) {
+      await IDBService.putName(newWindow.id!, name);
     }
 
     const dataSource = DataService.convertWindowToDataSource(newWindow);
 
     // Add initial pages to new window
-    if (message.initialPages) {
-      if (message.copy) {
-        DataService.copyPages(message.initialPages, await dataSource);
+    if (initialPages) {
+      if (copy) {
+        DataService.copyPages(initialPages, await dataSource);
       } else {
-        DataService.movePages(message.initialPages, await dataSource);
+        DataService.movePages(initialPages, await dataSource);
       }
 
       // Once a tab in the new window is created, remove the glimpse tab
@@ -105,7 +110,9 @@ browser.runtime.onMessage.addListener(async (message) => {
       IDBService.putFavicon(newPageId, data[2]);
     }
   } else if (message.type === 'removePages') {
-    message.pages.forEach((page: Page) => {
+    const pages = message.pages;
+
+    pages.forEach((page: Page) => {
       DataService.removePage(page);
     });
   }
