@@ -29,7 +29,23 @@ export class IDBService {
   }
 
   static async putImage(pageId: PageId, image: string) {
-    return (await this.getDB()).put('images', image, pageId);
+    return new Promise((resolve) => {
+      const sourceImage = new Image();
+
+      sourceImage.onload = async function resize() {
+        const canvas = document.createElement('canvas');
+        const width = 600;
+        const height = (width * sourceImage.height) / sourceImage.width;
+        canvas.width = width;
+        canvas.height = height;
+
+        canvas.getContext('2d')!.drawImage(sourceImage, 0, 0, width, height);
+
+        resolve((await IDBService.getDB()).put('images', canvas.toDataURL('image/jpeg'), pageId));
+      };
+
+      sourceImage.src = image;
+    });
   }
 
   static async getImage(pageId: PageId) {
