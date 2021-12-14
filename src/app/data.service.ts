@@ -194,25 +194,6 @@ export class DataService {
     return page;
   }
 
-  static async movePages(sources: Page[], destination: DataSource) {
-    sources.forEach((source) => {
-      this.movePage(source, destination);
-    });
-  }
-
-  static async copyPages(sources: Page[], destination: DataSource) {
-    sources.forEach((source) => {
-      this.copyPage(source, destination);
-    });
-  }
-
-  static async removePages(pages: Page[]) {
-    browser.runtime.sendMessage({
-      type: 'removePages',
-      pages,
-    });
-  }
-
   static async movePage(source: Page, destination: DataSource) {
     browser.runtime.sendMessage({
       type: 'moveOrCopyPage',
@@ -232,11 +213,33 @@ export class DataService {
   }
 
   static async removePage(page: Page) {
-    if (page.pageId[0] === DataSourceType.Window) {
-      browser.tabs.remove(page.pageId[2]);
-    } else {
-      browser.bookmarks.remove(page.pageId[2]);
-    }
+    browser.runtime.sendMessage({
+      type: 'removePage',
+      page,
+    });
+  }
+
+  static async movePages(sources: Page[], destination: DataSource) {
+    browser.runtime.sendMessage({
+      type: 'movePages',
+      sources,
+      destination,
+    });
+  }
+
+  static async copyPages(sources: Page[], destination: DataSource) {
+    browser.runtime.sendMessage({
+      type: 'copyPages',
+      sources,
+      destination,
+    });
+  }
+
+  static async removePages(pages: Page[]) {
+    browser.runtime.sendMessage({
+      type: 'removePages',
+      pages,
+    });
   }
 
   // Tab management

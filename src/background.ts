@@ -18,6 +18,83 @@ function isValidPage(url: string) {
   );
 }
 
+async function removePage(page: Page) {
+  if (page.pageId[0] === DataSourceType.Window) {
+    browser.tabs.remove(page.pageId[2]);
+  } else {
+    browser.bookmarks.remove(page.pageId[2]);
+  }
+}
+
+function removePages(pages: Page[]) {
+  pages.forEach((page) => {
+    removePage(page);
+  });
+}
+
+async function moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
+  // Collect IDB-stored page data for page
+  const image = IDBService.getImage(source.pageId);
+  const timeLastAccessed = IDBService.getTimeLastAccessed(source.pageId);
+  let favicon: Promise<string | undefined>;
+  if (source.pageId[0] === DataSourceType.Window) {
+    favicon = browser.tabs.get(source.pageId[2]).then((tab) => tab.favIconUrl!);
+  } else {
+    favicon = IDBService.getFavicon(source.pageId);
+  }
+  const data = await Promise.all([image, timeLastAccessed, favicon]);
+
+  // Move or copy page
+  let newPageId: PageId | undefined;
+  if (
+    source.pageId[0] === DataSourceType.Window &&
+    destination.dataSourceId[0] === DataSourceType.Window &&
+    operation === Operation.Move
+  ) {
+    const tab = (await browser.tabs.move(source.pageId[2], {
+      index: -1,
+      windowId: destination.dataSourceId[1],
+    })) as browser.Tabs.Tab;
+    newPageId = DataService.getPageIdFromTab(tab);
+  } else {
+    if (operation === Operation.Move) {
+      removePage(source);
+    }
+    newPageId = await DataService.addPage(source, destination);
+  }
+
+  // Put page data in IDB
+  if (data[0]) {
+    IDBService.putImage(newPageId, data[0]);
+  }
+  if (data[1]) {
+    IDBService.putTimeLastAccessed(newPageId, data[1]);
+  }
+  if (data[2] && newPageId[0] === DataSourceType.Folder) {
+    IDBService.putFavicon(newPageId, data[2]);
+  }
+}
+
+function movePage(source: Page, destination: DataSource) {
+  moveOrCopyPage(source, destination, Operation.Move);
+}
+
+function copyPage(source: Page, destination: DataSource) {
+  moveOrCopyPage(source, destination, Operation.Copy);
+}
+
+async function movePages(sources: Page[], destination: DataSource) {
+  sources.forEach((source) => {
+    movePage(source, destination);
+  });
+}
+
+async function copyPages(sources: Page[], destination: DataSource) {
+  sources.forEach((source) => {
+    copyPage(source, destination);
+  });
+}
+
 browser.runtime.onMessage.addListener(async (message) => {
   if (message.type === 'addWindow') {
     const currentWindow = message.currentWindow;
@@ -43,9 +120,9 @@ browser.runtime.onMessage.addListener(async (message) => {
     // Add initial pages to new window
     if (initialPages) {
       if (copy) {
-        DataService.copyPages(initialPages, await dataSource);
+        copyPages(initialPages, await dataSource);
       } else {
-        DataService.movePages(initialPages, await dataSource);
+        movePages(initialPages, await dataSource);
       }
 
       // Once a tab in the new window is created, remove the glimpse tab
@@ -64,57 +141,28 @@ browser.runtime.onMessage.addListener(async (message) => {
         browser.tabs.onAttached.removeListener(closeGlimpseTabAfterTabMoved);
       });
     }
-  } else if (message.type === 'moveOrCopyPage') {
-    const source: Page = message.source;
-    const destination: DataSource = message.destination;
-    const operation: Operation = message.operation;
-
-    // Collect IDB-stored page data for page
-    const image = IDBService.getImage(source.pageId);
-    const timeLastAccessed = IDBService.getTimeLastAccessed(source.pageId);
-    let favicon: Promise<string | undefined>;
-    if (source.pageId[0] === DataSourceType.Window) {
-      favicon = browser.tabs.get(source.pageId[2]).then((tab) => tab.favIconUrl!);
-    } else {
-      favicon = IDBService.getFavicon(source.pageId);
-    }
-    const data = await Promise.all([image, timeLastAccessed, favicon]);
-
-    // Move or copy page
-    let newPageId: PageId | undefined;
-    if (
-      source.pageId[0] === DataSourceType.Window &&
-      destination.dataSourceId[0] === DataSourceType.Window &&
-      operation === Operation.Move
-    ) {
-      const tab = (await browser.tabs.move(source.pageId[2], {
-        index: -1,
-        windowId: destination.dataSourceId[1],
-      })) as browser.Tabs.Tab;
-      newPageId = DataService.getPageIdFromTab(tab);
-    } else {
-      if (operation === Operation.Move) {
-        DataService.removePage(source);
-      }
-      newPageId = await DataService.addPage(source, destination);
-    }
-
-    // Put page data in IDB
-    if (data[0]) {
-      IDBService.putImage(newPageId, data[0]);
-    }
-    if (data[1]) {
-      IDBService.putTimeLastAccessed(newPageId, data[1]);
-    }
-    if (data[2] && newPageId[0] === DataSourceType.Folder) {
-      IDBService.putFavicon(newPageId, data[2]);
-    }
+  } else if (message.type === 'movePage') {
+    const source = message.source;
+    const destination = message.destination;
+    movePage(source, destination);
+  } else if (message.type === 'copyPage') {
+    const source = message.source;
+    const destination = message.destination;
+    copyPage(source, destination);
+  } else if (message.type === 'removePage') {
+    const page = message.page;
+    removePage(page);
+  } else if (message.type === 'movePages') {
+    const sources = message.sources;
+    const destination = message.destination;
+    movePages(sources, destination);
+  } else if (message.type === 'copyPages') {
+    const sources = message.sources;
+    const destination = message.destination;
+    copyPages(sources, destination);
   } else if (message.type === 'removePages') {
     const pages = message.pages;
-
-    pages.forEach((page: Page) => {
-      DataService.removePage(page);
-    });
+    removePages(pages);
   }
 });
 
