@@ -281,24 +281,38 @@ export class PageManagerService {
         this.getPageElementsOfType(dataSourceType).push(selectablePage);
       });
     });
-    // TODO: Reimplement sorting
-    this.updatePageElements((currentPageElements) =>
-      currentPageElements.adjustCollection(
-        this.savedPageElements.concat(
-          this.windowPageElements,
-        ) /** .sort((a, b) => this.sortPages(a, b)) */,
-      ),
-    );
+
+    Promise.all(
+      this.savedPageElements.concat(this.windowPageElements).map(async (selectablePage) => {
+        return {
+          page: selectablePage,
+          timeLastAccessed: await selectablePage.timeLastAccessed,
+        };
+      }),
+    ).then((pages) => {
+      this.updatePageElements((currentPageElements) =>
+        currentPageElements.adjustCollection(
+          pages
+            .sort((a, b) => this.sortPages(a, b))
+            .map((selectablePageTimeLastAccessedPair) => {
+              return selectablePageTimeLastAccessedPair.page;
+            }),
+        ),
+      );
+    });
   }
 
-  private async sortPages(a: SelectablePage, b: SelectablePage) {
-    if (a.url === 'chrome://newtab/') {
+  private sortPages(
+    a: { page: SelectablePage; timeLastAccessed: number },
+    b: { page: SelectablePage; timeLastAccessed: number },
+  ) {
+    if (a.page.url === 'chrome://newtab/') {
       return 1;
     }
-    if (b.url === 'chrome://newtab/') {
+    if (b.page.url === 'chrome://newtab/') {
       return -1;
     }
-    return (await b.timeLastAccessed) - (await a.timeLastAccessed);
+    return b.timeLastAccessed - a.timeLastAccessed;
   }
 
   private getPageElementsOfType(type: DataSourceType): SelectablePage[] {
