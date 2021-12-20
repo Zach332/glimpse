@@ -1,7 +1,8 @@
 <mat-card-header class="prev-header">
   <div
     mat-card-avatar
-    [style.background-image]="'url(' + (tabData.faviconUrl | async) + ')'"
+    *ngIf="tabData.faviconUrl | async; let tabDataUrl"
+    [style.background-image]="'url(' + tabDataUrl + ')'"
     class="favicon"
   ></div>
   <mat-card-title class="prev-title">{{ tabData.title }}</mat-card-title>

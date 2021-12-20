@@ -66,7 +66,6 @@ export class PageManagerService {
     );
     this.browserObservable.subscribe(() =>
       this.lock.runExclusive(() => {
-        console.log('Updating pages from browser observable');
         this.updatePages(DataSourceType.Window, sidebarManagerService.windowSidebarButtons.value);
       }),
     );
@@ -265,7 +264,6 @@ export class PageManagerService {
     dataSourceType: DataSourceType,
     dataSources: SelectableCollection<SelectableSidebarButton>,
   ) {
-    console.log('Updating pages');
     if (dataSourceType === DataSourceType.Folder) {
       this.savedPageElements = [];
     } else if (dataSourceType === DataSourceType.Window) {
