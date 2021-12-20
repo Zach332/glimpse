@@ -18,6 +18,7 @@ export class DataService {
     browser.runtime.sendMessage({
       type: 'addWindow',
       currentWindow: await browser.windows.getCurrent(),
+      currentWindowGlimpseTabId: (await browser.tabs.getCurrent()).id!,
       name,
       initialPages,
       copy,
@@ -145,8 +146,6 @@ export class DataService {
   }
 
   static async getPagesByWindowId(windowId: number) {
-    // TODO: Switch this to use .then?
-    // Also for other methods in DataService
     return Promise.all(
       (await browser.tabs.query({ windowId })).map(async (tab) => this.convertTabToPage(tab)),
     );
@@ -244,22 +243,13 @@ export class DataService {
 
   // Tab management
 
-  static async switchToTab(tabId: number) {
-    this.closeGlimpseTabAfterCallback(async () => {
-      const windowId = (await browser.tabs.get(tabId)).windowId!;
-      browser.windows.update(windowId, { focused: true });
-      browser.tabs.update(tabId, { active: true });
+  static async switchToTab(destinationTabId: number) {
+    browser.runtime.sendMessage({
+      type: 'switchToTab',
+      destinationWindowId: (await browser.tabs.get(destinationTabId)).windowId!,
+      destinationTabId,
+      glimpseTabId: (await browser.tabs.getCurrent()).id!,
     });
-  }
-
-  static async closeGlimpseTab(tabId: number) {
-    browser.tabs.remove(tabId);
-  }
-
-  static async closeGlimpseTabAfterCallback(callback: Function) {
-    const currentTabId = (await browser.tabs.getCurrent()).id!;
-    await callback();
-    this.closeGlimpseTab(currentTabId);
   }
 
   // Information
