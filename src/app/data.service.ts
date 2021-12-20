@@ -146,8 +146,6 @@ export class DataService {
   }
 
   static async getPagesByWindowId(windowId: number) {
-    // TODO: Switch this to use .then?
-    // Also for other methods in DataService
     return Promise.all(
       (await browser.tabs.query({ windowId })).map(async (tab) => this.convertTabToPage(tab)),
     );
