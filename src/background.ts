@@ -255,6 +255,10 @@ browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
   IDBService.deletePageData([DataSourceType.Window, removeInfo.windowId, tabId]);
 });
 
+browser.bookmarks.onRemoved.addListener((id, removeInfo) => {
+  IDBService.deletePageData([DataSourceType.Folder, removeInfo.parentId, id]);
+});
+
 browser.runtime.onStartup.addListener(() => {
   IDBService.deleteSessionData();
 });
