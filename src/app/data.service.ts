@@ -18,6 +18,7 @@ export class DataService {
     browser.runtime.sendMessage({
       type: 'addWindow',
       currentWindow: await browser.windows.getCurrent(),
+      currentWindowGlimpseTabId: (await browser.tabs.getCurrent()).id!,
       name,
       initialPages,
       copy,

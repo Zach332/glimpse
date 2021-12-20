@@ -98,6 +98,7 @@ async function copyPages(sources: Page[], destination: DataSource) {
 browser.runtime.onMessage.addListener(async (message) => {
   if (message.type === 'addWindow') {
     const currentWindow = message.currentWindow;
+    const currentWindowGlimpseTabId = message.currentWindowGlimpseTabId;
     const name = message.name;
     const initialPages = message.initialPages;
     const copy = message.copy;
@@ -108,7 +109,7 @@ browser.runtime.onMessage.addListener(async (message) => {
       state: currentWindow.state,
     });
 
-    const glimpseTabId = (await browser.tabs.query({ windowId: newWindow.id }))[0].id!;
+    const newWindowGlimpseTabId = (await browser.tabs.query({ windowId: newWindow.id }))[0].id!;
 
     // Add name to new window (if specified)
     if (name) {
@@ -125,10 +126,10 @@ browser.runtime.onMessage.addListener(async (message) => {
         movePages(initialPages, await dataSource);
       }
 
-      // Once a tab in the new window is created, remove the glimpse tab
+      // Once a tab in the new window is created, remove the glimpse tab in the new window
       browser.tabs.onCreated.addListener(function closeGlimpseTabAfterNewTabOpened(tab) {
         if (tab.windowId === newWindow.id) {
-          browser.tabs.remove(glimpseTabId);
+          browser.tabs.remove(newWindowGlimpseTabId);
         }
         browser.tabs.onCreated.removeListener(closeGlimpseTabAfterNewTabOpened);
       });
@@ -136,11 +137,14 @@ browser.runtime.onMessage.addListener(async (message) => {
       // For the window -> window move case, listen for attachment
       browser.tabs.onAttached.addListener(function closeGlimpseTabAfterTabMoved(tabId, attachInfo) {
         if (attachInfo.newWindowId === newWindow.id) {
-          browser.tabs.remove(glimpseTabId);
+          browser.tabs.remove(newWindowGlimpseTabId);
         }
         browser.tabs.onAttached.removeListener(closeGlimpseTabAfterTabMoved);
       });
     }
+
+    // Close glimpse tab in current window
+    browser.tabs.remove(currentWindowGlimpseTabId);
   } else if (message.type === 'movePage') {
     const source = message.source;
     const destination = message.destination;
