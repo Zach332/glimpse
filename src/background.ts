@@ -145,6 +145,14 @@ browser.runtime.onMessage.addListener(async (message) => {
 
     // Close glimpse tab in current window
     browser.tabs.remove(currentWindowGlimpseTabId);
+  } else if (message.type === 'switchToTab') {
+    const destinationWindowId = message.destinationWindowId;
+    const destinationTabId = message.destinationTabId;
+    const glimpseTabId = message.glimpseTabId;
+
+    browser.windows.update(destinationWindowId, { focused: true });
+    browser.tabs.update(destinationTabId, { active: true });
+    browser.tabs.remove(glimpseTabId);
   } else if (message.type === 'movePage') {
     const source = message.source;
     const destination = message.destination;

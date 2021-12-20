@@ -245,22 +245,13 @@ export class DataService {
 
   // Tab management
 
-  static async switchToTab(tabId: number) {
-    this.closeGlimpseTabAfterCallback(async () => {
-      const windowId = (await browser.tabs.get(tabId)).windowId!;
-      browser.windows.update(windowId, { focused: true });
-      browser.tabs.update(tabId, { active: true });
+  static async switchToTab(destinationTabId: number) {
+    browser.runtime.sendMessage({
+      type: 'switchToTab',
+      destinationWindowId: (await browser.tabs.get(destinationTabId)).windowId!,
+      destinationTabId,
+      glimpseTabId: (await browser.tabs.getCurrent()).id!,
     });
-  }
-
-  static async closeGlimpseTab(tabId: number) {
-    browser.tabs.remove(tabId);
-  }
-
-  static async closeGlimpseTabAfterCallback(callback: Function) {
-    const currentTabId = (await browser.tabs.getCurrent()).id!;
-    await callback();
-    this.closeGlimpseTab(currentTabId);
   }
 
   // Information
