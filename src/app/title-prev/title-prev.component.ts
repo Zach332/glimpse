@@ -10,9 +10,13 @@ export class TitlePrevComponent {
   @Input()
   tabData!: Page;
 
-  @Output() removePage = new EventEmitter<MouseEvent>();
+  @Output() removePage = new EventEmitter();
 
   close($event: MouseEvent): void {
-    this.removePage.next($event);
+    $event.stopPropagation();
+    if (!this.tabData.loading) {
+      this.tabData.loading = true;
+      this.removePage.next();
+    }
   }
 }

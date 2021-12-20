@@ -7,6 +7,9 @@
   <mat-card-title class="prev-title">{{ tabData.title }}</mat-card-title>
   <mat-card-subtitle class="prev-site">{{ tabData.url | siteTrim }}</mat-card-subtitle>
   <button mat-icon-button (click)="close($event)" class="prev-close">
-    <mat-icon>close</mat-icon>
+    <mat-icon *ngIf="!tabData.loading">close</mat-icon>
+    <div *ngIf="tabData.loading" class="flex space-around align-items-center">
+      <mat-spinner diameter="24"></mat-spinner>
+    </div>
   </button>
 </mat-card-header>

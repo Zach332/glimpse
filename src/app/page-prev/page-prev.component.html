@@ -8,11 +8,7 @@
   <app-image-prev
     *ngIf="!collapse"
     [tabData]="tabData"
-    (removePage)="removePage($event)"
+    (removePage)="removePage()"
   ></app-image-prev>
-  <app-title-prev
-    *ngIf="collapse"
-    [tabData]="tabData"
-    (removePage)="removePage($event)"
-  ></app-title-prev>
+  <app-title-prev *ngIf="collapse" [tabData]="tabData" (removePage)="removePage()"></app-title-prev>
 </mat-card>

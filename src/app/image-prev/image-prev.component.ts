@@ -10,9 +10,9 @@ export class ImagePrevComponent {
   @Input()
   tabData!: Page;
 
-  @Output() removePage = new EventEmitter<MouseEvent>();
+  @Output() removePage = new EventEmitter();
 
-  close($event: MouseEvent): void {
-    this.removePage.next($event);
+  close(): void {
+    this.removePage.next();
   }
 }

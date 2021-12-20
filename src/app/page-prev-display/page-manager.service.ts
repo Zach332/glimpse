@@ -65,9 +65,10 @@ export class PageManagerService {
       this.lock.runExclusive(() => this.updatePages(DataSourceType.Window, selectedButtons)),
     );
     this.browserObservable.subscribe(() =>
-      this.lock.runExclusive(() =>
-        this.updatePages(DataSourceType.Window, sidebarManagerService.windowSidebarButtons.value),
-      ),
+      this.lock.runExclusive(() => {
+        console.log('Updating pages from browser observable');
+        this.updatePages(DataSourceType.Window, sidebarManagerService.windowSidebarButtons.value);
+      }),
     );
     this.searchQuery.subscribe(
       (newQuery) =>
@@ -122,7 +123,6 @@ export class PageManagerService {
   }
 
   public removePage(page: SelectablePage) {
-    this.updatePageElements((currentPageElements) => currentPageElements.remove(page.id));
     DataService.removePage(page);
   }
 
@@ -265,6 +265,7 @@ export class PageManagerService {
     dataSourceType: DataSourceType,
     dataSources: SelectableCollection<SelectableSidebarButton>,
   ) {
+    console.log('Updating pages');
     if (dataSourceType === DataSourceType.Folder) {
       this.savedPageElements = [];
     } else if (dataSourceType === DataSourceType.Window) {

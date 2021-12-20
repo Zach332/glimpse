@@ -39,8 +39,7 @@ export class PagePrevComponent {
     }
   }
 
-  removePage($event: MouseEvent): void {
-    $event.stopPropagation();
+  removePage(): void {
     this.pageManagerService.removePage(this.tabData);
   }
 
