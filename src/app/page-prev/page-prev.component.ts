@@ -17,7 +17,7 @@ export class PagePrevComponent {
   @Input()
   collapse!: boolean;
 
-  constructor(public pageManagerService: PageManagerService) {}
+  constructor(public pageManagerService: PageManagerService, private dataService: DataService) {}
 
   onClick($event: MouseEvent): void {
     // If page is a bookmark, update the time last accessed
@@ -32,7 +32,7 @@ export class PagePrevComponent {
       this.pageManagerService.displayPageElements.selectToId(this.tabData.id);
     } else {
       if (this.tabData.pageId[0] === DataSourceType.Window) {
-        DataService.switchToTab(this.tabData.pageId[2]);
+        this.dataService.switchToTab(this.tabData.pageId[2]);
       } else {
         window.location.href = this.tabData.url;
       }

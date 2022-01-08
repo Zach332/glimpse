@@ -54,6 +54,7 @@ export class PageManagerService {
     private sidebarManagerService: SidebarManagerService,
     private pageFilterService: PageFilterService,
     private hotkeyManagerService: HotkeyManagerService,
+    private dataService: DataService,
     private ngZone: NgZone,
     private moveCopyDialog: MatDialog,
     private nameDialog: MatDialog,
@@ -122,14 +123,14 @@ export class PageManagerService {
   }
 
   public removePage(page: SelectablePage) {
-    DataService.removePage(page);
+    this.dataService.removePage(page);
   }
 
   public removeAll() {
     const pagesToRemove = this.displayPageElements.collection.filter(
       (element) => element.isSelected,
     );
-    DataService.removePages(pagesToRemove);
+    this.dataService.removePages(pagesToRemove);
     pagesToRemove.forEach((page) => {
       this.updatePageElements((currentPageElements) => currentPageElements.remove(page.id));
     });
@@ -148,17 +149,23 @@ export class PageManagerService {
 
   public async dropPages(destination: DataSource): Promise<void> {
     if (this.dragMode === 'copy') {
-      await DataService.copyPages(this.getDraggedPages(), destination);
+      await this.dataService.copyPages(this.getDraggedPages(), destination);
     } else {
-      await DataService.movePages(this.getDraggedPages(), destination);
+      await this.dataService.movePages(this.getDraggedPages(), destination);
     }
   }
 
   public async openAll(): Promise<void> {
     if (this.dragMode === 'copy') {
-      await DataService.copyPages(this.getDraggedPages(), await DataService.getActiveDataSource());
+      await this.dataService.copyPages(
+        this.getDraggedPages(),
+        await this.dataService.getActiveDataSource(),
+      );
     } else {
-      await DataService.movePages(this.getDraggedPages(), await DataService.getActiveDataSource());
+      await this.dataService.movePages(
+        this.getDraggedPages(),
+        await this.dataService.getActiveDataSource(),
+      );
     }
   }
 
@@ -270,7 +277,7 @@ export class PageManagerService {
       this.windowPageElements = [];
     }
     const selectedDataSources = dataSources.getSelectedItems();
-    await DataService.getPagesByDataSources(selectedDataSources).then((pages) => {
+    await this.dataService.getPagesByDataSources(selectedDataSources).then((pages) => {
       pages.forEach((page) => {
         const selectablePage: SelectablePage = {
           ...page,
