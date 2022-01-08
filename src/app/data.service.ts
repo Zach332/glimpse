@@ -109,23 +109,6 @@ export class DataService {
 
   // Pages
 
-  static async addPage(page: Page, dataSource: DataSource) {
-    if (dataSource.dataSourceId[0] === DataSourceType.Window) {
-      const tab = await browser.tabs.create({
-        url: page.url,
-        active: false,
-        windowId: dataSource.dataSourceId[1],
-      });
-      return DataService.getPageIdFromTab(tab);
-    }
-    const bookmark = await browser.bookmarks.create({
-      parentId: dataSource.dataSourceId[1],
-      title: page.title,
-      url: page.url,
-    });
-    return DataService.getPageIdFromBookmark(bookmark);
-  }
-
   static async getPagesByDataSources(dataSources: DataSource[]) {
     return Promise.all(
       dataSources.map((dataSource) => {
