@@ -281,7 +281,7 @@ export class PageManagerService {
       });
     });
 
-    Promise.all(
+    await Promise.all(
       this.savedPageElements.concat(this.windowPageElements).map(async (selectablePage) => {
         return {
           page: selectablePage,
