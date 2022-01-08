@@ -122,6 +122,9 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
       }
     });
     this.collection = newData;
+    console.log('--');
+    console.log(newData.length);
+    console.log(this.collection.length);
   }
 
   public [Symbol.iterator]() {

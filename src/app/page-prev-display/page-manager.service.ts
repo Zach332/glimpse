@@ -59,15 +59,16 @@ export class PageManagerService {
     private nameDialog: MatDialog,
   ) {
     this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
-      this.lock.runExclusive(() => this.updatePages(DataSourceType.Folder, selectedButtons)),
+      this.updatePagesLocked(DataSourceType.Folder, selectedButtons),
     );
     this.sidebarManagerService.windowSidebarButtons.subscribe((selectedButtons) =>
-      this.lock.runExclusive(() => this.updatePages(DataSourceType.Window, selectedButtons)),
+      this.updatePagesLocked(DataSourceType.Window, selectedButtons),
     );
     this.browserObservable.subscribe(() =>
-      this.lock.runExclusive(() => {
-        this.updatePages(DataSourceType.Window, sidebarManagerService.windowSidebarButtons.value);
-      }),
+      this.updatePagesLocked(
+        DataSourceType.Window,
+        sidebarManagerService.windowSidebarButtons.value,
+      ),
     );
     this.searchQuery.subscribe(
       (newQuery) =>
@@ -77,6 +78,13 @@ export class PageManagerService {
     this.hotkeyManagerService.addShortcut('delete', 'delete').subscribe(() => this.removeAll());
     this.hotkeyManagerService.addShortcut('m', 'move').subscribe(() => this.moveDialog());
     this.hotkeyManagerService.addShortcut('c', 'copy').subscribe(() => this.copyDialog());
+  }
+
+  private updatePagesLocked(
+    dataSourceType: DataSourceType,
+    selectedButtons: SelectableCollection<SelectableSidebarButton>,
+  ) {
+    this.lock.runExclusive(() => this.updatePages(dataSourceType, selectedButtons));
   }
 
   public get pagePrevWidth() {
