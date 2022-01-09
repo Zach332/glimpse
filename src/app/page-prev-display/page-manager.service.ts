@@ -128,10 +128,11 @@ export class PageManagerService {
     const pagesToRemove = this.displayPageElements.collection.filter(
       (element) => element.isSelected,
     );
-    DataService.removePages(pagesToRemove);
-    // TODO let event handlers do this
     pagesToRemove.forEach((page) => {
-      this.updatePageElements((currentPageElements) => currentPageElements.remove(page.id));
+      if (!page.loading) {
+        page.loading = true;
+        DataService.removePage(page);
+      }
     });
   }
 
