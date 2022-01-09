@@ -25,7 +25,6 @@ export class NewButtonComponent {
   ) {}
 
   drop(dropped: CdkDragDrop<SelectablePage>) {
-    this.pageManagerService.dragging = false;
     if (dropped.isPointerOverContainer) {
       this.pageManagerService.dropInNew(this.buttonData.dataSourceId[0]);
     }

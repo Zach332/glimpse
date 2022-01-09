@@ -28,8 +28,6 @@ export class PageManagerService {
 
   public displayPageElements = new SelectableCollection<SelectablePage>();
 
-  public dragging: boolean = false;
-
   public draggedElement: string = '';
 
   public pagePrevMax = 600;
@@ -78,13 +76,6 @@ export class PageManagerService {
     this.hotkeyManagerService.addShortcut('delete', 'delete').subscribe(() => this.removeAll());
     this.hotkeyManagerService.addShortcut('m', 'move').subscribe(() => this.moveDialog());
     this.hotkeyManagerService.addShortcut('c', 'copy').subscribe(() => this.copyDialog());
-  }
-
-  private updatePagesLocked(
-    dataSourceType: DataSourceType,
-    selectedButtons: SelectableCollection<SelectableSidebarButton>,
-  ) {
-    this.lock.runExclusive(() => this.updatePages(dataSourceType, selectedButtons));
   }
 
   public get pagePrevWidth() {
@@ -138,6 +129,7 @@ export class PageManagerService {
       (element) => element.isSelected,
     );
     DataService.removePages(pagesToRemove);
+    // TODO let event handlers do this
     pagesToRemove.forEach((page) => {
       this.updatePageElements((currentPageElements) => currentPageElements.remove(page.id));
     });
@@ -266,6 +258,13 @@ export class PageManagerService {
     dialogRef.componentInstance.dialogTitle = 'Name';
     dialogRef.componentInstance.inputLabel = 'Name';
     return dialogRef.afterClosed();
+  }
+
+  private updatePagesLocked(
+    dataSourceType: DataSourceType,
+    selectedButtons: SelectableCollection<SelectableSidebarButton>,
+  ) {
+    this.lock.runExclusive(() => this.updatePages(dataSourceType, selectedButtons));
   }
 
   private async updatePages(

@@ -4,17 +4,13 @@
   ></mat-sidenav>
   <mat-sidenav-content>
     <app-search class="flex justify-content-center"></app-search>
-    <div
-      class="flex flex-wrap justify-content-center"
-      cdkDropList
-      cdkDropListSortingDisabled
-      (cdkDropListDropped)="drop()"
-    >
+    <div class="flex flex-wrap justify-content-center" cdkDropList cdkDropListSortingDisabled>
       <app-page-prev
-        *ngFor="let tabElement of pageManagerService.displayPageElements"
+        *ngFor="let tabElement of pageView()"
         [tabData]="tabElement"
         [collapse]="pageManagerService.pagePrevCollapse"
         (cdkDragStarted)="onDragStart($event)"
+        (cdkDragReleased)="release()"
         id="{{ tabElement.id }}"
         cdkDrag
       >
