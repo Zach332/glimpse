@@ -28,8 +28,6 @@ export class PageManagerService {
 
   public displayPageElements = new SelectableCollection<SelectablePage>();
 
-  public dragging: boolean = false;
-
   public draggedElement: string = '';
 
   public pagePrevMax = 600;
@@ -60,15 +58,16 @@ export class PageManagerService {
     private nameDialog: MatDialog,
   ) {
     this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
-      this.lock.runExclusive(() => this.updatePages(DataSourceType.Folder, selectedButtons)),
+      this.updatePagesLocked(DataSourceType.Folder, selectedButtons),
     );
     this.sidebarManagerService.windowSidebarButtons.subscribe((selectedButtons) =>
-      this.lock.runExclusive(() => this.updatePages(DataSourceType.Window, selectedButtons)),
+      this.updatePagesLocked(DataSourceType.Window, selectedButtons),
     );
     this.browserObservable.subscribe(() =>
-      this.lock.runExclusive(() => {
-        this.updatePages(DataSourceType.Window, sidebarManagerService.windowSidebarButtons.value);
-      }),
+      this.updatePagesLocked(
+        DataSourceType.Window,
+        sidebarManagerService.windowSidebarButtons.value,
+      ),
     );
     this.searchQuery.subscribe(
       (newQuery) =>
@@ -131,6 +130,7 @@ export class PageManagerService {
       (element) => element.isSelected,
     );
     this.dataService.removePages(pagesToRemove);
+    // TODO let event handlers do this
     pagesToRemove.forEach((page) => {
       this.updatePageElements((currentPageElements) => currentPageElements.remove(page.id));
     });
@@ -267,6 +267,13 @@ export class PageManagerService {
     return dialogRef.afterClosed();
   }
 
+  private updatePagesLocked(
+    dataSourceType: DataSourceType,
+    selectedButtons: SelectableCollection<SelectableSidebarButton>,
+  ) {
+    this.lock.runExclusive(() => this.updatePages(dataSourceType, selectedButtons));
+  }
+
   private async updatePages(
     dataSourceType: DataSourceType,
     dataSources: SelectableCollection<SelectableSidebarButton>,
@@ -288,7 +295,7 @@ export class PageManagerService {
       });
     });
 
-    Promise.all(
+    await Promise.all(
       this.savedPageElements.concat(this.windowPageElements).map(async (selectablePage) => {
         return {
           page: selectablePage,

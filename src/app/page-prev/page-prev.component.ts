@@ -42,11 +42,4 @@ export class PagePrevComponent {
   removePage(): void {
     this.pageManagerService.removePage(this.tabData);
   }
-
-  dragging(): boolean {
-    if (this.tabData.isSelected && this.pageManagerService.dragging) {
-      return true;
-    }
-    return false;
-  }
 }
