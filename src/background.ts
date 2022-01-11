@@ -18,6 +18,23 @@ function isValidPage(url: string) {
   );
 }
 
+async function addPage(page: Page, dataSource: DataSource) {
+  if (dataSource.dataSourceId[0] === DataSourceType.Window) {
+    const tab = await browser.tabs.create({
+      url: page.url,
+      active: false,
+      windowId: dataSource.dataSourceId[1],
+    });
+    return DataService.getPageIdFromTab(tab);
+  }
+  const bookmark = await browser.bookmarks.create({
+    parentId: dataSource.dataSourceId[1],
+    title: page.title,
+    url: page.url,
+  });
+  return DataService.getPageIdFromBookmark(bookmark);
+}
+
 async function removePage(page: Page) {
   if (page.pageId[0] === DataSourceType.Window) {
     browser.tabs.remove(page.pageId[2]);
@@ -60,7 +77,7 @@ async function moveOrCopyPage(source: Page, destination: DataSource, operation: 
     if (operation === Operation.Move) {
       removePage(source);
     }
-    newPageId = await DataService.addPage(source, destination);
+    newPageId = await addPage(source, destination);
   }
 
   // Put page data in IDB

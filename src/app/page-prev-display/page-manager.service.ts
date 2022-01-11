@@ -52,6 +52,7 @@ export class PageManagerService {
     private sidebarManagerService: SidebarManagerService,
     private pageFilterService: PageFilterService,
     private hotkeyManagerService: HotkeyManagerService,
+    private dataService: DataService,
     private ngZone: NgZone,
     private moveCopyDialog: MatDialog,
     private nameDialog: MatDialog,
@@ -121,7 +122,7 @@ export class PageManagerService {
   }
 
   public removePage(page: SelectablePage) {
-    DataService.removePage(page);
+    this.dataService.removePage(page);
   }
 
   public removeAll() {
@@ -131,7 +132,7 @@ export class PageManagerService {
     pagesToRemove.forEach((page) => {
       if (!page.loading) {
         page.loading = true;
-        DataService.removePage(page);
+        this.removePage(page);
       }
     });
   }
@@ -149,17 +150,23 @@ export class PageManagerService {
 
   public async dropPages(destination: DataSource): Promise<void> {
     if (this.dragMode === 'copy') {
-      await DataService.copyPages(this.getDraggedPages(), destination);
+      await this.dataService.copyPages(this.getDraggedPages(), destination);
     } else {
-      await DataService.movePages(this.getDraggedPages(), destination);
+      await this.dataService.movePages(this.getDraggedPages(), destination);
     }
   }
 
   public async openAll(): Promise<void> {
     if (this.dragMode === 'copy') {
-      await DataService.copyPages(this.getDraggedPages(), await DataService.getActiveDataSource());
+      await this.dataService.copyPages(
+        this.getDraggedPages(),
+        await this.dataService.getActiveDataSource(),
+      );
     } else {
-      await DataService.movePages(this.getDraggedPages(), await DataService.getActiveDataSource());
+      await this.dataService.movePages(
+        this.getDraggedPages(),
+        await this.dataService.getActiveDataSource(),
+      );
     }
   }
 
@@ -278,16 +285,18 @@ export class PageManagerService {
       this.windowPageElements = [];
     }
     const selectedDataSources = dataSources.getSelectedItems();
-    await DataService.getPagesByDataSources(selectedDataSources).then((pages) => {
-      pages.forEach((page) => {
-        const selectablePage: SelectablePage = {
-          ...page,
-          id: IdGeneratorService.getIdFromPageId(page.pageId),
-          isSelected: false,
-        };
-        this.getPageElementsOfType(dataSourceType).push(selectablePage);
+    if (selectedDataSources.length > 0) {
+      await this.dataService.getPagesByDataSources(selectedDataSources).then((pages) => {
+        pages.forEach((page) => {
+          const selectablePage: SelectablePage = {
+            ...page,
+            id: IdGeneratorService.getIdFromPageId(page.pageId),
+            isSelected: false,
+          };
+          this.getPageElementsOfType(dataSourceType).push(selectablePage);
+        });
       });
-    });
+    }
 
     await Promise.all(
       this.savedPageElements.concat(this.windowPageElements).map(async (selectablePage) => {

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as browser from 'webextension-polyfill';
+import pThrottle from 'p-throttle';
 import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
@@ -12,9 +13,14 @@ import { BookmarkService } from './bookmark-service';
   providedIn: 'root',
 })
 export class DataService {
+  private pageThrottle = pThrottle({
+    limit: 1,
+    interval: 100,
+  });
+
   // Data sources
 
-  static async addWindow(name?: string, initialPages?: Page[], copy?: boolean) {
+  async addWindow(name?: string, initialPages?: Page[], copy?: boolean) {
     browser.runtime.sendMessage({
       type: 'addWindow',
       currentWindow: await browser.windows.getCurrent(),
@@ -25,13 +31,13 @@ export class DataService {
     });
   }
 
-  static async addFolder(name: string, initialPages?: Page[], copy?: boolean) {
+  async addFolder(name: string, initialPages?: Page[], copy?: boolean) {
     // Create new folder
     const folder = browser.bookmarks.create({
       parentId: (await BookmarkService.getRootGlimpseFolder()).id,
       title: name,
     });
-    const dataSource = this.convertFolderToDataSource(await folder);
+    const dataSource = DataService.convertFolderToDataSource(await folder);
 
     // Add initial pages to new folder
     if (initialPages) {
@@ -45,10 +51,10 @@ export class DataService {
     return dataSource;
   }
 
-  static async getWindowDataSources() {
+  async getWindowDataSources() {
     return Promise.all(
       (await browser.windows.getAll()).map(async (window) =>
-        this.convertWindowToDataSource(window),
+        DataService.convertWindowToDataSource(window),
       ),
     );
   }
@@ -66,12 +72,12 @@ export class DataService {
     return dataSource;
   }
 
-  static async getFolderDataSources() {
+  async getFolderDataSources() {
     // TODO: Handle errors
     return browser.bookmarks
       .getChildren((await BookmarkService.getRootGlimpseFolder()).id)
       .then((folders) => {
-        return folders.map((folder) => this.convertFolderToDataSource(folder));
+        return folders.map((folder) => DataService.convertFolderToDataSource(folder));
       });
   }
 
@@ -83,15 +89,15 @@ export class DataService {
     return dataSource;
   }
 
-  static async renameWindow(windowId: number, name: string) {
+  async renameWindow(windowId: number, name: string) {
     IDBService.putName(windowId, name);
   }
 
-  static async renameFolder(folderId: string, name: string) {
+  async renameFolder(folderId: string, name: string) {
     browser.bookmarks.update(folderId, { title: name });
   }
 
-  static async renameDataSource(dataSource: DataSource, name: string) {
+  async renameDataSource(dataSource: DataSource, name: string) {
     if (dataSource.dataSourceId[0] === DataSourceType.Window) {
       this.renameWindow(dataSource.dataSourceId[1], name);
     } else {
@@ -99,7 +105,7 @@ export class DataService {
     }
   }
 
-  static async removeDataSource(dataSource: DataSource) {
+  async removeDataSource(dataSource: DataSource) {
     if (dataSource.dataSourceId[0] === DataSourceType.Window) {
       browser.windows.remove(dataSource.dataSourceId[1]);
     } else {
@@ -109,24 +115,7 @@ export class DataService {
 
   // Pages
 
-  static async addPage(page: Page, dataSource: DataSource) {
-    if (dataSource.dataSourceId[0] === DataSourceType.Window) {
-      const tab = await browser.tabs.create({
-        url: page.url,
-        active: false,
-        windowId: dataSource.dataSourceId[1],
-      });
-      return DataService.getPageIdFromTab(tab);
-    }
-    const bookmark = await browser.bookmarks.create({
-      parentId: dataSource.dataSourceId[1],
-      title: page.title,
-      url: page.url,
-    });
-    return DataService.getPageIdFromBookmark(bookmark);
-  }
-
-  static async getPagesByDataSources(dataSources: DataSource[]) {
+  private async _getPagesByDataSources(dataSources: DataSource[]) {
     return Promise.all(
       dataSources.map((dataSource) => {
         if (dataSource.dataSourceId[0] === DataSourceType.Window) {
@@ -145,13 +134,17 @@ export class DataService {
     });
   }
 
-  static async getPagesByWindowId(windowId: number) {
+  getPagesByDataSources = this.pageThrottle((dataSources: DataSource[]) =>
+    this._getPagesByDataSources(dataSources),
+  );
+
+  async getPagesByWindowId(windowId: number) {
     return Promise.all(
       (await browser.tabs.query({ windowId })).map(async (tab) => this.convertTabToPage(tab)),
     );
   }
 
-  static async convertTabToPage(tab: browser.Tabs.Tab) {
+  private async convertTabToPage(tab: browser.Tabs.Tab) {
     const pageId: PageId = DataService.getPageIdFromTab(tab);
     const page: Page = {
       pageId,
@@ -169,13 +162,13 @@ export class DataService {
     return page;
   }
 
-  static async getPagesByFolderId(folderId: string) {
+  async getPagesByFolderId(folderId: string) {
     return browser.bookmarks.getChildren(folderId).then((folder) => {
       return Promise.all(folder.map(async (bookmark) => this.convertBookmarkToPage(bookmark)));
     });
   }
 
-  static async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode) {
+  private async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode) {
     const pageId: PageId = DataService.getPageIdFromBookmark(bookmark);
     const page: Page = {
       pageId,
@@ -193,7 +186,7 @@ export class DataService {
     return page;
   }
 
-  static async movePage(source: Page, destination: DataSource) {
+  async movePage(source: Page, destination: DataSource) {
     browser.runtime.sendMessage({
       type: 'moveOrCopyPage',
       source,
@@ -202,7 +195,7 @@ export class DataService {
     });
   }
 
-  static async copyPage(source: Page, destination: DataSource) {
+  async copyPage(source: Page, destination: DataSource) {
     browser.runtime.sendMessage({
       type: 'moveOrCopyPage',
       source,
@@ -211,14 +204,14 @@ export class DataService {
     });
   }
 
-  static async removePage(page: Page) {
+  async removePage(page: Page) {
     browser.runtime.sendMessage({
       type: 'removePage',
       page,
     });
   }
 
-  static async movePages(sources: Page[], destination: DataSource) {
+  async movePages(sources: Page[], destination: DataSource) {
     browser.runtime.sendMessage({
       type: 'movePages',
       sources,
@@ -226,7 +219,7 @@ export class DataService {
     });
   }
 
-  static async copyPages(sources: Page[], destination: DataSource) {
+  async copyPages(sources: Page[], destination: DataSource) {
     browser.runtime.sendMessage({
       type: 'copyPages',
       sources,
@@ -234,7 +227,7 @@ export class DataService {
     });
   }
 
-  static async removePages(pages: Page[]) {
+  async removePages(pages: Page[]) {
     browser.runtime.sendMessage({
       type: 'removePages',
       pages,
@@ -243,7 +236,7 @@ export class DataService {
 
   // Tab management
 
-  static async switchToTab(destinationTabId: number) {
+  async switchToTab(destinationTabId: number) {
     browser.runtime.sendMessage({
       type: 'switchToTab',
       destinationWindowId: (await browser.tabs.get(destinationTabId)).windowId!,
@@ -254,8 +247,10 @@ export class DataService {
 
   // Information
 
-  static async getActiveDataSource(): Promise<DataSource> {
-    return browser.windows.getCurrent().then((window) => this.convertWindowToDataSource(window));
+  async getActiveDataSource(): Promise<DataSource> {
+    return browser.windows
+      .getCurrent()
+      .then((window) => DataService.convertWindowToDataSource(window));
   }
 
   // Helper methods
