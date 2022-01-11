@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as browser from 'webextension-polyfill';
+import pThrottle from 'p-throttle';
 import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
@@ -12,6 +13,11 @@ import { BookmarkService } from './bookmark-service';
   providedIn: 'root',
 })
 export class DataService {
+  private pageThrottle = pThrottle({
+    limit: 1,
+    interval: 100,
+  });
+
   // Data sources
 
   async addWindow(name?: string, initialPages?: Page[], copy?: boolean) {
@@ -109,7 +115,7 @@ export class DataService {
 
   // Pages
 
-  async getPagesByDataSources(dataSources: DataSource[]) {
+  async _getPagesByDataSources(dataSources: DataSource[]) {
     return Promise.all(
       dataSources.map((dataSource) => {
         if (dataSource.dataSourceId[0] === DataSourceType.Window) {
@@ -127,6 +133,10 @@ export class DataService {
       return pages;
     });
   }
+
+  getPagesByDataSources = this.pageThrottle((dataSources: DataSource[]) =>
+    this._getPagesByDataSources(dataSources),
+  );
 
   async getPagesByWindowId(windowId: number) {
     return Promise.all(
