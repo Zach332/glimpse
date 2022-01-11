@@ -10,7 +10,7 @@ import { PageManagerService } from './page-prev-display/page-manager.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  dragInsert: null | { index: number; page: SelectablePage } = null;
+  pageViewDrag: null | SelectableCollection<SelectablePage> = null;
 
   constructor(public pageManagerService: PageManagerService) {}
 
@@ -19,23 +19,22 @@ export class AppComponent {
     const currentIndex = this.pageManagerService.displayPageElements.collection.findIndex(
       (p) => p.id === parseInt(this.pageManagerService.draggedElement, 10),
     );
-    this.dragInsert = {
-      index: currentIndex,
-      page: this.pageManagerService.displayPageElements.collection[currentIndex],
-    };
+    const dragInsert = this.pageManagerService.displayPageElements.collection[currentIndex];
+    this.pageViewDrag = this.pageManagerService.displayPageElements.copy();
+    this.pageViewDrag.adjustCollection([
+      ...this.pageManagerService.displayPageElements.collection.slice(0, currentIndex),
+      dragInsert,
+      ...this.pageManagerService.displayPageElements.collection.slice(currentIndex),
+    ]);
   }
 
   release() {
-    this.dragInsert = null;
+    this.pageViewDrag = null;
   }
 
   pageView() {
-    if (this.dragInsert) {
-      return new SelectableCollection([
-        ...this.pageManagerService.displayPageElements.collection.slice(0, this.dragInsert.index),
-        this.dragInsert.page,
-        ...this.pageManagerService.displayPageElements.collection.slice(this.dragInsert.index),
-      ]);
+    if (this.pageViewDrag) {
+      return this.pageViewDrag;
     }
     return this.pageManagerService.displayPageElements;
   }

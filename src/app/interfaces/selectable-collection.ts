@@ -25,6 +25,13 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     this._collection = newCollection;
   }
 
+  public copy() {
+    const copy = new SelectableCollection(this.collection);
+    copy.lastToggled = this.lastToggled;
+    copy.lastShifted = this.lastShifted;
+    return copy;
+  }
+
   public getSelectedItems() {
     return this._collection.filter((selectable) => selectable.isSelected);
   }
