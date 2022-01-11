@@ -115,7 +115,7 @@ export class DataService {
 
   // Pages
 
-  async _getPagesByDataSources(dataSources: DataSource[]) {
+  private async _getPagesByDataSources(dataSources: DataSource[]) {
     return Promise.all(
       dataSources.map((dataSource) => {
         if (dataSource.dataSourceId[0] === DataSourceType.Window) {
@@ -144,7 +144,7 @@ export class DataService {
     );
   }
 
-  async convertTabToPage(tab: browser.Tabs.Tab) {
+  private async convertTabToPage(tab: browser.Tabs.Tab) {
     const pageId: PageId = DataService.getPageIdFromTab(tab);
     const page: Page = {
       pageId,
@@ -168,7 +168,7 @@ export class DataService {
     });
   }
 
-  async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode) {
+  private async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode) {
     const pageId: PageId = DataService.getPageIdFromBookmark(bookmark);
     const page: Page = {
       pageId,
