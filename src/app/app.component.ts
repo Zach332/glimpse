@@ -12,6 +12,8 @@ import { PageManagerService } from './page-prev-display/page-manager.service';
 export class AppComponent {
   pageViewDrag: null | SelectableCollection<SelectablePage> = null;
 
+  opened = true;
+
   constructor(public pageManagerService: PageManagerService) {}
 
   onDragStart($event: CdkDragStart) {

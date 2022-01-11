@@ -54,8 +54,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .align-items-center {
   align-items: center;
 }
+.align-items-start {
+  align-items: flex-start;
+}
 .space-around {
   justify-content: space-around;
+}
+.fill {
+  width: 100%;
 }
 
 .mat-button-toggle-label-content {

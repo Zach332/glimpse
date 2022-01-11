@@ -1,9 +1,17 @@
 <mat-sidenav-container cdkDropListGroup>
-  <mat-sidenav #sidenav mode="side" fixedInViewport opened disableClose
+  <mat-sidenav #sidenav mode="side" fixedInViewport disableClose [(opened)]="opened"
     ><app-sidebar></app-sidebar
   ></mat-sidenav>
   <mat-sidenav-content>
-    <app-search class="flex justify-content-center"></app-search>
+    <div class="flex align-items-start justify-content-center">
+      <button mat-icon-button *ngIf="opened" (click)="sidenav.toggle()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-icon-button *ngIf="!opened" (click)="sidenav.toggle()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <app-search class="search"></app-search>
+    </div>
     <div class="flex flex-wrap justify-content-center" cdkDropList cdkDropListSortingDisabled>
       <app-page-prev
         *ngFor="let tabElement of pageView()"
