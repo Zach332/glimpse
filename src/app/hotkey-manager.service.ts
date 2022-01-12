@@ -9,7 +9,10 @@ import { Observable } from 'rxjs';
 export class HotkeyManagerService {
   public hotkeyRegistry: Map<string, string> = new Map();
 
-  constructor(private eventManager: EventManager, @Inject(DOCUMENT) private document: Document) {}
+  constructor(private eventManager: EventManager, @Inject(DOCUMENT) private document: Document) {
+    // set registry for impermanent hotkeys
+    this.hotkeyRegistry.set('enter', 'submit');
+  }
 
   public addShortcut(keys: string, label: string, ignoreInput: boolean = true) {
     const keyEvent = `keydown.${keys}`;
@@ -30,7 +33,6 @@ export class HotkeyManagerService {
       );
 
       return () => {
-        this.hotkeyRegistry.delete(keys);
         removeListener();
       };
     });
