@@ -205,6 +205,9 @@ export class PageManagerService {
     ) {
       return 'You have not selected any sidebar items.';
     }
+    if (this.searchQuery.value) {
+      return 'No results';
+    }
     if (this.sidebarManagerService.windowSidebarButtons.value.getNumSelected() === 0) {
       if (this.sidebarManagerService.savedSidebarButtons.value.getNumSelected() === 1) {
         return 'This folder has no content.';
