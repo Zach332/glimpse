@@ -38,6 +38,8 @@ export class PageManagerService {
 
   public searchQuery = new BehaviorSubject<string>('');
 
+  private pagesUpdating = false;
+
   private browserObservable = new Observable((observer) => {
     browser.tabs.onCreated.addListener(() => observer.next());
     browser.tabs.onRemoved.addListener(() => observer.next());
@@ -193,6 +195,25 @@ export class PageManagerService {
     }
   }
 
+  public getNoContentMessage() {
+    if (this.pagesUpdating) {
+      return '';
+    }
+    if (
+      this.sidebarManagerService.windowSidebarButtons.value.getNumSelected() === 0 &&
+      this.sidebarManagerService.savedSidebarButtons.value.getNumSelected() === 0
+    ) {
+      return 'You have not selected any sidebar items.';
+    }
+    if (this.sidebarManagerService.windowSidebarButtons.value.getNumSelected() === 0) {
+      if (this.sidebarManagerService.savedSidebarButtons.value.getNumSelected() === 1) {
+        return 'This folder has no content.';
+      }
+      return 'These folders have no content.';
+    }
+    return '';
+  }
+
   private notDefaultName(name: string) {
     const regex = new RegExp('^Window [0-9]*$');
     return !regex.test(name);
@@ -289,6 +310,7 @@ export class PageManagerService {
     dataSourceType: DataSourceType,
     dataSources: SelectableCollection<SelectableSidebarButton>,
   ) {
+    this.pagesUpdating = true;
     if (dataSourceType === DataSourceType.Folder) {
       this.savedPageElements = [];
     } else if (dataSourceType === DataSourceType.Window) {
@@ -326,6 +348,8 @@ export class PageManagerService {
         ),
       );
     });
+
+    this.pagesUpdating = false;
   }
 
   private sortPages(
