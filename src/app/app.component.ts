@@ -4,6 +4,7 @@ import { HotkeyManagerService } from './hotkey-manager.service';
 import { SelectableCollection } from './interfaces/selectable-collection';
 import { SelectablePage } from './interfaces/selectable-page';
 import { PageManagerService } from './page-prev-display/page-manager.service';
+import { SidebarManagerService } from './sidebar/sidebar-management/sidebar-manager.service';
 
 @Component({
   selector: 'app-root',
@@ -13,14 +14,12 @@ import { PageManagerService } from './page-prev-display/page-manager.service';
 export class AppComponent {
   pageViewDrag: null | SelectableCollection<SelectablePage> = null;
 
-  opened = true;
-
-  constructor(private hotkeyManagerService: HotkeyManagerService, public pageManagerService: PageManagerService) {}
+  constructor(private hotkeyManagerService: HotkeyManagerService, public pageManagerService: PageManagerService, public sidebarManagerService: SidebarManagerService) {}
 
   ngAfterViewInit(): void {
     this.hotkeyManagerService
       .addShortcut('e', 'toggle sidebar expansion')
-      .subscribe(() => this.opened = !this.opened);
+      .subscribe(() => this.pageManagerService.sidebarExpanded = !this.pageManagerService.sidebarExpanded);
   }
 
   onDragStart($event: CdkDragStart) {

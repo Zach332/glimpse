@@ -5,5 +5,6 @@ export interface Settings {
   selectedSidebarItems: Map<string, boolean>;
   windowExpanded: boolean;
   savedExpanded: boolean;
+  sidebarExpanded: boolean;
   updateSettings: boolean;
 }

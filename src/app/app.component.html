@@ -1,13 +1,13 @@
 <mat-sidenav-container cdkDropListGroup>
-  <mat-sidenav #sidenav mode="side" fixedInViewport disableClose [(opened)]="opened"
+  <mat-sidenav #sidenav mode="side" fixedInViewport disableClose [(opened)]="pageManagerService.sidebarExpanded"
     ><app-sidebar></app-sidebar
   ></mat-sidenav>
   <mat-sidenav-content>
     <div class="flex align-items-start justify-content-center">
-      <button mat-icon-button *ngIf="opened" (click)="sidenav.toggle()">
+      <button mat-icon-button *ngIf="pageManagerService.sidebarExpanded" (click)="sidenav.toggle()">
         <mat-icon>chevron_left</mat-icon>
       </button>
-      <button mat-icon-button *ngIf="!opened" (click)="sidenav.toggle()">
+      <button mat-icon-button *ngIf="!pageManagerService.sidebarExpanded" (click)="sidenav.toggle()">
         <mat-icon>chevron_right</mat-icon>
       </button>
       <app-search class="search"></app-search>

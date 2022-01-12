@@ -107,6 +107,16 @@ export class PageManagerService {
     );
   }
 
+  public get sidebarExpanded() {
+    return this.sidebarManagerService.savedSettings.sidebarExpanded;
+  }
+
+  public set sidebarExpanded(newExpanded: boolean) {
+    this.sidebarManagerService.updateSettings(
+      (oldSettings) => (oldSettings.sidebarExpanded = newExpanded),
+    );
+  }
+
   public get updateSettings() {
     return this.sidebarManagerService.savedSettings.updateSettings;
   }

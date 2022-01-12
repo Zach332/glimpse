@@ -37,6 +37,7 @@ export class SidebarManagerService {
     selectedSidebarItems: new Map<string, boolean>(),
     windowExpanded: true,
     savedExpanded: true,
+    sidebarExpanded: true,
     updateSettings: true,
   };
 
