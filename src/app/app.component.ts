@@ -1,5 +1,6 @@
 import { CdkDragStart } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
+import { HotkeyManagerService } from './hotkey-manager.service';
 import { SelectableCollection } from './interfaces/selectable-collection';
 import { SelectablePage } from './interfaces/selectable-page';
 import { PageManagerService } from './page-prev-display/page-manager.service';
@@ -14,7 +15,13 @@ export class AppComponent {
 
   opened = true;
 
-  constructor(public pageManagerService: PageManagerService) {}
+  constructor(private hotkeyManagerService: HotkeyManagerService, public pageManagerService: PageManagerService) {}
+
+  ngAfterViewInit(): void {
+    this.hotkeyManagerService
+      .addShortcut('e', 'toggle sidebar expansion')
+      .subscribe(() => this.opened = !this.opened);
+  }
 
   onDragStart($event: CdkDragStart) {
     this.pageManagerService.draggedElement = $event.source.element.nativeElement.id;

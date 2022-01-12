@@ -38,6 +38,9 @@ export class SidebarComponent {
     this.hotkeyManagerService
       .addShortcut('n', 'deselect all sidebar items')
       .subscribe(() => this.sidebarManagerService.deselectAll());
+    this.hotkeyManagerService
+      .addShortcut('u', 'toggle "Update settings"')
+      .subscribe(() => this.pageManagerService.updateSettings = !this.pageManagerService.updateSettings);
     for (let i = 1; i <= 9; i += 1) {
       this.hotkeyManagerService
         .addShortcut(`${i}`, 'toggle sidebar item')
