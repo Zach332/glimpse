@@ -14,12 +14,18 @@ import { SidebarManagerService } from './sidebar/sidebar-management/sidebar-mana
 export class AppComponent {
   pageViewDrag: null | SelectableCollection<SelectablePage> = null;
 
-  constructor(private hotkeyManagerService: HotkeyManagerService, public pageManagerService: PageManagerService, public sidebarManagerService: SidebarManagerService) {}
+  constructor(
+    private hotkeyManagerService: HotkeyManagerService,
+    public pageManagerService: PageManagerService,
+    public sidebarManagerService: SidebarManagerService,
+  ) {}
 
   ngAfterViewInit(): void {
     this.hotkeyManagerService
       .addShortcut('e', 'toggle sidebar expansion')
-      .subscribe(() => this.pageManagerService.sidebarExpanded = !this.pageManagerService.sidebarExpanded);
+      .subscribe(
+        () => (this.pageManagerService.sidebarExpanded = !this.pageManagerService.sidebarExpanded),
+      );
   }
 
   onDragStart($event: CdkDragStart) {
