@@ -62,7 +62,7 @@ export class DataService {
   static async convertWindowToDataSource(window: browser.Windows.Window) {
     const dataSource: DataSource = {
       dataSourceId: [DataSourceType.Window, window.id!],
-      name: IDBService.getName(window.id!).then((name) => {
+      name: await IDBService.getName(window.id!).then((name) => {
         if (name) {
           return name;
         }
@@ -84,7 +84,7 @@ export class DataService {
   static convertFolderToDataSource(folder: browser.Bookmarks.BookmarkTreeNode) {
     const dataSource: DataSource = {
       dataSourceId: [DataSourceType.Folder, folder.id],
-      name: Promise.resolve(folder.title),
+      name: folder.title,
     };
     return dataSource;
   }
