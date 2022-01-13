@@ -11,6 +11,8 @@ export class HotkeyManagerService {
 
   constructor(private eventManager: EventManager, @Inject(DOCUMENT) private document: Document) {
     // set registry for impermanent hotkeys
+    this.hotkeyRegistry.set('ctrl.click', 'select page');
+    this.hotkeyRegistry.set('shift.click', 'select until item');
     this.hotkeyRegistry.set('enter', 'submit');
   }
 
