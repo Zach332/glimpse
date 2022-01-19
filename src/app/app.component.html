@@ -38,5 +38,13 @@
     <div class="flex justify-content-center" *ngIf="pageView().length === 0">
       {{ pageManagerService.getNoContentMessage() }}
     </div>
+    <div
+      matRipple
+      [matRippleAnimation]="rippleAnimConfig"
+      [matRippleRadius]="500"
+      [matRippleColor]="rippleColor"
+      (click)="setRandomRippleColor()"
+      [style.min-height]="spacerHeight + 'px'"
+    ></div>
   </mat-sidenav-content>
 </mat-sidenav-container>
