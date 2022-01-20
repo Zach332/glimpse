@@ -172,18 +172,24 @@ export class DataService {
 
     const data = await Promise.all([images, favicons, accessTimes]);
 
-    // NOTE: This isn't a valid promise impelementation, but it is not permanent
     const pages: Page[] = pagesWithoutIDBData.map((pageWithoutIDBData, index) => {
       return {
         ...pageWithoutIDBData,
-        image: Promise.resolve(data[0][index]),
-        faviconUrl: Promise.resolve(data[1][index]),
-        // TODO: Change from 0
-        timeLastAccessed: Promise.resolve(data[2][index] ?? 0),
+        image: data[0][index],
+        faviconUrl: data[1][index],
+        timeLastAccessed:
+          data[2][index] ?? this.getAlternativeTimeLastAccessed(pageWithoutIDBData.pageId),
       };
     });
 
     return pages;
+  }
+
+  private getAlternativeTimeLastAccessed(pageId: PageId) {
+    if (pageId[0] === DataSourceType.Window) {
+      return pageId[2];
+    }
+    return parseInt(pageId[2], 10);
   }
 
   getPagesByDataSources = this.pageThrottle((dataSources: DataSource[]) =>

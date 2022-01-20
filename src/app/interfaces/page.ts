@@ -5,7 +5,7 @@ export interface Page {
   title: string;
   url: string;
   loading?: boolean;
-  faviconUrl: Promise<string | undefined>;
-  image: Promise<string | undefined>;
-  timeLastAccessed: Promise<number>;
+  faviconUrl: string | undefined;
+  image: string | undefined;
+  timeLastAccessed: number;
 }

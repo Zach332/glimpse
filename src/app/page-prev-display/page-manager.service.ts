@@ -334,10 +334,10 @@ export class PageManagerService {
     }
 
     await Promise.all(
-      this.savedPageElements.concat(this.windowPageElements).map(async (selectablePage) => {
+      this.savedPageElements.concat(this.windowPageElements).map((selectablePage) => {
         return {
           page: selectablePage,
-          timeLastAccessed: await selectablePage.timeLastAccessed,
+          timeLastAccessed: selectablePage.timeLastAccessed,
         };
       }),
     ).then((pages) => {
