@@ -3,7 +3,7 @@ import { DataSourceType } from '../interfaces/data-source-type';
 import { SelectablePage } from '../interfaces/selectable-page';
 import { PageManagerService } from '../page-prev-display/page-manager.service';
 import { DataService } from '../data.service';
-import { IDBService } from '../idb-service';
+import { db } from '../database';
 
 @Component({
   selector: 'app-page-prev',
@@ -23,7 +23,7 @@ export class PagePrevComponent {
     // If page is a bookmark, update the time last accessed
     // This is handled differently for tabs
     if (this.tabData.pageId[0] === DataSourceType.Folder) {
-      IDBService.putTimeLastAccessed(this.tabData.pageId, Date.now());
+      db.accessTimes.put(Date.now(), this.tabData.pageId);
     }
 
     if ($event.ctrlKey || $event.metaKey) {

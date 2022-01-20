@@ -4,7 +4,7 @@ import pThrottle from 'p-throttle';
 import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
-import { IDBService } from './idb-service';
+import { db } from './database';
 import { Operation } from './interfaces/operation';
 import { PageId } from './interfaces/page-id';
 import { BookmarkService } from './bookmark-service';
@@ -62,7 +62,7 @@ export class DataService {
   static async convertWindowToDataSource(window: browser.Windows.Window) {
     const dataSource: DataSource = {
       dataSourceId: [DataSourceType.Window, window.id!],
-      name: await IDBService.getName(window.id!).then((name) => {
+      name: await db.names.get(window.id!).then((name) => {
         if (name) {
           return name;
         }
@@ -90,7 +90,7 @@ export class DataService {
   }
 
   async renameWindow(windowId: number, name: string) {
-    IDBService.putName(windowId, name);
+    db.names.put(name, windowId);
   }
 
   async renameFolder(folderId: string, name: string) {
@@ -116,15 +116,44 @@ export class DataService {
   // Pages
 
   private async _getPagesByDataSources(dataSources: DataSource[]) {
-    return Promise.all(
-      dataSources.map((dataSource) => {
+    type PageWithoutIDBData = {
+      readonly pageId: PageId;
+      title: string;
+      url: string;
+      loading?: boolean;
+    };
+
+    const pagesWithoutIDBData: PageWithoutIDBData[] = await Promise.all(
+      dataSources.map(async (dataSource) => {
+        // Handle tabs
         if (dataSource.dataSourceId[0] === DataSourceType.Window) {
-          return this.getPagesByWindowId(dataSource.dataSourceId[1]);
+          return Promise.all(
+            (await browser.tabs.query({ windowId: dataSource.dataSourceId[1] })).map(
+              async (tab) => {
+                return {
+                  pageId: DataService.getPageIdFromTab(tab),
+                  title: tab.title!,
+                  url: tab.url!,
+                };
+              },
+            ),
+          );
         }
-        return this.getPagesByFolderId(dataSource.dataSourceId[1]);
+        // Handle bookmarks
+        return browser.bookmarks.getChildren(dataSource.dataSourceId[1]).then((folder) => {
+          return Promise.all(
+            folder.map(async (bookmark) => {
+              return {
+                pageId: DataService.getPageIdFromBookmark(bookmark),
+                title: bookmark.title,
+                url: bookmark.url!,
+              };
+            }),
+          );
+        });
       }),
     ).then((pagesList) => {
-      const pages: Page[] = [];
+      const pages: PageWithoutIDBData[] = [];
       pagesList.forEach((pageList) => {
         pageList.forEach((page) => {
           pages.push(page);
@@ -132,59 +161,34 @@ export class DataService {
       });
       return pages;
     });
+
+    const pageIds = pagesWithoutIDBData.map((pageWithoutIDBData) => {
+      return pageWithoutIDBData.pageId;
+    });
+
+    const images = db.images.bulkGet(pageIds);
+    const favicons = db.favicons.bulkGet(pageIds);
+    const accessTimes = db.accessTimes.bulkGet(pageIds);
+
+    const data = await Promise.all([images, favicons, accessTimes]);
+
+    // NOTE: This isn't a valid promise impelementation, but it is not permanent
+    const pages: Page[] = pagesWithoutIDBData.map((pageWithoutIDBData, index) => {
+      return {
+        ...pageWithoutIDBData,
+        image: Promise.resolve(data[0][index]),
+        faviconUrl: Promise.resolve(data[1][index]),
+        // TODO: Change from 0
+        timeLastAccessed: Promise.resolve(data[2][index] ?? 0),
+      };
+    });
+
+    return pages;
   }
 
   getPagesByDataSources = this.pageThrottle((dataSources: DataSource[]) =>
     this._getPagesByDataSources(dataSources),
   );
-
-  async getPagesByWindowId(windowId: number) {
-    return Promise.all(
-      (await browser.tabs.query({ windowId })).map(async (tab) => this.convertTabToPage(tab)),
-    );
-  }
-
-  private async convertTabToPage(tab: browser.Tabs.Tab) {
-    const pageId: PageId = DataService.getPageIdFromTab(tab);
-    const page: Page = {
-      pageId,
-      title: tab.title!,
-      url: tab.url!,
-      faviconUrl: Promise.resolve(tab.favIconUrl),
-      image: IDBService.getImage(pageId),
-      timeLastAccessed: IDBService.getTimeLastAccessed(pageId).then((timeLastAccessed) => {
-        if (timeLastAccessed) {
-          return timeLastAccessed;
-        }
-        return tab.id!;
-      }),
-    };
-    return page;
-  }
-
-  async getPagesByFolderId(folderId: string) {
-    return browser.bookmarks.getChildren(folderId).then((folder) => {
-      return Promise.all(folder.map(async (bookmark) => this.convertBookmarkToPage(bookmark)));
-    });
-  }
-
-  private async convertBookmarkToPage(bookmark: browser.Bookmarks.BookmarkTreeNode) {
-    const pageId: PageId = DataService.getPageIdFromBookmark(bookmark);
-    const page: Page = {
-      pageId,
-      title: bookmark.title,
-      url: bookmark.url!,
-      faviconUrl: IDBService.getFavicon(pageId),
-      image: IDBService.getImage(pageId),
-      timeLastAccessed: IDBService.getTimeLastAccessed(pageId).then((timeLastAccessed) => {
-        if (timeLastAccessed) {
-          return timeLastAccessed;
-        }
-        return bookmark.dateAdded!;
-      }),
-    };
-    return page;
-  }
 
   async movePage(source: Page, destination: DataSource) {
     browser.runtime.sendMessage({

@@ -4,11 +4,11 @@ import { IdGeneratorService } from 'src/app/id-generator-serivce';
 import { BehaviorSubject, Observable } from 'rxjs';
 import * as browser from 'webextension-polyfill';
 import { Page } from 'src/app/interfaces/page';
-import { IDBService } from 'src/app/idb-service';
 import { DataService } from '../../data.service';
 import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
 import { Settings } from '../../interfaces/settings';
+import { db } from 'src/app/database';
 
 @Injectable({
   providedIn: 'root',
@@ -92,7 +92,7 @@ export class SidebarManagerService {
   }
 
   private async restoreSavedSettings() {
-    await IDBService.getSettings().then((settings) => {
+    await db.getSettings().then((settings) => {
       if (settings) {
         this.savedSettings = settings;
       }
@@ -248,7 +248,7 @@ export class SidebarManagerService {
       update(this.savedSettings);
     }
     if (this.savedSettings.updateSettings || originalUpdateSettings) {
-      IDBService.putSettings(this.savedSettings);
+      db.putSettings(this.savedSettings);
     }
   }
 
