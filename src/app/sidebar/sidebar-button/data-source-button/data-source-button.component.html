@@ -9,7 +9,7 @@
   [ngClass]="{ selected: buttonData.isSelected }"
 >
   <div class="flex align-items-center">
-    <div [ngClass]="{ active: isActive }">
+    <div [ngClass]="{ 'accent-contrast': isActive }">
       {{ buttonData.name }}
     </div>
     <button

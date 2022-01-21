@@ -129,6 +129,16 @@ export class PageManagerService {
     );
   }
 
+  public get darkMode() {
+    return this.sidebarManagerService.savedSettings.darkMode;
+  }
+
+  public set darkMode(newDarkMode: boolean) {
+    this.sidebarManagerService.updateSettings(
+      (oldSettings) => (oldSettings.darkMode = newDarkMode),
+    );
+  }
+
   public updatePageWidth($event: MatSliderChange): void {
     this.pagePrevWidth = $event.value ? $event.value : this.pagePrevWidth;
   }

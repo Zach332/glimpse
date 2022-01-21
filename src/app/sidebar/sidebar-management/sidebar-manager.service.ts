@@ -39,6 +39,7 @@ export class SidebarManagerService {
     savedExpanded: true,
     sidebarExpanded: true,
     updateSettings: true,
+    darkMode: true,
   };
 
   private browserObservable = new Observable((observer) => {
