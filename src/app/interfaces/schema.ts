@@ -1,6 +1,5 @@
 import { DBSchema } from 'idb';
 import { PageId } from './page-id';
-import { Settings } from './settings';
 
 export interface Schema extends DBSchema {
   images: {
@@ -15,10 +14,6 @@ export interface Schema extends DBSchema {
     // TODO: Change to DataSourceId
     key: number;
     value: string;
-  };
-  settings: {
-    key: string;
-    value: Settings;
   };
   accessTimes: {
     key: PageId;

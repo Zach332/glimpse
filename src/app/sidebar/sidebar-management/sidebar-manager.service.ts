@@ -4,7 +4,6 @@ import { IdGeneratorService } from 'src/app/id-generator-serivce';
 import { BehaviorSubject, Observable } from 'rxjs';
 import * as browser from 'webextension-polyfill';
 import { Page } from 'src/app/interfaces/page';
-import { IDBService } from 'src/app/idb-service';
 import { DataService } from '../../data.service';
 import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
@@ -55,8 +54,6 @@ export class SidebarManagerService {
   });
 
   constructor(private dataService: DataService) {
-    this.savedSettings = SidebarManagerService.DEFAULT_SETTINGS;
-
     // TODO: These should use a new interface or something
     // And maybe rename SelectableSidebarButton to SelectableDataSource
     this.windowRootButton = {
@@ -83,21 +80,22 @@ export class SidebarManagerService {
       name: 'New Folder',
       isSelected: false,
     };
+    this.savedSettings = SidebarManagerService.DEFAULT_SETTINGS;
+    this.restoreSavedSettings();
+
     this.browserObservable.subscribe(() => this.createSidebarItems());
     this.init();
   }
 
   private async init() {
-    await this.restoreSavedSettings();
     this.createSidebarItems();
   }
 
-  private async restoreSavedSettings() {
-    await IDBService.getSettings().then((settings) => {
-      if (settings) {
-        this.savedSettings = settings;
-      }
-    });
+  private restoreSavedSettings() {
+    const requestedSettings = localStorage.getItem('settings');
+    if (requestedSettings) {
+      this.savedSettings = JSON.parse(requestedSettings, this.reviver);
+    }
     this.windowRootButton.expanded = this.savedSettings.windowExpanded;
     this.savedRootButton.expanded = this.savedSettings.savedExpanded;
   }
@@ -249,7 +247,7 @@ export class SidebarManagerService {
       update(this.savedSettings);
     }
     if (this.savedSettings.updateSettings || originalUpdateSettings) {
-      IDBService.putSettings(this.savedSettings);
+      localStorage.setItem('settings', JSON.stringify(this.savedSettings, this.replacer));
     }
   }
 
@@ -276,5 +274,24 @@ export class SidebarManagerService {
     return new BehaviorSubject<SelectableCollection<SelectableSidebarButton>>(
       new SelectableCollection<SelectableSidebarButton>(),
     );
+  }
+
+  private replacer(key: any, value: any) {
+    if (value instanceof Map) {
+      return {
+        dataType: 'Map',
+        value: Array.from(value.entries()), // or with spread: value: [...value]
+      };
+    }
+    return value;
+  }
+
+  private reviver(key: any, value: any) {
+    if (typeof value === 'object' && value !== null) {
+      if (value.dataType === 'Map') {
+        return new Map(value.value);
+      }
+    }
+    return value;
   }
 }

@@ -1,13 +1,10 @@
 import { openDB } from 'idb';
 import { Schema } from './interfaces/schema';
 import { PageId } from './interfaces/page-id';
-import { Settings } from './interfaces/settings';
 import { DataSourceType } from './interfaces/data-source-type';
 import { BookmarkService } from './bookmark-service';
 
 export class IDBService {
-  static readonly SETTINGS_ID = 'settings';
-
   static readonly pageObjectStores: ['images', 'favicons', 'accessTimes'] = [
     'images',
     'favicons',
@@ -22,7 +19,6 @@ export class IDBService {
         db.createObjectStore('images');
         db.createObjectStore('favicons');
         db.createObjectStore('names');
-        db.createObjectStore('settings');
         db.createObjectStore('accessTimes');
       },
     });
@@ -66,14 +62,6 @@ export class IDBService {
 
   static async getName(windowId: number) {
     return (await this.getDB()).get('names', windowId);
-  }
-
-  static async putSettings(settings: Settings) {
-    return (await this.getDB()).put('settings', settings, this.SETTINGS_ID);
-  }
-
-  static async getSettings() {
-    return (await this.getDB()).get('settings', this.SETTINGS_ID);
   }
 
   static async putTimeLastAccessed(pageId: PageId, timeLastAccessed: number) {
