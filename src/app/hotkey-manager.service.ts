@@ -22,7 +22,8 @@ export class HotkeyManagerService {
     return new Observable<KeyboardEvent>((observer) => {
       const handler = (event: KeyboardEvent) => {
         const eventTarget: any = event?.target;
-        if (!ignoreInput || !(eventTarget.type === 'text')) {
+        console.log(event);
+        if (!event.repeat && (!ignoreInput || !(eventTarget.type === 'text'))) {
           event.preventDefault();
           observer.next(event);
         }
