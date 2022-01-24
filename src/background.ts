@@ -53,13 +53,13 @@ function removePages(pages: Page[]) {
 
 async function moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
   // Collect IDB-stored page data for page
-  const image = db.images.get(source.pageId);
-  const timeLastAccessed = db.accessTimes.get(source.pageId);
-  let favicon: Promise<string | undefined>;
+  const image = (await db.images.get(source.pageId))?.image;
+  const timeLastAccessed = (await db.accessTimes.get(source.pageId))?.accessTime;
+  let favicon: string | undefined;
   if (source.pageId[0] === DataSourceType.Window) {
-    favicon = browser.tabs.get(source.pageId[2]).then((tab) => tab.favIconUrl!);
+    favicon = (await browser.tabs.get(source.pageId[2])).favIconUrl!;
   } else {
-    favicon = db.favicons.get(source.pageId);
+    favicon = (await db.favicons.get(source.pageId))?.favicon;
   }
   const data = await Promise.all([image, timeLastAccessed, favicon]);
 
@@ -84,13 +84,22 @@ async function moveOrCopyPage(source: Page, destination: DataSource, operation: 
 
   // Put page data in IDB
   if (data[0]) {
-    db.images.put(data[0], newPageId);
+    db.images.put({
+      pageId: newPageId,
+      image: data[0],
+    });
   }
   if (data[1]) {
-    db.accessTimes.put(data[1], newPageId);
+    db.accessTimes.put({
+      pageId: newPageId,
+      accessTime: data[1],
+    });
   }
   if (data[2] && newPageId[0] === DataSourceType.Folder) {
-    db.favicons.put(data[2], newPageId);
+    db.favicons.put({
+      pageId: newPageId,
+      favicon: data[2],
+    });
   }
 }
 
@@ -207,7 +216,10 @@ async function captureTab() {
       .query({ active: true, currentWindow: true })
       .then((tabs) => tabs[0]);
     if (initialCurrentPage.id! === currentTab.id!) {
-      db.images.put(image, DataService.getPageIdFromTab(currentTab));
+      db.images.put({
+        pageId: DataService.getPageIdFromTab(currentTab),
+        image,
+      });
     }
   }
 }
@@ -219,7 +231,10 @@ browser.webNavigation.onCompleted.addListener(async (details) => {
       .query({ active: true, currentWindow: true })
       .then((tabs) => tabs[0]);
     if (details.tabId === currentTab.id!) {
-      db.images.put(image, DataService.getPageIdFromTab(currentTab));
+      db.images.put({
+        pageId: DataService.getPageIdFromTab(currentTab),
+        image,
+      });
     }
   }
 });
@@ -236,7 +251,10 @@ browser.tabs.onActivated.addListener(async (activeInfo) => {
       .query({ active: true, currentWindow: true })
       .then((tabs) => tabs[0]);
     if (initialCurrentPage.id! === currentTab.id!) {
-      db.images.put(image, DataService.getPageIdFromTab(currentTab));
+      db.images.put({
+        pageId: DataService.getPageIdFromTab(currentTab),
+        image,
+      });
     }
   }
 });
@@ -252,19 +270,34 @@ browser.bookmarks.onCreated.addListener(async (id, bookmark) => {
       .then((tabs) => tabs[0]);
     if (bookmark.url! === currentTab.url!) {
       const pageId = DataService.getPageIdFromBookmark(bookmark);
-      db.images.put(image, pageId);
-      db.accessTimes.put(Date.now(), pageId);
-      db.favicons.put(currentTab.favIconUrl!, pageId);
+      db.images.put({
+        pageId,
+        image,
+      });
+      db.favicons.put({
+        pageId,
+        favicon: currentTab.favIconUrl!,
+      });
+      db.accessTimes.put({
+        pageId,
+        accessTime: Date.now(),
+      });
     }
   }
 });
 
 browser.tabs.onCreated.addListener((tab) => {
-  db.accessTimes.put(Date.now(), DataService.getPageIdFromTab(tab));
+  db.accessTimes.put({
+    pageId: DataService.getPageIdFromTab(tab),
+    accessTime: Date.now(),
+  });
 });
 
 browser.tabs.onActivated.addListener((activeInfo) => {
-  db.accessTimes.put(Date.now(), [DataSourceType.Window, activeInfo.windowId, activeInfo.windowId]);
+  db.accessTimes.put({
+    pageId: [DataSourceType.Window, activeInfo.windowId, activeInfo.tabId],
+    accessTime: Date.now(),
+  });
 });
 
 browser.tabs.onRemoved.addListener((tabId, removeInfo) => {

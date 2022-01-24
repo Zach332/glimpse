@@ -23,7 +23,10 @@ export class PagePrevComponent {
     // If page is a bookmark, update the time last accessed
     // This is handled differently for tabs
     if (this.tabData.pageId[0] === DataSourceType.Folder) {
-      db.accessTimes.put(Date.now(), this.tabData.pageId);
+      db.accessTimes.put({
+        pageId: this.tabData.pageId,
+        accessTime: Date.now(),
+      });
     }
 
     if ($event.ctrlKey || $event.metaKey) {

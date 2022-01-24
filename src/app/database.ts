@@ -1,31 +1,50 @@
 import Dexie, { Table } from 'dexie';
+import { BookmarkService } from './bookmark-service';
+import { DataSourceType } from './interfaces/data-source-type';
 import { PageId } from './interfaces/page-id';
 import { Settings } from './interfaces/settings';
 
 export class Database extends Dexie {
+  // TODO: Should this be Table<string, DataSourceId>?
   names!: Table<string, number>;
-  images!: Table<string, PageId>;
-  favicons!: Table<string, PageId>;
-  accessTimes!: Table<number, PageId>;
+
+  images!: Table<
+    {
+      pageId: PageId;
+      image: string;
+    },
+    PageId
+  >;
+
+  favicons!: Table<
+    {
+      pageId: PageId;
+      favicon: string;
+    },
+    PageId
+  >;
+
+  accessTimes!: Table<
+    {
+      pageId: PageId;
+      accessTime: number;
+    },
+    PageId
+  >;
+
+  // TODO: Remove
   settings!: Table<Settings, string>;
 
   private readonly SETTINGS_ID = 'settings';
 
-  private readonly pageObjectStores: ['images', 'favicons', 'accessTimes'] = [
-    'images',
-    'favicons',
-    'accessTimes',
-  ];
-
-  private readonly dataSourceObjectStores: ['names'] = ['names'];
-
   constructor() {
     super('glimpse');
-    this.version(13).stores({
+    this.version(16).stores({
       names: '',
-      images: '',
-      favicons: '',
-      accessTimes: '',
+      // TODO: Re-evaluate these
+      images: 'pageId',
+      favicons: 'pageId',
+      accessTimes: 'pageId',
       settings: '',
     });
   }
@@ -39,11 +58,43 @@ export class Database extends Dexie {
   }
 
   async deletePageData(pageId: PageId) {
-    // TODO
+    this.images.delete(pageId);
+    this.favicons.delete(pageId);
+    this.accessTimes.delete(pageId);
   }
 
   async deleteSessionData() {
-    // TODO
+    const imageKeys = (await this.images.toArray()).map((value) => {
+      return value.pageId;
+    });
+    const faviconKeys = (await this.favicons.toArray()).map((value) => {
+      return value.pageId;
+    });
+    const accessTimeKeys = (await this.accessTimes.toArray()).map((value) => {
+      return value.pageId;
+    });
+
+    const keys = imageKeys.concat(faviconKeys).concat(accessTimeKeys);
+
+    const bookmarkIds = new Set(
+      (await BookmarkService.getRootGlimpseFolder()).children!.map((bookmark) => {
+        return bookmark.id;
+      }),
+    );
+
+    const keysToDelete = keys.filter((key) => {
+      // Delete all window data
+      if (key[0] === DataSourceType.Window) {
+        return true;
+      }
+      // Delete data for bookmarks that no longer exist
+
+      return !bookmarkIds.has(key[1]);
+    });
+
+    this.images.bulkDelete(keysToDelete);
+    this.favicons.bulkDelete(keysToDelete);
+    this.accessTimes.bulkDelete(keysToDelete);
   }
 }
 

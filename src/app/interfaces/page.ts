@@ -5,7 +5,7 @@ export interface Page {
   title: string;
   url: string;
   loading?: boolean;
-  faviconUrl: string | undefined;
+  favicon: string | undefined;
   image: string | undefined;
   timeLastAccessed: number;
 }

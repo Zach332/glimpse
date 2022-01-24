@@ -8,6 +8,7 @@ import { db } from './database';
 import { Operation } from './interfaces/operation';
 import { PageId } from './interfaces/page-id';
 import { BookmarkService } from './bookmark-service';
+import { IdGeneratorService } from './id-generator-serivce';
 
 @Injectable({
   providedIn: 'root',
@@ -120,7 +121,7 @@ export class DataService {
       readonly pageId: PageId;
       title: string;
       url: string;
-      loading?: boolean;
+      favicon: string | undefined;
     };
 
     const pagesWithoutIDBData: PageWithoutIDBData[] = await Promise.all(
@@ -130,11 +131,13 @@ export class DataService {
           return Promise.all(
             (await browser.tabs.query({ windowId: dataSource.dataSourceId[1] })).map(
               async (tab) => {
-                return {
+                const pageWithoutIDBData: PageWithoutIDBData = {
                   pageId: DataService.getPageIdFromTab(tab),
                   title: tab.title!,
                   url: tab.url!,
+                  favicon: tab.favIconUrl!,
                 };
+                return pageWithoutIDBData;
               },
             ),
           );
@@ -143,11 +146,13 @@ export class DataService {
         return browser.bookmarks.getChildren(dataSource.dataSourceId[1]).then((folder) => {
           return Promise.all(
             folder.map(async (bookmark) => {
-              return {
+              const pageWithoutIDBData: PageWithoutIDBData = {
                 pageId: DataService.getPageIdFromBookmark(bookmark),
                 title: bookmark.title,
                 url: bookmark.url!,
+                favicon: undefined,
               };
+              return pageWithoutIDBData;
             }),
           );
         });
@@ -162,25 +167,45 @@ export class DataService {
       return pages;
     });
 
-    const pageIds = pagesWithoutIDBData.map((pageWithoutIDBData) => {
-      return pageWithoutIDBData.pageId;
+    const images = db.images.toArray().then((values) => {
+      const map = new Map<number, string>();
+      values.forEach((value) => {
+        map.set(IdGeneratorService.getIdFromPageId(value.pageId), value.image);
+      });
+      return map;
     });
 
-    const images = db.images.bulkGet(pageIds);
-    const favicons = db.favicons.bulkGet(pageIds);
-    const accessTimes = db.accessTimes.bulkGet(pageIds);
-
-    const data = await Promise.all([images, favicons, accessTimes]);
-
-    const pages: Page[] = pagesWithoutIDBData.map((pageWithoutIDBData, index) => {
-      return {
-        ...pageWithoutIDBData,
-        image: data[0][index],
-        faviconUrl: data[1][index],
-        timeLastAccessed:
-          data[2][index] ?? this.getAlternativeTimeLastAccessed(pageWithoutIDBData.pageId),
-      };
+    const favicons = db.favicons.toArray().then((values) => {
+      const map = new Map<number, string>();
+      values.forEach((value) => {
+        map.set(IdGeneratorService.getIdFromPageId(value.pageId), value.favicon);
+      });
+      return map;
     });
+
+    const accessTimes = db.accessTimes.toArray().then((values) => {
+      const map = new Map<number, number>();
+      values.forEach((value) => {
+        map.set(IdGeneratorService.getIdFromPageId(value.pageId), value.accessTime);
+      });
+      return map;
+    });
+
+    const pages: Page[] = await Promise.all(
+      pagesWithoutIDBData.map(async (pageWithoutIDBData) => {
+        const pageId = pageWithoutIDBData.pageId;
+        return {
+          ...pageWithoutIDBData,
+          image: (await images).get(IdGeneratorService.getIdFromPageId(pageId)),
+          favicon:
+            pageWithoutIDBData.favicon ??
+            (await favicons).get(IdGeneratorService.getIdFromPageId(pageId)),
+          timeLastAccessed:
+            (await accessTimes).get(IdGeneratorService.getIdFromPageId(pageId)) ??
+            this.getAlternativeTimeLastAccessed(pageId),
+        };
+      }),
+    );
 
     return pages;
   }
