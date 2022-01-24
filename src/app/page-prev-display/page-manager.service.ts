@@ -15,6 +15,7 @@ import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-man
 import { HotkeyManagerService } from '../hotkey-manager.service';
 import { DataSource } from '../interfaces/data-source';
 import { SimpleDialogComponent } from '../general/simple-dialog/simple-dialog.component';
+import { PageId } from '../interfaces/page-id';
 
 @Injectable({
   providedIn: 'root',
@@ -42,10 +43,16 @@ export class PageManagerService {
 
   private browserObservable = new Observable((observer) => {
     browser.tabs.onCreated.addListener(() => observer.next());
-    browser.tabs.onRemoved.addListener(() => observer.next());
     browser.tabs.onActivated.addListener(() => observer.next());
     browser.tabs.onDetached.addListener(() => observer.next());
     browser.webNavigation.onCommitted.addListener(() => observer.next());
+  });
+
+  private tabRemoveObservable = new Observable<{
+    tabId: number;
+    removeInfo: browser.Tabs.OnRemovedRemoveInfoType;
+  }>((observer) => {
+    browser.tabs.onRemoved.addListener((tabId, removeInfo) => observer.next({ tabId, removeInfo }));
   });
 
   private lock = new Mutex();
@@ -69,6 +76,13 @@ export class PageManagerService {
       this.updatePagesLocked(
         DataSourceType.Window,
         sidebarManagerService.windowSidebarButtons.value,
+      ),
+    );
+    this.tabRemoveObservable.subscribe((removeData) =>
+      this.updatePagesLocked(
+        DataSourceType.Window,
+        sidebarManagerService.windowSidebarButtons.value,
+        () => this.updatePagesRemove(removeData.tabId, removeData.removeInfo),
       ),
     );
     this.searchQuery.subscribe(
@@ -315,15 +329,53 @@ export class PageManagerService {
   private updatePagesLocked(
     dataSourceType: DataSourceType,
     selectedButtons: SelectableCollection<SelectableSidebarButton>,
+    specialUpdate?: () => Promise<void>,
   ) {
-    this.lock.runExclusive(() => this.updatePages(dataSourceType, selectedButtons));
+    let update = () => this.defaultUpdatePages(dataSourceType, selectedButtons);
+    if (specialUpdate) {
+      update = specialUpdate;
+    }
+    this.pagesUpdating = true;
+    this.lock.runExclusive(update).then(() => (this.pagesUpdating = false));
+  }
+
+  private async updatePagesRemove(tabId: number, removeInfo: browser.Tabs.OnRemovedRemoveInfoType) {
+    const pageId: PageId = [DataSourceType.Window, removeInfo.windowId, tabId];
+    this.windowPageElements = this.windowPageElements.filter(
+      (page) => page.pageId.toString() !== pageId.toString(),
+    );
+
+    await Promise.all(
+      this.savedPageElements.concat(this.windowPageElements).map(async (selectablePage) => {
+        return {
+          page: selectablePage,
+          timeLastAccessed: await selectablePage.timeLastAccessed,
+        };
+      }),
+    ).then((pages) => {
+      this.updatePageElements((currentPageElements) =>
+        currentPageElements.adjustCollection(
+          pages
+            .sort((a, b) => this.sortPages(a, b))
+            .map((selectablePageTimeLastAccessedPair) => {
+              return selectablePageTimeLastAccessedPair.page;
+            }),
+        ),
+      );
+    });
+  }
+
+  private async defaultUpdatePages(
+    dataSourceType: DataSourceType,
+    selectedButtons: SelectableCollection<SelectableSidebarButton>,
+  ) {
+    this.updatePages(dataSourceType, selectedButtons);
   }
 
   private async updatePages(
     dataSourceType: DataSourceType,
     dataSources: SelectableCollection<SelectableSidebarButton>,
   ) {
-    this.pagesUpdating = true;
     if (dataSourceType === DataSourceType.Folder) {
       this.savedPageElements = [];
     } else if (dataSourceType === DataSourceType.Window) {
@@ -361,8 +413,6 @@ export class PageManagerService {
         ),
       );
     });
-
-    this.pagesUpdating = false;
   }
 
   private sortPages(
