@@ -286,6 +286,35 @@ browser.bookmarks.onCreated.addListener(async (id, bookmark) => {
   }
 });
 
+browser.bookmarks.onMoved.addListener(async (id, moveInfo) => {
+  const originalPageId: PageId = [DataSourceType.Folder, moveInfo.oldParentId, id];
+  const image = (await db.images.get(originalPageId))?.image;
+  const accessTime = (await db.accessTimes.get(originalPageId))?.accessTime;
+  const favicon = (await db.favicons.get(originalPageId))?.favicon;
+
+  db.deletePageData([DataSourceType.Folder, moveInfo.oldParentId, id]);
+
+  const newPageId: PageId = [DataSourceType.Folder, moveInfo.parentId!, id!];
+  if (image) {
+    db.images.put({
+      pageId: newPageId,
+      image,
+    });
+  }
+  if (accessTime) {
+    db.accessTimes.put({
+      pageId: newPageId,
+      accessTime,
+    });
+  }
+  if (favicon) {
+    db.favicons.put({
+      pageId: newPageId,
+      favicon,
+    });
+  }
+});
+
 browser.tabs.onCreated.addListener((tab) => {
   db.accessTimes.put({
     pageId: DataService.getPageIdFromTab(tab),

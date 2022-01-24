@@ -1,42 +1,56 @@
-<mat-sidenav-container cdkDropListGroup>
-  <mat-sidenav
-    #sidenav
-    mode="side"
-    fixedInViewport
-    disableClose
-    [(opened)]="pageManagerService.sidebarExpanded"
-    ><app-sidebar></app-sidebar
-  ></mat-sidenav>
-  <mat-sidenav-content>
-    <div class="flex align-items-start justify-content-center">
-      <button mat-icon-button *ngIf="pageManagerService.sidebarExpanded" (click)="sidenav.toggle()">
-        <mat-icon>chevron_left</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        *ngIf="!pageManagerService.sidebarExpanded"
-        (click)="sidenav.toggle()"
-      >
-        <mat-icon>chevron_right</mat-icon>
-      </button>
-      <app-search class="search"></app-search>
-    </div>
-    <div class="flex flex-wrap justify-content-center" cdkDropList cdkDropListSortingDisabled>
-      <app-page-prev
-        *ngFor="let tabElement of pageView()"
-        [tabData]="tabElement"
-        [collapse]="pageManagerService.pagePrevCollapse"
-        (cdkDragStarted)="onDragStart($event)"
-        (cdkDragReleased)="release()"
-        id="{{ tabElement.id }}"
-        cdkDrag
-      >
-        <app-drag-prev *cdkDragPreview></app-drag-prev>
-        <div *cdkDragPlaceholder></div>
-      </app-page-prev>
-    </div>
-    <div class="flex justify-content-center" *ngIf="pageView().length === 0">
-      {{ pageManagerService.getNoContentMessage() }}
-    </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<div [ngClass]="{ 'dark-theme': pageManagerService.darkMode }">
+  <mat-sidenav-container cdkDropListGroup>
+    <mat-sidenav
+      #sidenav
+      mode="side"
+      fixedInViewport
+      disableClose
+      [(opened)]="pageManagerService.sidebarExpanded"
+      ><app-sidebar></app-sidebar
+    ></mat-sidenav>
+    <mat-sidenav-content>
+      <div class="flex align-items-start justify-content-center">
+        <button
+          mat-icon-button
+          *ngIf="pageManagerService.sidebarExpanded"
+          (click)="sidenav.toggle()"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          *ngIf="!pageManagerService.sidebarExpanded"
+          (click)="sidenav.toggle()"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <app-search class="search"></app-search>
+      </div>
+      <div class="flex flex-wrap justify-content-center" cdkDropList cdkDropListSortingDisabled>
+        <app-page-prev
+          *ngFor="let tabElement of pageView()"
+          [tabData]="tabElement"
+          [collapse]="pageManagerService.pagePrevCollapse"
+          (cdkDragStarted)="onDragStart($event)"
+          (cdkDragReleased)="release()"
+          id="{{ tabElement.id }}"
+          cdkDrag
+        >
+          <app-drag-prev *cdkDragPreview></app-drag-prev>
+          <div *cdkDragPlaceholder></div>
+        </app-page-prev>
+      </div>
+      <div class="flex justify-content-center" *ngIf="pageView().length === 0">
+        {{ pageManagerService.getNoContentMessage() }}
+      </div>
+      <div
+        matRipple
+        [matRippleAnimation]="rippleAnimConfig"
+        [matRippleRadius]="500"
+        [matRippleColor]="rippleColor"
+        (click)="setRandomRippleColor()"
+        [style.min-height]="spacerHeight + 'px'"
+      ></div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -7,4 +7,5 @@ export interface Settings {
   savedExpanded: boolean;
   sidebarExpanded: boolean;
   updateSettings: boolean;
+  darkMode: boolean;
 }

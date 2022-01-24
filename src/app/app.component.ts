@@ -1,5 +1,5 @@
 import { CdkDragStart } from '@angular/cdk/drag-drop';
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { HotkeyManagerService } from './hotkey-manager.service';
 import { SelectableCollection } from './interfaces/selectable-collection';
 import { SelectablePage } from './interfaces/selectable-page';
@@ -11,14 +11,24 @@ import { SidebarManagerService } from './sidebar/sidebar-management/sidebar-mana
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit, AfterViewInit {
+  spacerHeight: number = 0;
+
   pageViewDrag: null | SelectableCollection<SelectablePage> = null;
+
+  rippleAnimConfig = { enterDuration: 2000, exitDuration: 500 };
+
+  rippleColor = '#B3808080';
 
   constructor(
     private hotkeyManagerService: HotkeyManagerService,
     public pageManagerService: PageManagerService,
     public sidebarManagerService: SidebarManagerService,
   ) {}
+
+  ngOnInit() {
+    this.spacerHeight = window.innerHeight;
+  }
 
   ngAfterViewInit(): void {
     this.hotkeyManagerService
@@ -51,5 +61,14 @@ export class AppComponent {
       return this.pageViewDrag;
     }
     return this.pageManagerService.displayPageElements;
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.spacerHeight = window.innerHeight;
+  }
+
+  setRandomRippleColor() {
+    this.rippleColor = `#B3${(0x1000000 + Math.random() * 0xffffff).toString(16).substring(1, 7)}`;
   }
 }
