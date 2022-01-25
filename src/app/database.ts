@@ -2,7 +2,6 @@ import Dexie, { Table } from 'dexie';
 import { BookmarkService } from './bookmark-service';
 import { DataSourceType } from './interfaces/data-source-type';
 import { PageId } from './interfaces/page-id';
-import { Settings } from './interfaces/settings';
 
 export class Database extends Dexie {
   // TODO: Should this be Table<string, DataSourceId>?
@@ -32,29 +31,15 @@ export class Database extends Dexie {
     PageId
   >;
 
-  // TODO: Remove
-  settings!: Table<Settings, string>;
-
-  private readonly SETTINGS_ID = 'settings';
-
   constructor() {
     super('glimpse');
-    this.version(16).stores({
+    this.version(17).stores({
       names: '',
       // TODO: Re-evaluate these
       images: 'pageId',
       favicons: 'pageId',
       accessTimes: 'pageId',
-      settings: '',
     });
-  }
-
-  async getSettings() {
-    return this.settings.get(this.SETTINGS_ID);
-  }
-
-  async putSettings(settings: Settings) {
-    return this.settings.put(settings, this.SETTINGS_ID);
   }
 
   async deletePageData(pageId: PageId) {
