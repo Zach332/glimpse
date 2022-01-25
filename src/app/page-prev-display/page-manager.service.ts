@@ -367,7 +367,7 @@ export class PageManagerService {
     dataSourceType: DataSourceType,
     selectedButtons: SelectableCollection<SelectableSidebarButton>,
   ) {
-    this.updatePages(dataSourceType, selectedButtons);
+    await this.updatePages(dataSourceType, selectedButtons);
   }
 
   private async updatePages(
