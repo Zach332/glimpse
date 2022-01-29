@@ -4,6 +4,7 @@ import { IdGeneratorService } from 'src/app/id-generator-serivce';
 import { BehaviorSubject, Observable } from 'rxjs';
 import * as browser from 'webextension-polyfill';
 import { Page } from 'src/app/interfaces/page';
+import { BookmarkService } from 'src/app/bookmark-service';
 import { DataService } from '../../data.service';
 import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
@@ -48,7 +49,11 @@ export class SidebarManagerService {
   private browserObservable = new Observable((observer) => {
     browser.windows.onCreated.addListener(() => observer.next());
     browser.windows.onRemoved.addListener(() => observer.next());
-    browser.bookmarks.onCreated.addListener(() => observer.next());
+    browser.bookmarks.onCreated.addListener(async (id, bookmark) => {
+      if (bookmark.parentId === (await BookmarkService.getRootGlimpseFolder()).id) {
+        observer.next();
+      }
+    });
     browser.bookmarks.onChanged.addListener(() => observer.next());
     browser.bookmarks.onRemoved.addListener(() => observer.next());
   });
