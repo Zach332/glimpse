@@ -13,11 +13,15 @@ import { Settings } from '../../interfaces/settings';
   providedIn: 'root',
 })
 export class SidebarManagerService {
-  public windowSidebarButtons: BehaviorSubject<SelectableCollection<SelectableSidebarButton>> =
-    new BehaviorSubject(new SelectableCollection<SelectableSidebarButton>());
+  public windowSidebarButtons = new SelectableCollection<SelectableSidebarButton>();
 
-  public savedSidebarButtons: BehaviorSubject<SelectableCollection<SelectableSidebarButton>> =
-    new BehaviorSubject(new SelectableCollection<SelectableSidebarButton>());
+  public savedSidebarButtons = new SelectableCollection<SelectableSidebarButton>();
+
+  public selectedSidebarButtons: BehaviorSubject<SelectableSidebarButton[]> = new BehaviorSubject(
+    this.windowSidebarButtons
+      .getSelectedItems()
+      .concat(this.savedSidebarButtons.getSelectedItems()),
+  );
 
   public windowRootButton: SelectableSidebarButton;
 
@@ -185,11 +189,11 @@ export class SidebarManagerService {
   }
 
   public areAllSelected(type: DataSourceType): boolean {
-    return this.getDataSourceObservable(type).value.areAllSelected();
+    return this.getDataSourceCollection(type).areAllSelected();
   }
 
   public hasChildren(type: DataSourceType): boolean {
-    return this.getDataSourceObservable(type).value.collection.length > 0;
+    return this.getDataSourceCollection(type).collection.length > 0;
   }
 
   public toggleRoot(type: DataSourceType): void {
@@ -222,22 +226,26 @@ export class SidebarManagerService {
 
   public getNthDataSource(n: number) {
     let index = n - 1;
-    if (index < this.windowSidebarButtons.value.length) {
-      return this.windowSidebarButtons.value.get(index);
+    if (index < this.windowSidebarButtons.length) {
+      return this.windowSidebarButtons.get(index);
     }
-    index -= this.windowSidebarButtons.value.length;
-    return this.savedSidebarButtons.value.get(index);
+    index -= this.windowSidebarButtons.length;
+    return this.savedSidebarButtons.get(index);
   }
 
   public updateDataSource(
     type: DataSourceType,
     update?: (original: SelectableCollection<SelectableSidebarButton>) => void,
   ) {
-    const dataSource = this.getDataSourceObservable(type).value;
+    const dataSource = this.getDataSourceCollection(type);
     if (update) {
       update(dataSource);
     }
-    this.getDataSourceObservable(type).next(dataSource);
+    this.selectedSidebarButtons.next(
+      this.windowSidebarButtons
+        .getSelectedItems()
+        .concat(this.savedSidebarButtons.getSelectedItems()),
+    );
     this.updateSettings((settings) => this.updateSettingsMap(settings));
   }
 
@@ -253,27 +261,20 @@ export class SidebarManagerService {
 
   private updateSettingsMap(settings: Settings) {
     const updatedMap = new Map<string, boolean>();
-    this.windowSidebarButtons.value.collection.forEach((element) =>
+    this.windowSidebarButtons.collection.forEach((element) =>
       updatedMap.set(element.dataSourceId.toString(), element.isSelected),
     );
-    this.savedSidebarButtons.value.collection.forEach((element) =>
+    this.savedSidebarButtons.collection.forEach((element) =>
       updatedMap.set(element.dataSourceId.toString(), element.isSelected),
     );
     settings.selectedSidebarItems = updatedMap;
   }
 
-  private getDataSourceObservable(
-    type: DataSourceType,
-  ): BehaviorSubject<SelectableCollection<SelectableSidebarButton>> {
+  private getDataSourceCollection(type: DataSourceType) {
     if (type === DataSourceType.Window) {
       return this.windowSidebarButtons;
     }
-    if (type === DataSourceType.Folder) {
-      return this.savedSidebarButtons;
-    }
-    return new BehaviorSubject<SelectableCollection<SelectableSidebarButton>>(
-      new SelectableCollection<SelectableSidebarButton>(),
-    );
+    return this.savedSidebarButtons;
   }
 
   private replacer(key: any, value: any) {

@@ -9,7 +9,6 @@ import { IdGeneratorService } from '../id-generator-serivce';
 import { DataSourceType } from '../interfaces/data-source-type';
 import { SelectableCollection } from '../interfaces/selectable-collection';
 import { SelectablePage } from '../interfaces/selectable-page';
-import { SelectableSidebarButton } from '../interfaces/selectable-sidebar-button';
 import { PageFilterService } from '../page-filter.service';
 import { SidebarManagerService } from '../sidebar/sidebar-management/sidebar-manager.service';
 import { HotkeyManagerService } from '../hotkey-manager.service';
@@ -66,25 +65,17 @@ export class PageManagerService {
     private moveCopyDialog: MatDialog,
     private nameDialog: MatDialog,
   ) {
-    this.sidebarManagerService.savedSidebarButtons.subscribe((selectedButtons) =>
-      this.updatePagesLocked(DataSourceType.Folder, selectedButtons),
-    );
-    this.sidebarManagerService.windowSidebarButtons.subscribe((selectedButtons) =>
-      this.updatePagesLocked(DataSourceType.Window, selectedButtons),
-    );
-    this.browserObservable.subscribe(() =>
-      this.updatePagesLocked(
-        DataSourceType.Window,
-        sidebarManagerService.windowSidebarButtons.value,
-      ),
-    );
-    this.tabRemoveObservable.subscribe((removeData) =>
-      this.updatePagesLocked(
-        DataSourceType.Window,
-        sidebarManagerService.windowSidebarButtons.value,
-        () => this.updatePagesRemove(removeData.tabId, removeData.removeInfo),
-      ),
-    );
+    this.sidebarManagerService.selectedSidebarButtons.subscribe((selectedButtons) => {
+      this.updatePagesLocked(selectedButtons);
+    });
+    this.browserObservable.subscribe(() => {
+      this.updatePagesLocked(sidebarManagerService.selectedSidebarButtons.value);
+    });
+    this.tabRemoveObservable.subscribe((removeData) => {
+      this.updatePagesLocked(sidebarManagerService.selectedSidebarButtons.value, () =>
+        this.updatePagesRemove(removeData.tabId, removeData.removeInfo),
+      );
+    });
     this.searchQuery.subscribe(
       (newQuery) =>
         (this.displayPageElements = pageFilterService.filterByQuery(newQuery, this.pageElements)),
@@ -208,8 +199,8 @@ export class PageManagerService {
 
   public async dropInNew(type: DataSourceType) {
     const matchingName = this.getMatchingNameForSelected();
-    if (matchingName && this.notDefaultName(await matchingName)) {
-      this.dropInNewWithName(await matchingName, type);
+    if (matchingName && this.notDefaultName(matchingName)) {
+      this.dropInNewWithName(matchingName, type);
     } else {
       this.getNameDialog().subscribe((nameResult) => {
         if (nameResult !== null && nameResult !== undefined) {
@@ -223,17 +214,22 @@ export class PageManagerService {
     if (this.pagesUpdating) {
       return '';
     }
-    if (
-      this.sidebarManagerService.windowSidebarButtons.value.getNumSelected() === 0 &&
-      this.sidebarManagerService.savedSidebarButtons.value.getNumSelected() === 0
-    ) {
+    if (this.sidebarManagerService.selectedSidebarButtons.value.length === 0) {
       return 'You have not selected any sidebar items.';
     }
     if (this.searchQuery.value) {
       return 'No results';
     }
-    if (this.sidebarManagerService.windowSidebarButtons.value.getNumSelected() === 0) {
-      if (this.sidebarManagerService.savedSidebarButtons.value.getNumSelected() === 1) {
+    if (
+      this.sidebarManagerService.selectedSidebarButtons.value.filter(
+        (sidebarButton) => sidebarButton.dataSourceId[0] === DataSourceType.Window,
+      ).length === 0
+    ) {
+      if (
+        this.sidebarManagerService.selectedSidebarButtons.value.filter(
+          (sidebarButton) => sidebarButton.dataSourceId[0] === DataSourceType.Folder,
+        ).length === 1
+      ) {
         return 'This folder has no content.';
       }
       return 'These folders have no content.';
@@ -247,20 +243,14 @@ export class PageManagerService {
   }
 
   private getMatchingNameForSelected() {
-    const selectedWindows =
-      this.sidebarManagerService.windowSidebarButtons.value.getSelectedItems();
-    const selectedFolders = this.sidebarManagerService.savedSidebarButtons.value.getSelectedItems();
-    if (selectedFolders.length + selectedWindows.length !== 1) {
+    const selectedSidebarButtons = this.sidebarManagerService.selectedSidebarButtons.value;
+
+    if (selectedSidebarButtons.length !== 1) {
       return null;
     }
-    let selectedSidebarItem;
-    if (selectedWindows.length === 1) {
-      selectedSidebarItem = selectedWindows[0];
-    } else {
-      selectedSidebarItem = selectedFolders[0];
-    }
+
     if (this.pageElements.collection.every((page) => page.isSelected)) {
-      return selectedSidebarItem.name;
+      return selectedSidebarButtons[0].name;
     }
     return null;
   }
@@ -326,12 +316,8 @@ export class PageManagerService {
     return dialogRef.afterClosed();
   }
 
-  private updatePagesLocked(
-    dataSourceType: DataSourceType,
-    selectedButtons: SelectableCollection<SelectableSidebarButton>,
-    specialUpdate?: () => Promise<void>,
-  ) {
-    let update = () => this.defaultUpdatePages(dataSourceType, selectedButtons);
+  private updatePagesLocked(dataSources: DataSource[], specialUpdate?: () => Promise<void>) {
+    let update = () => this.defaultUpdatePages(dataSources);
     if (specialUpdate) {
       update = specialUpdate;
     }
@@ -363,32 +349,22 @@ export class PageManagerService {
     });
   }
 
-  private async defaultUpdatePages(
-    dataSourceType: DataSourceType,
-    selectedButtons: SelectableCollection<SelectableSidebarButton>,
-  ) {
-    await this.updatePages(dataSourceType, selectedButtons);
+  private async defaultUpdatePages(dataSources: DataSource[]) {
+    await this.updatePages(dataSources);
   }
 
-  private async updatePages(
-    dataSourceType: DataSourceType,
-    dataSources: SelectableCollection<SelectableSidebarButton>,
-  ) {
-    if (dataSourceType === DataSourceType.Folder) {
-      this.savedPageElements = [];
-    } else if (dataSourceType === DataSourceType.Window) {
-      this.windowPageElements = [];
-    }
-    const selectedDataSources = dataSources.getSelectedItems();
-    if (selectedDataSources.length > 0) {
-      await this.dataService.getPagesByDataSources(selectedDataSources).then((pages) => {
+  private async updatePages(dataSources: DataSource[]) {
+    this.windowPageElements = [];
+    this.savedPageElements = [];
+    if (dataSources.length > 0) {
+      await this.dataService.getPagesByDataSources(dataSources).then((pages) => {
         pages.forEach((page) => {
           const selectablePage: SelectablePage = {
             ...page,
             id: IdGeneratorService.getIdFromPageId(page.pageId),
             isSelected: false,
           };
-          this.getPageElementsOfType(dataSourceType).push(selectablePage);
+          this.getPageElementsOfType(page.pageId[0]).push(selectablePage);
         });
       });
     }

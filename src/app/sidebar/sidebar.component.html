@@ -41,7 +41,7 @@
     class="flex"
   ></app-root-button>
   <app-data-source-button
-    *ngFor="let button of sidebarManagerService.windowSidebarButtons.value"
+    *ngFor="let button of sidebarManagerService.windowSidebarButtons"
     [buttonData]="button"
     class="flex"
   ></app-data-source-button>
@@ -54,7 +54,7 @@
     class="flex"
   ></app-root-button>
   <app-data-source-button
-    *ngFor="let button of sidebarManagerService.savedSidebarButtons.value"
+    *ngFor="let button of sidebarManagerService.savedSidebarButtons"
     [buttonData]="button"
     class="flex"
   ></app-data-source-button>
