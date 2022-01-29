@@ -40,7 +40,9 @@ export class SidebarComponent {
       .subscribe(() => this.sidebarManagerService.deselectAll());
     this.hotkeyManagerService
       .addShortcut('u', 'toggle "Update settings"')
-      .subscribe(() => this.pageManagerService.updateSettings = !this.pageManagerService.updateSettings);
+      .subscribe(
+        () => (this.pageManagerService.updateSettings = !this.pageManagerService.updateSettings),
+      );
     for (let i = 1; i <= 9; i += 1) {
       this.hotkeyManagerService
         .addShortcut(`${i}`, 'toggle sidebar item')
@@ -79,6 +81,10 @@ export class SidebarComponent {
     dialogRef.componentInstance.dialogContent = this.generateHotkeyHelp(
       this.hotkeyManagerService.hotkeyRegistry,
     );
+  }
+
+  openHelp() {
+    window.open('https://github.com/Zach332/glimpse/blob/main/README.md', '_self');
   }
 
   private generateHotkeyHelp(hotkeys: Map<string, string>): string {
