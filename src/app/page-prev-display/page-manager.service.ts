@@ -30,7 +30,7 @@ export class PageManagerService {
 
   public draggedElement: string = '';
 
-  public pagePrevMax = 600;
+  public pagePrevMax = 750;
 
   public pagePrevMin = 200;
 
