@@ -323,9 +323,13 @@ browser.tabs.onCreated.addListener((tab) => {
 });
 
 browser.tabs.onActivated.addListener((activeInfo) => {
-  db.accessTimes.put({
-    pageId: [DataSourceType.Window, activeInfo.windowId, activeInfo.tabId],
-    accessTime: Date.now(),
+  browser.windows.getCurrent().then((activeWindow) => {
+    if (activeWindow.id === activeInfo.windowId) {
+      db.accessTimes.put({
+        pageId: [DataSourceType.Window, activeInfo.windowId, activeInfo.tabId],
+        accessTime: Date.now(),
+      });
+    }
   });
 });
 
