@@ -333,6 +333,18 @@ browser.tabs.onActivated.addListener((activeInfo) => {
   });
 });
 
+browser.windows.onFocusChanged.addListener(async (windowId) => {
+  const activeTabInWindow = await browser.tabs
+    .query({ active: true, windowId })
+    .then((tabs) => tabs[0]);
+  if (activeTabInWindow.id) {
+    db.accessTimes.put({
+      pageId: [DataSourceType.Window, windowId, activeTabInWindow.id],
+      accessTime: Date.now(),
+    });
+  }
+});
+
 browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
   db.deletePageData([DataSourceType.Window, removeInfo.windowId, tabId]);
 });

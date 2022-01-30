@@ -45,6 +45,7 @@ export class PageManagerService {
     browser.tabs.onActivated.addListener(() => observer.next());
     browser.tabs.onDetached.addListener(() => observer.next());
     browser.webNavigation.onCommitted.addListener(() => observer.next());
+    browser.windows.onFocusChanged.addListener(() => observer.next());
   });
 
   private tabRemoveObservable = new Observable<{
