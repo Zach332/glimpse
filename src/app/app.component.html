@@ -50,7 +50,13 @@
         [matRippleColor]="rippleColor"
         (click)="setRandomRippleColor()"
         [style.min-height]="spacerHeight + 'px'"
-      ></div>
+        class="flex justify-content-center"
+      >
+        <div class="logo flex align-items-center unselectable">
+          <img src="/assets/favicon.png" alt="glimpse logo" class="favicon" />
+          <h1 class="logo-title">glimpse</h1>
+        </div>
+      </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
 </div>
