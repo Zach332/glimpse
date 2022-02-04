@@ -29,7 +29,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets", "src/manifest.json"],
+            "assets": ["src/favicon.ico", "src/icon16.png", "src/icon48.png", "src/icon128.png", "src/assets", "src/manifest.json"],
             "styles": ["src/styles.scss"],
             "scripts": [],
             "aot": true
@@ -98,7 +98,7 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": ["src/favicon.ico", "src/icon16.png", "src/icon48.png", "src/icon128.png", "src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": []
           }
