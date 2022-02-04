@@ -392,10 +392,10 @@ export class PageManagerService {
     a: { page: SelectablePage; timeLastAccessed: number },
     b: { page: SelectablePage; timeLastAccessed: number },
   ) {
-    if (a.page.url === 'chrome://newtab/') {
+    if (a.page.title === 'New Tab') {
       return 1;
     }
-    if (b.page.url === 'chrome://newtab/') {
+    if (b.page.title === 'New Tab') {
       return -1;
     }
     return b.timeLastAccessed - a.timeLastAccessed;
