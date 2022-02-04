@@ -60,18 +60,20 @@
   ></app-data-source-button>
   <app-new-button [buttonData]="sidebarManagerService.newSavedButton" class="flex"></app-new-button>
   <mat-divider class="divider-margin"></mat-divider>
-  <div class="flex space-between align-items-center m-5">
+  <div class="flex space-between align-items-center m-8">
     <div>
       <button mat-raised-button (click)="showHotkeyHelp()">Hotkeys</button>
     </div>
-    <mat-slide-toggle [(ngModel)]="pageManagerService.updateSettings"
+    <mat-slide-toggle [(ngModel)]="pageManagerService.updateSettings" labelPosition="before"
       >Update settings</mat-slide-toggle
     >
   </div>
-  <div class="flex space-between align-items-center m-5">
+  <div class="flex space-between align-items-center m-8">
     <div>
       <button mat-raised-button (click)="openHelp()">Help</button>
     </div>
-    <mat-slide-toggle [(ngModel)]="pageManagerService.darkMode">Dark Mode</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="pageManagerService.darkMode" labelPosition="before"
+      >Dark Mode</mat-slide-toggle
+    >
   </div>
 </div>
