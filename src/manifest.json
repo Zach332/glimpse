@@ -1,7 +1,10 @@
 {
   "name": "glimpse",
   "version": "0.0.0.1",
-  "description": "Visual history and tab manager",
+  "icons": { "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png" },
+  "description": "Visual tab manager",
   "manifest_version": 2,
   "background": {
     "scripts": ["background.js", "runtime.js"]
