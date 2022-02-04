@@ -65,7 +65,6 @@ export class SidebarManagerService {
   });
 
   constructor(private dataService: DataService) {
-    // TODO: These should use a new interface or something
     // And maybe rename SelectableSidebarButton to SelectableDataSource
     this.windowRootButton = {
       dataSourceId: [DataSourceType.Window, 1],

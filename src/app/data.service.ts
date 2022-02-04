@@ -74,7 +74,6 @@ export class DataService {
   }
 
   async getFolderDataSources() {
-    // TODO: Handle errors
     return browser.bookmarks
       .getChildren((await BookmarkService.getRootGlimpseFolder()).id)
       .then((folders) => {
