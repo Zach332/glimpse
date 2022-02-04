@@ -40,7 +40,7 @@
           <div *cdkDragPlaceholder></div>
         </app-page-prev>
       </div>
-      <div class="flex justify-content-center" *ngIf="pageView().length === 0">
+      <div class="flex justify-content-center message-box" *ngIf="pageView().length === 0">
         {{ pageManagerService.getNoContentMessage() }}
       </div>
       <div
