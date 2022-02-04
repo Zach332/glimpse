@@ -212,7 +212,7 @@ export class PageManagerService {
   }
 
   public getNoContentMessage() {
-    if (this.pagesUpdating) {
+    if (this.pagesUpdating || !this.sidebarManagerService.initialized) {
       return '';
     }
     if (this.sidebarManagerService.selectedSidebarButtons.value.length === 0) {

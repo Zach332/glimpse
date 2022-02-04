@@ -34,6 +34,8 @@ export class SidebarManagerService {
 
   public savedSettings: Settings;
 
+  public initialized: boolean = false;
+
   private static DEFAULT_SETTINGS: Settings = {
     pagePrevWidth: 400,
     pagePrevCollapse: false,
@@ -96,7 +98,8 @@ export class SidebarManagerService {
   }
 
   private async init() {
-    this.createSidebarItems();
+    await this.createSidebarItems();
+    this.initialized = true;
   }
 
   private restoreSavedSettings() {
