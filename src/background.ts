@@ -211,51 +211,63 @@ async function captureTab() {
     .query({ active: true, currentWindow: true })
     .then((tabs) => tabs[0]);
   if (initialCurrentPage && isValidPage(initialCurrentPage.url!)) {
-    const image = await browser.tabs.captureVisibleTab();
-    const currentTab = await browser.tabs
-      .query({ active: true, currentWindow: true })
-      .then((tabs) => tabs[0]);
-    if (initialCurrentPage.id! === currentTab.id!) {
-      db.images.put({
-        pageId: DataService.getPageIdFromTab(currentTab),
-        image,
-      });
+    try {
+      const image = await browser.tabs.captureVisibleTab();
+      const currentTab = await browser.tabs
+        .query({ active: true, currentWindow: true })
+        .then((tabs) => tabs[0]);
+      if (initialCurrentPage.id! === currentTab.id!) {
+        db.images.put({
+          pageId: DataService.getPageIdFromTab(currentTab),
+          image,
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 }
 
 browser.webNavigation.onCompleted.addListener(async (details) => {
   if (details.frameId === 0 && isValidPage(details.url)) {
-    const image = await browser.tabs.captureVisibleTab();
-    const currentTab = await browser.tabs
-      .query({ active: true, currentWindow: true })
-      .then((tabs) => tabs[0]);
-    if (details.tabId === currentTab.id!) {
-      db.images.put({
-        pageId: DataService.getPageIdFromTab(currentTab),
-        image,
-      });
+    try {
+      const image = await browser.tabs.captureVisibleTab();
+      const currentTab = await browser.tabs
+        .query({ active: true, currentWindow: true })
+        .then((tabs) => tabs[0]);
+      if (details.tabId === currentTab.id!) {
+        db.images.put({
+          pageId: DataService.getPageIdFromTab(currentTab),
+          image,
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 });
 
 browser.tabs.onActivated.addListener(async (activeInfo) => {
-  if (captureTabOIntervalId) {
-    clearInterval(captureTabOIntervalId);
-  }
-  captureTabOIntervalId = setInterval(captureTab, 1000);
-  const initialCurrentPage = await browser.tabs.get(activeInfo.tabId);
-  if (!browser.runtime.lastError && isValidPage(initialCurrentPage.url!)) {
-    const image = await browser.tabs.captureVisibleTab();
-    const currentTab = await browser.tabs
-      .query({ active: true, currentWindow: true })
-      .then((tabs) => tabs[0]);
-    if (initialCurrentPage.id! === currentTab.id!) {
-      db.images.put({
-        pageId: DataService.getPageIdFromTab(currentTab),
-        image,
-      });
+  try {
+    if (captureTabOIntervalId) {
+      clearInterval(captureTabOIntervalId);
     }
+    captureTabOIntervalId = setInterval(captureTab, 1000);
+    const initialCurrentPage = await browser.tabs.get(activeInfo.tabId);
+    if (!browser.runtime.lastError && isValidPage(initialCurrentPage.url!)) {
+      const image = await browser.tabs.captureVisibleTab();
+      const currentTab = await browser.tabs
+        .query({ active: true, currentWindow: true })
+        .then((tabs) => tabs[0]);
+      if (initialCurrentPage.id! === currentTab.id!) {
+        db.images.put({
+          pageId: DataService.getPageIdFromTab(currentTab),
+          image,
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 
@@ -264,24 +276,28 @@ browser.bookmarks.onCreated.addListener(async (id, bookmark) => {
     .query({ active: true, currentWindow: true })
     .then((tabs) => tabs[0]);
   if (isValidPage(initialCurrentTab.url!)) {
-    const image = await browser.tabs.captureVisibleTab();
-    const currentTab = await browser.tabs
-      .query({ active: true, currentWindow: true })
-      .then((tabs) => tabs[0]);
-    if (bookmark.url! === currentTab.url!) {
-      const pageId = DataService.getPageIdFromBookmark(bookmark);
-      db.images.put({
-        pageId,
-        image,
-      });
-      db.favicons.put({
-        pageId,
-        favicon: currentTab.favIconUrl!,
-      });
-      db.accessTimes.put({
-        pageId,
-        accessTime: Date.now(),
-      });
+    try {
+      const image = await browser.tabs.captureVisibleTab();
+      const currentTab = await browser.tabs
+        .query({ active: true, currentWindow: true })
+        .then((tabs) => tabs[0]);
+      if (bookmark.url! === currentTab.url!) {
+        const pageId = DataService.getPageIdFromBookmark(bookmark);
+        db.images.put({
+          pageId,
+          image,
+        });
+        db.favicons.put({
+          pageId,
+          favicon: currentTab.favIconUrl!,
+        });
+        db.accessTimes.put({
+          pageId,
+          accessTime: Date.now(),
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 });
