@@ -4,7 +4,6 @@ import { DataSourceType } from './interfaces/data-source-type';
 import { PageId } from './interfaces/page-id';
 
 export class Database extends Dexie {
-  // TODO: Should this be Table<string, DataSourceId>?
   names!: Table<string, number>;
 
   images!: Table<
@@ -35,7 +34,6 @@ export class Database extends Dexie {
     super('glimpse');
     this.version(17).stores({
       names: '',
-      // TODO: Re-evaluate these
       images: 'pageId',
       favicons: 'pageId',
       accessTimes: 'pageId',
