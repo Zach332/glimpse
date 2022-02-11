@@ -41,7 +41,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   onDragStart($event: CdkDragStart) {
     this.pageManagerService.draggedElement = $event.source.element.nativeElement.id;
     const currentIndex = this.pageManagerService.displayPageElements.collection.findIndex(
-      (p) => p.id === parseInt(this.pageManagerService.draggedElement, 10),
+      (p) => p.id === this.pageManagerService.draggedElement,
     );
     const dragInsert = this.pageManagerService.displayPageElements.collection[currentIndex];
     this.pageViewDrag = this.pageManagerService.displayPageElements.copy();

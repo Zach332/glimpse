@@ -68,25 +68,25 @@ export class SidebarManagerService {
     // And maybe rename SelectableSidebarButton to SelectableDataSource
     this.windowRootButton = {
       dataSourceId: [DataSourceType.Window, 1],
-      id: 1,
+      id: '1',
       name: 'Windows',
       isSelected: false,
     };
     this.savedRootButton = {
       dataSourceId: [DataSourceType.Folder, '1'],
-      id: 1,
+      id: '1',
       name: 'Saved',
       isSelected: false,
     };
     this.newWindowButton = {
       dataSourceId: [DataSourceType.Window, 1],
-      id: 1,
+      id: '1',
       name: 'New Window',
       isSelected: false,
     };
     this.newSavedButton = {
       dataSourceId: [DataSourceType.Folder, '1'],
-      id: 1,
+      id: '1',
       name: 'New Folder',
       isSelected: false,
     };
@@ -187,11 +187,11 @@ export class SidebarManagerService {
     });
   }
 
-  public selectToId(type: DataSourceType, id: number): void {
+  public selectToId(type: DataSourceType, id: string): void {
     this.updateDataSource(type, (dataSource) => dataSource.selectToId(id));
   }
 
-  public toggleId(type: DataSourceType, id: number): void {
+  public toggleId(type: DataSourceType, id: string): void {
     this.updateDataSource(type, (dataSource) => dataSource.toggleId(id));
   }
 

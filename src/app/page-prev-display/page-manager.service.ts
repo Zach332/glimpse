@@ -168,7 +168,7 @@ export class PageManagerService {
   public getDraggedPages(): SelectablePage[] {
     const draggedPages: SelectablePage[] = this.displayPageElements.getSelectedItems();
     const draggedPage: SelectablePage | undefined = this.displayPageElements.getById(
-      parseInt(this.draggedElement, 10),
+      this.draggedElement,
     );
     if (draggedPage && !draggedPage?.isSelected) {
       draggedPages.push(draggedPage);

@@ -1,4 +1,4 @@
 export interface Selectable {
-  readonly id: number;
+  readonly id: string;
   isSelected: boolean;
 }

@@ -167,7 +167,7 @@ export class DataService {
     });
 
     const images = db.images.toArray().then((values) => {
-      const map = new Map<number, string>();
+      const map = new Map<string, string>();
       values.forEach((value) => {
         map.set(IdGeneratorService.getIdFromPageId(value.pageId), value.image);
       });
@@ -175,7 +175,7 @@ export class DataService {
     });
 
     const favicons = db.favicons.toArray().then((values) => {
-      const map = new Map<number, string>();
+      const map = new Map<string, string>();
       values.forEach((value) => {
         map.set(IdGeneratorService.getIdFromPageId(value.pageId), value.favicon);
       });
@@ -183,7 +183,7 @@ export class DataService {
     });
 
     const accessTimes = db.accessTimes.toArray().then((values) => {
-      const map = new Map<number, number>();
+      const map = new Map<string, number>();
       values.forEach((value) => {
         map.set(IdGeneratorService.getIdFromPageId(value.pageId), value.accessTime);
       });
