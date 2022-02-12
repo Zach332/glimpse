@@ -250,7 +250,6 @@ browser.webNavigation.onCompleted.addListener(async (details) => {
 });
 
 browser.tabs.onActivated.addListener(async (activeInfo) => {
-  console.log('tabs.onActivated START');
   const db = new Database();
   try {
     if (captureTabOIntervalId) {
