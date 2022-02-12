@@ -1,6 +1,6 @@
 # glimpse
 
-glimpse is a visual tab manager. See all your tabs in a grid; easily move, copy, and delete groups of tabs; quickly find what you need with search. Below is a guide to the features of glimpse.
+glimpse is a visual tab manager. See all your tabs in a grid; easily move, copy, save, and delete groups of tabs; quickly find what you need with search. Below is a guide to the features of glimpse.
 
 ## Hotkeys
  - There are hotkeys for nearly all actions in glimpse. The full list can be viewed by clicking "Hotkeys" or using shift + ?
@@ -14,7 +14,7 @@ glimpse is a visual tab manager. See all your tabs in a grid; easily move, copy,
 
 ## Basic functions
  - Click a page to go to that page
- - Remove a page (close a window, or delete a saved page) by clicking the "x"; remove all selected pages by clicking "Remove all"
+ - Remove a page (close a tab, or delete a saved page) by clicking the "x"; remove all selected pages by clicking "Remove all"
  - Selected pages can be moved or copied by dragging. If "copy" is on, dragged pages will be added to the new window but will also remain in their original windows/saved folders. If "move" is on, the dragged pages will instead be closed in their original windows and deleted from their original saved folders. "Open all" is the same as dragging selected pages to the active window
  - Sidebar items can be deleted or renamed using the dropdown after clicking the icon with three dots. Deleting a window closes it and contained tabs; deleting a saved folder deletes it and pages therein
  - Use the search bar to filter pages by title and url. You can filter by multiple words independently by adding spaces between them
