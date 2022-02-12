@@ -180,10 +180,12 @@ export class PageManagerService {
   }
 
   public async dropPages(destination: DataSource): Promise<void> {
-    if (this.dragMode === 'copy') {
-      await this.dataService.copyPages(this.getDraggedPages(), destination);
-    } else {
-      await this.dataService.movePages(this.getDraggedPages(), destination);
+    if (destination) {
+      if (this.dragMode === 'copy') {
+        await this.dataService.copyPages(this.getDraggedPages(), destination);
+      } else {
+        await this.dataService.movePages(this.getDraggedPages(), destination);
+      }
     }
   }
 
@@ -306,7 +308,7 @@ export class PageManagerService {
       this.dropInNew(DataSourceType.Window);
     } else if (result === 's') {
       this.dropInNew(DataSourceType.Folder);
-    } else {
+    } else if (result) {
       this.dropPages(this.sidebarManagerService.getNthDataSource(parseInt(result, 10)));
     }
   }
