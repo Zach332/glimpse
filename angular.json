@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "glimpse": {
+    "glimpse-chrome": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -21,15 +21,21 @@
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "customWebpackConfig": {
-              "path": "./custom-webpack.config.js"
+              "path": "./chrome-webpack.config.js"
             },
-            "outputPath": "dist/glimpse",
+            "outputPath": "dist/glimpse-chrome",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/icon16.png", "src/icon48.png", "src/icon128.png", "src/assets", "src/manifest.json"],
+            "assets": [
+              "src/favicon.ico",
+              "src/icon16.png",
+              "src/icon48.png",
+              "src/icon128.png",
+              "src/assets"
+            ],
             "styles": ["src/styles.scss"],
             "scripts": [],
             "aot": true
@@ -98,7 +104,133 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/icon16.png", "src/icon48.png", "src/icon128.png", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              "src/icon16.png",
+              "src/icon48.png",
+              "src/icon128.png",
+              "src/assets"
+            ],
+            "styles": ["src/styles.scss"],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+          }
+        }
+      }
+    },
+    "glimpse-firefox": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            "customWebpackConfig": {
+              "path": "./firefox-webpack.config.js"
+            },
+            "outputPath": "dist/glimpse-firefox",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/icon16.png",
+              "src/icon48.png",
+              "src/icon128.png",
+              "src/assets"
+            ],
+            "styles": ["src/styles.scss"],
+            "scripts": [],
+            "aot": true
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "4mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "none",
+              "optimization": {
+                "styles": {
+                  "inlineCritical": false
+                }
+              }
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "glimpse:build:production"
+            },
+            "development": {
+              "browserTarget": "glimpse:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "glimpse:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/icon16.png",
+              "src/icon48.png",
+              "src/icon128.png",
+              "src/assets"
+            ],
             "styles": ["src/styles.scss"],
             "scripts": []
           }
@@ -112,7 +244,7 @@
       }
     }
   },
-  "defaultProject": "glimpse",
+  "defaultProject": "glimpse-chrome",
   "cli": {
     "defaultCollection": "@angular-eslint/schematics"
   }

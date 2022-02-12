@@ -1,0 +1,15 @@
+{
+  "name": "glimpse",
+  "version": "0.0.0.1",
+  "icons": { "16": "icon16.png", "48": "icon48.png", "128": "icon128.png" },
+  "description": "Visual tab manager",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["activeTab", "tabs", "webNavigation", "bookmarks"],
+  "host_permissions": ["<all_urls>"],
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  }
+}

@@ -7,8 +7,6 @@ import { Operation } from './app/interfaces/operation';
 import { Page } from './app/interfaces/page';
 import { PageId } from './app/interfaces/page-id';
 
-const db = new Database();
-
 let captureTabOIntervalId: NodeJS.Timeout;
 
 function isValidPage(url: string) {
@@ -52,6 +50,7 @@ function removePages(pages: Page[]) {
 }
 
 async function moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
+  const db = new Database();
   // Collect IDB-stored page data for page
   const image = (await db.images.get(source.pageId))?.image;
   const timeLastAccessed = (await db.accessTimes.get(source.pageId))?.accessTime;
@@ -124,6 +123,7 @@ async function copyPages(sources: Page[], destination: DataSource) {
 }
 
 browser.runtime.onMessage.addListener(async (message) => {
+  const db = new Database();
   if (message.type === 'addWindow') {
     const currentWindow = message.currentWindow;
     const currentWindowGlimpseTabId = message.currentWindowGlimpseTabId;
@@ -207,6 +207,7 @@ browser.runtime.onMessage.addListener(async (message) => {
 });
 
 async function captureTab() {
+  const db = new Database();
   const initialCurrentPage = await browser.tabs
     .query({ active: true, currentWindow: true })
     .then((tabs) => tabs[0]);
@@ -229,6 +230,7 @@ async function captureTab() {
 }
 
 browser.webNavigation.onCompleted.addListener(async (details) => {
+  const db = new Database();
   if (details.frameId === 0 && isValidPage(details.url)) {
     try {
       const image = await browser.tabs.captureVisibleTab();
@@ -248,6 +250,8 @@ browser.webNavigation.onCompleted.addListener(async (details) => {
 });
 
 browser.tabs.onActivated.addListener(async (activeInfo) => {
+  console.log('tabs.onActivated START');
+  const db = new Database();
   try {
     if (captureTabOIntervalId) {
       clearInterval(captureTabOIntervalId);
@@ -272,6 +276,7 @@ browser.tabs.onActivated.addListener(async (activeInfo) => {
 });
 
 browser.bookmarks.onCreated.addListener(async (id, bookmark) => {
+  const db = new Database();
   const initialCurrentTab = await browser.tabs
     .query({ active: true, currentWindow: true })
     .then((tabs) => tabs[0]);
@@ -303,6 +308,7 @@ browser.bookmarks.onCreated.addListener(async (id, bookmark) => {
 });
 
 browser.bookmarks.onMoved.addListener(async (id, moveInfo) => {
+  const db = new Database();
   const originalPageId: PageId = [DataSourceType.Folder, moveInfo.oldParentId, id];
   const image = (await db.images.get(originalPageId))?.image;
   const accessTime = (await db.accessTimes.get(originalPageId))?.accessTime;
@@ -332,6 +338,7 @@ browser.bookmarks.onMoved.addListener(async (id, moveInfo) => {
 });
 
 browser.tabs.onCreated.addListener((tab) => {
+  const db = new Database();
   db.accessTimes.put({
     pageId: DataService.getPageIdFromTab(tab),
     accessTime: Date.now(),
@@ -339,6 +346,7 @@ browser.tabs.onCreated.addListener((tab) => {
 });
 
 browser.tabs.onActivated.addListener((activeInfo) => {
+  const db = new Database();
   browser.windows.getCurrent().then((activeWindow) => {
     if (activeWindow.id === activeInfo.windowId) {
       db.accessTimes.put({
@@ -350,6 +358,7 @@ browser.tabs.onActivated.addListener((activeInfo) => {
 });
 
 browser.windows.onFocusChanged.addListener(async (windowId) => {
+  const db = new Database();
   const activeTabInWindow = await browser.tabs
     .query({ active: true, windowId })
     .then((tabs) => tabs[0]);
@@ -362,13 +371,16 @@ browser.windows.onFocusChanged.addListener(async (windowId) => {
 });
 
 browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  const db = new Database();
   db.deletePageData([DataSourceType.Window, removeInfo.windowId, tabId]);
 });
 
 browser.bookmarks.onRemoved.addListener((id, removeInfo) => {
+  const db = new Database();
   db.deletePageData([DataSourceType.Folder, removeInfo.parentId, id]);
 });
 
 browser.runtime.onStartup.addListener(() => {
+  const db = new Database();
   db.deleteSessionData();
 });
