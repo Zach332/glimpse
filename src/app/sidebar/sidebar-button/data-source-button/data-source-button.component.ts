@@ -1,6 +1,6 @@
 import { Component, Input, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
+import { SelectableDataSource } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { DataService } from 'src/app/data.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -15,7 +15,7 @@ import { SimpleDialogComponent } from '../../../general/simple-dialog/simple-dia
 })
 export class DataSourceButtonComponent {
   @Input()
-  buttonData!: SelectableSidebarButton;
+  buttonData!: SelectableDataSource;
 
   isActive: boolean = false;
 

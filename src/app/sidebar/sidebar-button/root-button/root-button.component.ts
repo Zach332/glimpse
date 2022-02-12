@@ -1,7 +1,7 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, Input } from '@angular/core';
 import { SelectablePage } from 'src/app/interfaces/selectable-page';
-import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
+import { SelectableDataSource } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.service';
 
@@ -12,7 +12,7 @@ import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.
 })
 export class RootButtonComponent {
   @Input()
-  buttonData!: SelectableSidebarButton;
+  buttonData!: SelectableDataSource;
 
   constructor(
     private pageManagerService: PageManagerService,

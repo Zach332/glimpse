@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { SimpleDialogComponent } from 'src/app/general/simple-dialog/simple-dialog.component';
 import { DataSourceType } from 'src/app/interfaces/data-source-type';
 import { SelectablePage } from 'src/app/interfaces/selectable-page';
-import { SelectableSidebarButton } from 'src/app/interfaces/selectable-sidebar-button';
+import { SelectableDataSource } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
 import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.service';
 
@@ -16,7 +16,7 @@ import { SidebarManagerService } from '../../sidebar-management/sidebar-manager.
 })
 export class NewButtonComponent {
   @Input()
-  buttonData!: SelectableSidebarButton;
+  buttonData!: SelectableDataSource;
 
   constructor(
     private pageManagerService: PageManagerService,

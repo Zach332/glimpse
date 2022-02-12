@@ -6,7 +6,7 @@ import * as browser from 'webextension-polyfill';
 import { Page } from 'src/app/interfaces/page';
 import { BookmarkService } from 'src/app/bookmark-service';
 import { DataService } from '../../data.service';
-import { SelectableSidebarButton } from '../../interfaces/selectable-sidebar-button';
+import { SelectableDataSource } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
 import { Settings } from '../../interfaces/settings';
 
@@ -14,23 +14,23 @@ import { Settings } from '../../interfaces/settings';
   providedIn: 'root',
 })
 export class SidebarManagerService {
-  public windowSidebarButtons = new SelectableCollection<SelectableSidebarButton>();
+  public windowSidebarButtons = new SelectableCollection<SelectableDataSource>();
 
-  public savedSidebarButtons = new SelectableCollection<SelectableSidebarButton>();
+  public savedSidebarButtons = new SelectableCollection<SelectableDataSource>();
 
-  public selectedSidebarButtons: BehaviorSubject<SelectableSidebarButton[]> = new BehaviorSubject(
+  public selectedSidebarButtons: BehaviorSubject<SelectableDataSource[]> = new BehaviorSubject(
     this.windowSidebarButtons
       .getSelectedItems()
       .concat(this.savedSidebarButtons.getSelectedItems()),
   );
 
-  public windowRootButton: SelectableSidebarButton;
+  public windowRootButton: SelectableDataSource;
 
-  public savedRootButton: SelectableSidebarButton;
+  public savedRootButton: SelectableDataSource;
 
-  public newWindowButton: SelectableSidebarButton;
+  public newWindowButton: SelectableDataSource;
 
-  public newSavedButton: SelectableSidebarButton;
+  public newSavedButton: SelectableDataSource;
 
   public savedSettings: Settings;
 
@@ -65,7 +65,6 @@ export class SidebarManagerService {
   });
 
   constructor(private dataService: DataService) {
-    // And maybe rename SelectableSidebarButton to SelectableDataSource
     this.windowRootButton = {
       dataSourceId: [DataSourceType.Window, 1],
       id: '1',
@@ -112,10 +111,10 @@ export class SidebarManagerService {
   }
 
   private async createSidebarItems() {
-    const windowButtons: SelectableSidebarButton[] = [];
+    const windowButtons: SelectableDataSource[] = [];
     await this.dataService.getWindowDataSources().then((windows) => {
       windows.forEach((window) => {
-        const sidebarButton: SelectableSidebarButton = {
+        const sidebarButton: SelectableDataSource = {
           ...window,
           id: IdGeneratorService.getIdFromDataSourceId(window.dataSourceId),
           isSelected:
@@ -125,10 +124,10 @@ export class SidebarManagerService {
       });
     });
 
-    const savedButtons: SelectableSidebarButton[] = [];
+    const savedButtons: SelectableDataSource[] = [];
     await this.dataService.getFolderDataSources().then((folders) => {
       folders.forEach((folder) => {
-        const sidebarButton: SelectableSidebarButton = {
+        const sidebarButton: SelectableDataSource = {
           ...folder,
           id: IdGeneratorService.getIdFromDataSourceId(folder.dataSourceId),
           isSelected:
@@ -160,12 +159,12 @@ export class SidebarManagerService {
     }
   }
 
-  public delete(button: SelectableSidebarButton): void {
+  public delete(button: SelectableDataSource): void {
     this.dataService.removeDataSource(button);
     this.updateDataSource(button.dataSourceId[0], (dataSource) => dataSource.remove(button.id));
   }
 
-  public rename(button: SelectableSidebarButton, name: string): void {
+  public rename(button: SelectableDataSource, name: string): void {
     this.dataService.renameDataSource(button, name);
     button.name = name;
     this.updateDataSource(button.dataSourceId[0]);
@@ -242,7 +241,7 @@ export class SidebarManagerService {
 
   public updateDataSource(
     type: DataSourceType,
-    update?: (original: SelectableCollection<SelectableSidebarButton>) => void,
+    update?: (original: SelectableCollection<SelectableDataSource>) => void,
   ) {
     const dataSource = this.getDataSourceCollection(type);
     if (update) {
