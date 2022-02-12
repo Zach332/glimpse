@@ -36,6 +36,9 @@
     .mat-card {
       background: $dark-background-color-2;
     }
+    .border-highlight {
+      border-color: mat.get-color-from-palette($accent-palette, 200);
+    }
   } @else {
     .selected {
       background-color: mat.get-color-from-palette($primary-palette, 400) !important;
@@ -48,6 +51,9 @@
     }
     .accent-contrast {
       color: mat.get-color-from-palette($accent-palette, 900);
+    }
+    .border-highlight {
+      border-color: mat.get-color-from-palette($accent-palette, 900);
     }
   }
 }

@@ -1,6 +1,6 @@
 <mat-card
   class="prev-card hoverlight"
-  [ngClass]="{ selected: tabData.isSelected }"
+  [ngClass]="{ selected: tabData.isSelected, 'border-highlight': isFolder() }"
   (click)="onClick($event)"
   [style.width.px]="pageManagerService.pagePrevWidth"
 >

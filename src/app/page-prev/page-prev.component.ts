@@ -45,4 +45,8 @@ export class PagePrevComponent {
   removePage(): void {
     this.pageManagerService.removePage(this.tabData);
   }
+
+  isFolder() {
+    return this.tabData.pageId[0] === DataSourceType.Folder;
+  }
 }
