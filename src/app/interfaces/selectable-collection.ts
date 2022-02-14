@@ -36,6 +36,10 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     return this._collection.filter((selectable) => selectable.isSelected);
   }
 
+  public getDeselectedItems() {
+    return this._collection.filter((selectable) => !selectable.isSelected);
+  }
+
   public getById(id: string): Type | undefined {
     return this.collection.find((element) => element.id === id);
   }
@@ -51,10 +55,12 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
   public toggleId(id: string): void {
     this.lastShifted = -1;
     const selectedindex = this.getIndexById(id);
-    this.lastToggled = selectedindex;
-    const selectedElement = this.collection[selectedindex];
-    if (selectedElement) {
-      selectedElement.isSelected = !selectedElement.isSelected;
+    if (selectedindex !== -1) {
+      this.lastToggled = selectedindex;
+      const selectedElement = this.collection[selectedindex];
+      if (selectedElement) {
+        selectedElement.isSelected = !selectedElement.isSelected;
+      }
     }
   }
 

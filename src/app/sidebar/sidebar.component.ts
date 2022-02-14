@@ -24,6 +24,12 @@ export class SidebarComponent {
     this.hotkeyManagerService.addShortcut('a', 'select all').subscribe(() => this.selectAll());
     this.hotkeyManagerService.addShortcut('d', 'deselect all').subscribe(() => this.deselectAll());
     this.hotkeyManagerService
+      .addShortcut('=', 'select first', true, true)
+      .subscribe(() => this.selectFirst());
+    this.hotkeyManagerService
+      .addShortcut('-', 'deselect last', true, true)
+      .subscribe(() => this.deselectLast());
+    this.hotkeyManagerService
       .addShortcut('o', 'open all (copy or move based on setting)')
       .subscribe(() => this.openAll());
     this.hotkeyManagerService
@@ -65,6 +71,18 @@ export class SidebarComponent {
 
   deselectAll(): void {
     this.pageManagerService.displayPageElements.deselectAll();
+  }
+
+  selectFirst(): void {
+    this.pageManagerService.displayPageElements.toggleId(
+      this.pageManagerService.displayPageElements.getDeselectedItems()[0]?.id,
+    );
+  }
+
+  deselectLast(): void {
+    this.pageManagerService.displayPageElements.toggleId(
+      this.pageManagerService.displayPageElements.getSelectedItems().slice(-1)[0]?.id,
+    );
   }
 
   removeAll(): void {

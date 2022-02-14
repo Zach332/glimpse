@@ -16,13 +16,18 @@ export class HotkeyManagerService {
     this.hotkeyRegistry.set('enter', 'submit');
   }
 
-  public addShortcut(keys: string, label: string, ignoreInput: boolean = true) {
+  public addShortcut(
+    keys: string,
+    label: string,
+    ignoreInput: boolean = true,
+    allowRepeats: boolean = false,
+  ) {
     const keyEvent = `keydown.${keys}`;
     this.hotkeyRegistry.set(keys, label);
     return new Observable<KeyboardEvent>((observer) => {
       const handler = (event: KeyboardEvent) => {
         const eventTarget: any = event?.target;
-        if (!event.repeat && (!ignoreInput || !(eventTarget.type === 'text'))) {
+        if ((allowRepeats || !event.repeat) && (!ignoreInput || !(eventTarget.type === 'text'))) {
           event.preventDefault();
           observer.next(event);
         }
