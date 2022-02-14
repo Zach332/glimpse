@@ -84,7 +84,6 @@ export class PageManagerService {
       (newQuery) =>
         (this.displayPageElements = pageFilterService.filterByQuery(newQuery, this.pageElements)),
     );
-    this.hotkeyManagerService.addShortcut('backspace', 'delete').subscribe(() => this.removeAll());
     this.hotkeyManagerService.addShortcut('delete', 'delete').subscribe(() => this.removeAll());
     this.hotkeyManagerService.addShortcut('m', 'move').subscribe(() => this.moveDialog());
     this.hotkeyManagerService.addShortcut('c', 'copy').subscribe(() => this.copyDialog());
