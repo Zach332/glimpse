@@ -220,24 +220,6 @@ export class DataService {
     this._getPagesByDataSources(dataSources),
   );
 
-  async movePage(source: Page, destination: DataSource) {
-    browser.runtime.sendMessage({
-      type: 'moveOrCopyPage',
-      source,
-      destination,
-      operation: Operation.Move,
-    });
-  }
-
-  async copyPage(source: Page, destination: DataSource) {
-    browser.runtime.sendMessage({
-      type: 'moveOrCopyPage',
-      source,
-      destination,
-      operation: Operation.Copy,
-    });
-  }
-
   async removePage(page: Page) {
     browser.runtime.sendMessage({
       type: 'removePage',
@@ -246,19 +228,30 @@ export class DataService {
   }
 
   async movePages(sources: Page[], destination: DataSource) {
-    browser.runtime.sendMessage({
-      type: 'movePages',
-      sources,
-      destination,
-    });
+    this.moveOrCopyPages(sources, destination, Operation.Move);
   }
 
   async copyPages(sources: Page[], destination: DataSource) {
-    browser.runtime.sendMessage({
-      type: 'copyPages',
-      sources,
-      destination,
-    });
+    this.moveOrCopyPages(sources, destination, Operation.Copy);
+  }
+
+  async moveOrCopyPages(sources: Page[], destination: DataSource, operation: Operation) {
+    const activeTab = await this.getActiveTab();
+    if (operation === Operation.Copy) {
+      browser.runtime.sendMessage({
+        type: 'copyPages',
+        sources,
+        destination,
+        activeTab,
+      });
+    } else {
+      browser.runtime.sendMessage({
+        type: 'movePages',
+        sources,
+        destination,
+        activeTab,
+      });
+    }
   }
 
   async removePages(pages: Page[]) {
@@ -285,6 +278,10 @@ export class DataService {
     return browser.windows
       .getCurrent()
       .then((window) => DataService.convertWindowToDataSource(window));
+  }
+
+  async getActiveTab() {
+    return (await browser.tabs.getCurrent())?.id;
   }
 
   // Helper methods

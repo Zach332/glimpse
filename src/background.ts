@@ -49,7 +49,15 @@ function removePages(pages: Page[]) {
   });
 }
 
-async function moveOrCopyPage(source: Page, destination: DataSource, operation: Operation) {
+async function moveOrCopyPage(
+  source: Page,
+  destination: DataSource,
+  currentTabId: number | undefined,
+  operation: Operation,
+) {
+  if (currentTabId === source.pageId[2]) {
+    return;
+  }
   const db = new Database();
   // Collect IDB-stored page data for page
   const image = (await db.images.get(source.pageId))?.image;
@@ -102,23 +110,14 @@ async function moveOrCopyPage(source: Page, destination: DataSource, operation: 
   }
 }
 
-function movePage(source: Page, destination: DataSource) {
-  moveOrCopyPage(source, destination, Operation.Move);
-}
-
-function copyPage(source: Page, destination: DataSource) {
-  moveOrCopyPage(source, destination, Operation.Copy);
-}
-
-async function movePages(sources: Page[], destination: DataSource) {
+async function moveOrCopyPages(
+  sources: Page[],
+  destination: DataSource,
+  activeTab: number | undefined,
+  operation: Operation,
+) {
   sources.forEach((source) => {
-    movePage(source, destination);
-  });
-}
-
-async function copyPages(sources: Page[], destination: DataSource) {
-  sources.forEach((source) => {
-    copyPage(source, destination);
+    moveOrCopyPage(source, destination, activeTab, operation);
   });
 }
 
@@ -149,9 +148,9 @@ browser.runtime.onMessage.addListener(async (message) => {
     // Add initial pages to new window
     if (initialPages) {
       if (copy) {
-        copyPages(initialPages, await dataSource);
+        moveOrCopyPages(initialPages, await dataSource, currentWindowGlimpseTabId, Operation.Copy);
       } else {
-        movePages(initialPages, await dataSource);
+        moveOrCopyPages(initialPages, await dataSource, currentWindowGlimpseTabId, Operation.Move);
       }
 
       // Once a tab in the new window is created, remove the glimpse tab in the new window
@@ -181,25 +180,19 @@ browser.runtime.onMessage.addListener(async (message) => {
     browser.windows.update(destinationWindowId, { focused: true });
     browser.tabs.update(destinationTabId, { active: true });
     browser.tabs.remove(glimpseTabId);
-  } else if (message.type === 'movePage') {
-    const source = message.source;
-    const destination = message.destination;
-    movePage(source, destination);
-  } else if (message.type === 'copyPage') {
-    const source = message.source;
-    const destination = message.destination;
-    copyPage(source, destination);
   } else if (message.type === 'removePage') {
     const page = message.page;
     removePage(page);
   } else if (message.type === 'movePages') {
     const sources = message.sources;
     const destination = message.destination;
-    movePages(sources, destination);
+    const activeTab = message.activeTab;
+    moveOrCopyPages(sources, destination, activeTab, Operation.Move);
   } else if (message.type === 'copyPages') {
     const sources = message.sources;
     const destination = message.destination;
-    copyPages(sources, destination);
+    const activeTab = message.activeTab;
+    moveOrCopyPages(sources, destination, activeTab, Operation.Copy);
   } else if (message.type === 'removePages') {
     const pages = message.pages;
     removePages(pages);
