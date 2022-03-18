@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as browser from 'webextension-polyfill';
-import pThrottle from 'p-throttle';
+import PQueue from 'p-queue';
 import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
@@ -14,9 +14,8 @@ import { IdGeneratorService } from './id-generator-serivce';
   providedIn: 'root',
 })
 export class DataService {
-  private pageThrottle = pThrottle({
-    limit: 1,
-    interval: 100,
+  private queue = new PQueue({
+    concurrency: 1,
   });
 
   // Data sources
@@ -209,16 +208,17 @@ export class DataService {
     return pages;
   }
 
+  public getPagesByDataSources(dataSources: DataSource[]) {
+    this.queue.clear();
+    return this.queue.add(() => this._getPagesByDataSources(dataSources));
+  }
+
   private getAlternativeTimeLastAccessed(pageId: PageId) {
     if (pageId[0] === DataSourceType.Window) {
       return pageId[2];
     }
     return parseInt(pageId[2], 10);
   }
-
-  getPagesByDataSources = this.pageThrottle((dataSources: DataSource[]) =>
-    this._getPagesByDataSources(dataSources),
-  );
 
   async removePage(page: Page) {
     browser.runtime.sendMessage({
