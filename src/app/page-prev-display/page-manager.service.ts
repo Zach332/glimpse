@@ -44,6 +44,7 @@ export class PageManagerService {
     browser.tabs.onCreated.addListener(() => observer.next());
     browser.tabs.onActivated.addListener(() => observer.next());
     browser.tabs.onDetached.addListener(() => observer.next());
+    browser.tabs.onUpdated.addListener(() => observer.next());
     browser.webNavigation.onCommitted.addListener(() => observer.next());
     browser.windows.onFocusChanged.addListener(() => observer.next());
     browser.bookmarks.onCreated.addListener(() => observer.next());
