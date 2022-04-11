@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as browser from 'webextension-polyfill';
-import PQueue from 'p-queue';
 import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
@@ -14,10 +13,6 @@ import { IdGeneratorService } from './id-generator-serivce';
   providedIn: 'root',
 })
 export class DataService {
-  private queue = new PQueue({
-    concurrency: 1,
-  });
-
   // Data sources
 
   async addWindow(name?: string, initialPages?: Page[], copy?: boolean) {
@@ -114,7 +109,7 @@ export class DataService {
 
   // Pages
 
-  private async _getPagesByDataSources(dataSources: DataSource[]) {
+  public async getPagesByDataSources(dataSources: DataSource[]) {
     type PageWithoutIDBData = {
       readonly pageId: PageId;
       title: string;
@@ -206,11 +201,6 @@ export class DataService {
     );
 
     return pages;
-  }
-
-  public getPagesByDataSources(dataSources: DataSource[]) {
-    this.queue.clear();
-    return this.queue.add(() => this._getPagesByDataSources(dataSources));
   }
 
   private getAlternativeTimeLastAccessed(pageId: PageId) {

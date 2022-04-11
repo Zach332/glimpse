@@ -4,6 +4,7 @@ import { Mutex } from 'async-mutex';
 import { BehaviorSubject, Observable } from 'rxjs';
 import * as browser from 'webextension-polyfill';
 import { MatDialog } from '@angular/material/dialog';
+import PQueue from 'p-queue';
 import { DataService } from '../data.service';
 import { IdGeneratorService } from '../id-generator-serivce';
 import { DataSourceType } from '../interfaces/data-source-type';
@@ -59,6 +60,10 @@ export class PageManagerService {
   });
 
   private lock = new Mutex();
+
+  private pageQueue = new PQueue({
+    concurrency: 1,
+  });
 
   constructor(
     private sidebarManagerService: SidebarManagerService,
@@ -358,7 +363,7 @@ export class PageManagerService {
     await this.updatePages(dataSources);
   }
 
-  private async updatePages(dataSources: DataSource[]) {
+  private async _updatePages(dataSources: DataSource[]) {
     this.windowPageElements = [];
     this.savedPageElements = [];
     if (dataSources.length > 0) {
@@ -390,6 +395,11 @@ export class PageManagerService {
           }),
       );
     });
+  }
+
+  private async updatePages(dataSources: DataSource[]) {
+    this.pageQueue.clear();
+    this.pageQueue.add(() => this._updatePages(dataSources));
   }
 
   private sortPages(
