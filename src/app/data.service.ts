@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as browser from 'webextension-polyfill';
-import pThrottle from 'p-throttle';
 import { DataSourceType } from './interfaces/data-source-type';
 import { DataSource } from './interfaces/data-source';
 import { Page } from './interfaces/page';
@@ -14,11 +13,6 @@ import { IdGeneratorService } from './id-generator-serivce';
   providedIn: 'root',
 })
 export class DataService {
-  private pageThrottle = pThrottle({
-    limit: 1,
-    interval: 100,
-  });
-
   // Data sources
 
   async addWindow(name?: string, initialPages?: Page[], copy?: boolean) {
@@ -115,7 +109,7 @@ export class DataService {
 
   // Pages
 
-  private async _getPagesByDataSources(dataSources: DataSource[]) {
+  public async getPagesByDataSources(dataSources: DataSource[]) {
     type PageWithoutIDBData = {
       readonly pageId: PageId;
       title: string;
@@ -215,10 +209,6 @@ export class DataService {
     }
     return parseInt(pageId[2], 10);
   }
-
-  getPagesByDataSources = this.pageThrottle((dataSources: DataSource[]) =>
-    this._getPagesByDataSources(dataSources),
-  );
 
   async removePage(page: Page) {
     browser.runtime.sendMessage({

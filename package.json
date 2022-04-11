@@ -31,7 +31,7 @@
     "@types/webextension-polyfill": "^0.8.0",
     "async-mutex": "^0.3.2",
     "dexie": "^3.2.0",
-    "p-throttle": "^5.0.0",
+    "p-queue": "^7.2.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.1.0",
     "webextension-polyfill": "^0.8.0",
