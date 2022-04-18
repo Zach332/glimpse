@@ -341,6 +341,9 @@ export class PageManagerService {
     this.windowPageElements = this.windowPageElements.filter(
       (page) => page.pageId.toString() !== pageId.toString(),
     );
+    setTimeout(() => {
+      this.updatePagesLocked(this.sidebarManagerService.selectedSidebarButtons.value);
+    }, 200);
 
     const pages = this.savedPageElements.concat(this.windowPageElements).map((selectablePage) => {
       return {
