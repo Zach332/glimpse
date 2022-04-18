@@ -7,7 +7,7 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "permissions": ["<all_urls>", "activeTab", "tabs", "webNavigation", "bookmarks"],
+  "permissions": ["<all_urls>", "tabs", "webNavigation", "bookmarks"],
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
