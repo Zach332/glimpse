@@ -5,7 +5,7 @@
     [style.background-image]="'url(' + tabDataUrl + ')'"
     class="favicon"
   ></div>
-  <mat-card-title class="prev-title">{{ tabData.pageId }}</mat-card-title>
+  <mat-card-title class="prev-title">{{ tabData.title }}</mat-card-title>
   <mat-card-subtitle class="prev-site">{{ tabData.url | siteTrim }}</mat-card-subtitle>
   <button mat-icon-button (click)="close($event)" class="prev-close hoverdark">
     <mat-icon *ngIf="!tabData.loading">close</mat-icon>
