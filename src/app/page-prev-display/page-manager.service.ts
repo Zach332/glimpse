@@ -353,12 +353,13 @@ export class PageManagerService {
     });
 
     this.updatePageElements((currentPageElements) => {
-      currentPageElements.adjustCollection(
+      currentPageElements.adjustCollectionMerge(
         pages
           .sort((a, b) => this.sortPages(a, b))
           .map((selectablePageTimeLastAccessedPair) => {
             return selectablePageTimeLastAccessedPair.page;
           }),
+        this.selectablePageMerge,
       );
     });
   }
@@ -391,12 +392,13 @@ export class PageManagerService {
     });
 
     this.updatePageElements((currentPageElements) => {
-      currentPageElements.adjustCollection(
+      currentPageElements.adjustCollectionMerge(
         pages
           .sort((a, b) => this.sortPages(a, b))
           .map((selectablePageTimeLastAccessedPair) => {
             return selectablePageTimeLastAccessedPair.page;
           }),
+        this.selectablePageMerge,
       );
     });
   }
@@ -417,6 +419,13 @@ export class PageManagerService {
       return -1;
     }
     return b.timeLastAccessed - a.timeLastAccessed;
+  }
+
+  private selectablePageMerge(init: SelectablePage, merge: SelectablePage) {
+    const isSelected = init.isSelected;
+    Object.assign(init, merge);
+    init.isSelected = isSelected;
+    return init;
   }
 
   private getPageElementsOfType(type: DataSourceType): SelectablePage[] {

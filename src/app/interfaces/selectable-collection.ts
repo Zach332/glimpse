@@ -137,6 +137,22 @@ export class SelectableCollection<Type extends Selectable> implements Iterable<T
     this.collection = newData;
   }
 
+  public adjustCollectionMerge(newData: Type[], mergeTo: (initial: Type, merge: Type) => Type) {
+    for (let i = 0; i < newData.length; i += 1) {
+      const element = newData[i];
+      const existingElement = this.collection.findIndex(
+        (currentElement) => currentElement.id === element.id,
+      );
+      if (existingElement !== -1) {
+        this.collection.splice(i, 0, mergeTo(this.collection[existingElement], element));
+        this.collection.splice(existingElement + 1, 1);
+      } else {
+        this.collection.splice(i, 0, element);
+      }
+    }
+    this.collection.splice(newData.length, this.collection.length - newData.length);
+  }
+
   public [Symbol.iterator]() {
     const { collection } = this;
     let pointer = 0;
