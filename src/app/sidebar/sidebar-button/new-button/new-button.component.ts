@@ -32,6 +32,6 @@ export class NewButtonComponent {
   }
 
   onClick(): void {
-    this.sidebarManagerService.addWindowButtonPress(this.buttonData);
+    this.sidebarManagerService.addNewDataSouceButtonPress(this.buttonData);
   }
 }
