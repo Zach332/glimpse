@@ -1,9 +1,6 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
-import { SimpleDialogComponent } from 'src/app/general/simple-dialog/simple-dialog.component';
-import { DataSourceType } from 'src/app/interfaces/data-source-type';
 import { SelectablePage } from 'src/app/interfaces/selectable-page';
 import { SelectableDataSource } from 'src/app/interfaces/selectable-sidebar-button';
 import { PageManagerService } from 'src/app/page-prev-display/page-manager.service';
@@ -35,23 +32,6 @@ export class NewButtonComponent {
   }
 
   onClick(): void {
-    this.getNameDialog().subscribe((result) => {
-      if (result !== undefined && result !== null) {
-        if (this.buttonData.dataSourceId[0] === DataSourceType.Window) {
-          this.sidebarManagerService.addWindow(result);
-        } else {
-          this.sidebarManagerService.addFolder(result);
-        }
-      }
-    });
-  }
-
-  getNameDialog(): Observable<string> {
-    const dialogRef = this.nameDialog.open(SimpleDialogComponent, {
-      data: { inputValue: '' },
-    });
-    dialogRef.componentInstance.dialogTitle = 'Name';
-    dialogRef.componentInstance.inputLabel = 'Name';
-    return dialogRef.afterClosed();
+    this.sidebarManagerService.addWindowButtonPress(this.buttonData);
   }
 }

@@ -5,6 +5,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import * as browser from 'webextension-polyfill';
 import { Page } from 'src/app/interfaces/page';
 import { BookmarkService } from 'src/app/bookmark-service';
+import { HotkeyManagerService } from 'src/app/hotkey-manager.service';
+import { MatDialog } from '@angular/material/dialog';
+import { SimpleDialogComponent } from 'src/app/general/simple-dialog/simple-dialog.component';
 import { DataService } from '../../data.service';
 import { SelectableDataSource } from '../../interfaces/selectable-sidebar-button';
 import { SelectableCollection } from '../../interfaces/selectable-collection';
@@ -64,7 +67,11 @@ export class SidebarManagerService {
     browser.windows.onFocusChanged.addListener(() => observer.next());
   });
 
-  constructor(private dataService: DataService) {
+  constructor(
+    private dataService: DataService,
+    private hotkeyManagerService: HotkeyManagerService,
+    private nameDialog: MatDialog,
+  ) {
     this.windowRootButton = {
       dataSourceId: [DataSourceType.Window, 1],
       id: '1',
@@ -94,6 +101,13 @@ export class SidebarManagerService {
 
     this.browserObservable.subscribe(() => this.createSidebarItems());
     this.init();
+
+    this.hotkeyManagerService
+      .addShortcut('[', 'create new window')
+      .subscribe(() => this.addNewDataSouceButtonPress(this.newWindowButton));
+    this.hotkeyManagerService
+      .addShortcut(']', 'create new folder')
+      .subscribe(() => this.addNewDataSouceButtonPress(this.newSavedButton));
   }
 
   private async init() {
@@ -281,6 +295,27 @@ export class SidebarManagerService {
       return this.windowSidebarButtons;
     }
     return this.savedSidebarButtons;
+  }
+
+  addNewDataSouceButtonPress(buttonData: SelectableDataSource): void {
+    this.getNameDialog().subscribe((result) => {
+      if (result !== undefined && result !== null) {
+        if (buttonData.dataSourceId[0] === DataSourceType.Window) {
+          this.addWindow(result);
+        } else {
+          this.addFolder(result);
+        }
+      }
+    });
+  }
+
+  getNameDialog(): Observable<string> {
+    const dialogRef = this.nameDialog.open(SimpleDialogComponent, {
+      data: { inputValue: '' },
+    });
+    dialogRef.componentInstance.dialogTitle = 'Name';
+    dialogRef.componentInstance.inputLabel = 'Name';
+    return dialogRef.afterClosed();
   }
 
   private replacer(key: any, value: any) {
