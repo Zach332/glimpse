@@ -371,8 +371,3 @@ browser.bookmarks.onRemoved.addListener((id, removeInfo) => {
   const db = new Database();
   db.deletePageData([DataSourceType.Folder, removeInfo.parentId, id]);
 });
-
-browser.runtime.onStartup.addListener(() => {
-  const db = new Database();
-  db.deleteSessionData();
-});

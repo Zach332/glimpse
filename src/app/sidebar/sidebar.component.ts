@@ -5,6 +5,7 @@ import { PageManagerService } from '../page-prev-display/page-manager.service';
 import { SidebarManagerService } from './sidebar-management/sidebar-manager.service';
 import { DataSourceType } from '../interfaces/data-source-type';
 import { InfoDialogComponent } from '../general/info-dialog/info-dialog.component';
+import { Database } from '../database';
 
 @Component({
   selector: 'app-sidebar',
@@ -59,6 +60,9 @@ export class SidebarComponent {
           ),
         );
     }
+    this.hotkeyManagerService
+      .addShortcut('shift.x', 'delete session data')
+      .subscribe(() => this.refreshData());
   }
 
   public get DataSourceType() {
@@ -109,5 +113,10 @@ export class SidebarComponent {
     let hotkeyHelp = '';
     hotkeys.forEach((key, value) => (hotkeyHelp += `${value.replace(/\./g, ' + ')} :  ${key}\n`));
     return hotkeyHelp;
+  }
+
+  private refreshData() {
+    const db = new Database();
+    db.deleteSessionData();
   }
 }
