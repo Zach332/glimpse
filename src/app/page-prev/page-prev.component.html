@@ -5,9 +5,13 @@
   [style.width.px]="pageManagerService.pagePrevWidth"
 >
   <app-image-prev
-    *ngIf="!collapse"
+    *ngIf="!showTitlePrev()"
     [tabData]="tabData"
     (removePage)="removePage()"
   ></app-image-prev>
-  <app-title-prev *ngIf="collapse" [tabData]="tabData" (removePage)="removePage()"></app-title-prev>
+  <app-title-prev
+    *ngIf="showTitlePrev()"
+    [tabData]="tabData"
+    (removePage)="removePage()"
+  ></app-title-prev>
 </mat-card>

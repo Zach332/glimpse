@@ -1,3 +1,4 @@
+import * as browser from 'webextension-polyfill';
 import { Component, Input } from '@angular/core';
 import { DataSourceType } from '../interfaces/data-source-type';
 import { SelectablePage } from '../interfaces/selectable-page';
@@ -48,5 +49,16 @@ export class PagePrevComponent {
 
   isFolder() {
     return this.tabData.pageId[0] === DataSourceType.Folder;
+  }
+
+  showTitlePrev() {
+    if (this.collapse) {
+      return true;
+    }
+    const extensionId = browser.i18n.getMessage('@@extension_id');
+    return (
+      this.tabData.url!.startsWith('chrome://newtab') ||
+      this.tabData.url!.startsWith(`moz-extension://${extensionId}`)
+    );
   }
 }
